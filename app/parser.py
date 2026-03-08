@@ -66,9 +66,16 @@ ATURAN PENTING — BACA SEMUA SEBELUM MEMPROSES
    - "darah" / "saren" / "marus"           → "darah ayam"
 
 ═══════════════════════════════════════════════
-FORMAT OUTPUT — WAJIB JSON SAJA, TIDAK ADA TEKS LAIN
+FORMAT OUTPUT — SANGAT PENTING!
 ═══════════════════════════════════════════════
 
+⚠️ KEMBALIKAN HANYA JSON ARRAY — TANPA TEKS LAIN!
+⚠️ JANGAN tulis penjelasan, pendahuluan, atau catatan apapun!
+⚠️ JANGAN gunakan format seperti "Berikut adalah JSON..." atau "Output:"!
+
+LANGSUNG MULAI DENGAN [ DAN AKHIRI DENGAN ]
+
+Format:
 [
   {
     "name": "nama makanan dalam bahasa Indonesia (standar)",
@@ -230,69 +237,119 @@ def convert_to_gram(qty: float, unit: str, estimated_grams: float) -> float:
 # PARSER UTAMA
 # ─────────────────────────────────────────────
 
-def parse_food_text(text: str) -> list[dict]:
+def parse_food_text(text: str) -> tuple[list[dict], dict]:
     """
-    Parse input teks bebas → list item makanan.
+    Parse input teks bebas → list item makanan + log detail.
 
     Returns:
-        [
+        (
+            [
+                {
+                    "name": str,
+                    "name_en": str,
+                    "qty": float,
+                    "unit": str,
+                    "grams": float,
+                },
+                ...
+            ],
             {
-                "name": str,
-                "name_en": str,
-                "qty": float,
-                "unit": str,
-                "grams": float,
-            },
-            ...
-        ]
+                "llm_raw_response": str,
+                "parsed_items_count": int,
+                "parse_time_ms": float,
+                "errors": list[str]
+            }
+        )
     """
+    import time
+    start_time = time.time()
+    
+    log_detail = {
+        "llm_raw_response": None,
+        "parsed_items_count": 0,
+        "parse_time_ms": 0,
+        "errors": [],
+        "llm_model": "llama-3.1-8b-instant",
+        "input_length": len(text)
+    }
+    
     if not text or not text.strip():
-        return []
+        log_detail["errors"].append("Empty input")
+        return [], log_detail
+
+    print("\n" + "="*80)
+    print("🔍 PARSING STARTED")
+    print("="*80)
+    print(f"📝 Input text: {text}")
+    print(f"⏱️  Start time: {time.strftime('%H:%M:%S')}")
 
     # ── Panggil LLM ──
     try:
+        print(f"\n🤖 Calling LLM ({log_detail['llm_model']})...")
         response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user",   "content": text.strip()},
             ],
-            temperature=0.1,   # rendah = lebih konsisten
+            temperature=0.1,
             max_tokens=1000,
         )
+        print("✅ LLM response received")
     except Exception as e:
-        print(f"[parser] LLM error: {e}")
-        return []
+        error_msg = f"LLM error: {e}"
+        print(f"❌ {error_msg}")
+        log_detail["errors"].append(error_msg)
+        log_detail["parse_time_ms"] = (time.time() - start_time) * 1000
+        return [], log_detail
 
     raw = response.choices[0].message.content.strip()
+    log_detail["llm_raw_response"] = raw  # Store full response
+    
+    print("\n📄 RAW LLM OUTPUT:")
+    print("-"*80)
+    print(raw)
+    print("-"*80)
 
     # ── Bersihkan output ──
-    # Hapus markdown code block jika ada
     raw = re.sub(r"```(?:json)?", "", raw).strip()
     raw = re.sub(r"```", "", raw).strip()
 
     # ── Parse JSON ──
     try:
         items = json.loads(raw)
+        print("✅ JSON parsed successfully")
     except json.JSONDecodeError:
-        # Coba ekstrak array dari teks
-        match = re.search(r"\[.*\]", raw, re.DOTALL)
-        if match:
+        start_idx = raw.find('[')
+        end_idx = raw.rfind(']')
+        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+            json_str = raw[start_idx:end_idx + 1]
             try:
-                items = json.loads(match.group())
-            except json.JSONDecodeError:
-                print(f"[parser] JSON parse failed. Raw: {raw[:200]}")
-                return []
+                items = json.loads(json_str)
+                print("✅ JSON extracted from text and parsed successfully")
+            except json.JSONDecodeError as e:
+                error_msg = f"JSON parse failed: {e}"
+                print(f"❌ {error_msg}")
+                log_detail["errors"].append(error_msg)
+                log_detail["parse_time_ms"] = (time.time() - start_time) * 1000
+                return [], log_detail
         else:
-            print(f"[parser] No JSON array found. Raw: {raw[:200]}")
-            return []
+            error_msg = "No JSON array found"
+            print(f"❌ {error_msg}")
+            log_detail["errors"].append(error_msg)
+            log_detail["parse_time_ms"] = (time.time() - start_time) * 1000
+            return [], log_detail
 
     if not isinstance(items, list):
-        return []
+        error_msg = "Parsed result is not a list"
+        print(f"❌ {error_msg}")
+        log_detail["errors"].append(error_msg)
+        return [], log_detail
 
     # ── Validasi & normalize setiap item ──
     result = []
-    for item in items:
+    print(f"\n📦 Parsed {len(items)} items from LLM:")
+    for i, item in enumerate(items, 1):
         if not isinstance(item, dict):
             continue
 
@@ -300,9 +357,7 @@ def parse_food_text(text: str) -> list[dict]:
         if not name:
             continue
 
-        # Normalisasi nama via alias dict
         name = normalize_food_name(name)
-
         name_en        = item.get("name_en", name)
         qty            = float(item.get("qty", 1))
         unit           = item.get("unit", "porsi")
@@ -310,15 +365,26 @@ def parse_food_text(text: str) -> list[dict]:
 
         grams = convert_to_gram(qty, unit, estimated_grams)
 
-        result.append({
+        parsed_item = {
             "name":       name,
             "name_en":    name_en,
             "qty":        qty,
             "unit":       unit,
             "grams":      round(grams, 1),
-        })
+        }
+        result.append(parsed_item)
+        
+        print(f"   {i}. {name} (EN: {name_en}) - {qty} {unit} ≈ {round(grams, 1)}g")
 
-    return result
+    log_detail["parsed_items_count"] = len(result)
+    log_detail["parse_time_ms"] = round((time.time() - start_time) * 1000, 2)
+    
+    print(f"\n✅ PARSING COMPLETED")
+    print(f"   Total items: {len(result)}")
+    print(f"   Parse time: {log_detail['parse_time_ms']}ms")
+    print("="*80 + "\n")
+    
+    return result, log_detail
 
 
 def estimate_nutrition_llm(food_name: str) -> dict:

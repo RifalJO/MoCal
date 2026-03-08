@@ -119,32 +119,65 @@ def usda_search(english_name: str) -> dict | None:
 
 
 # ─── Main: find_food ──────────────────────────────────────────────────────────
-def find_food(name: str, english_name: str | None = None) -> dict:
+def find_food(name: str, english_name: str | None = None) -> tuple[dict, dict]:
     """
     Urutan pencarian:
     1. Exact match di DB lokal
     2. Fuzzy match di DB lokal
     3. USDA API (pakai nama Inggris jika tersedia)
     4. Tidak ditemukan
-    """
 
-    # Step 1
+    Returns: (food_result, match_log)
+    """
+    match_log = {
+        "search_name": name,
+        "search_name_en": english_name,
+        "steps_tried": [],
+        "match_found": False
+    }
+
+    print(f"\n🔎 Searching for: '{name}'" + (f" (EN: {english_name})" if english_name else ""))
+
+    # Step 1: Exact match
+    print(f"   Step 1/3: Exact match...", end=" ")
+    match_log["steps_tried"].append("exact_match")
     result = exact_match(name)
     if result:
-        return result
+        print(f"✅ FOUND (exact match)")
+        match_log["match_found"] = True
+        match_log["matched_step"] = "exact_match"
+        return result, match_log
+    print("❌ Not found")
 
-    # Step 2
+    # Step 2: Fuzzy match
+    print(f"   Step 2/3: Fuzzy match...", end=" ")
+    match_log["steps_tried"].append("fuzzy_match")
     result = fuzzy_match(name)
     if result:
-        return result
+        print(f"✅ FOUND (fuzzy: {result.get('match_score', 0):.1%})")
+        match_log["match_found"] = True
+        match_log["matched_step"] = "fuzzy_match"
+        match_log["fuzzy_score"] = result.get("match_score")
+        return result, match_log
+    print("❌ Not found")
 
-    # Step 3 — pakai nama Inggris kalau ada, fallback ke nama asli
+    # Step 3: USDA API
+    match_log["steps_tried"].append("usda_api")
     search_term = english_name or name
+    print(f"   Step 3/3: USDA API search for '{search_term}'...", end=" ")
     result = usda_search(search_term)
     if result:
-        return result
+        print(f"✅ FOUND (USDA API)")
+        match_log["match_found"] = True
+        match_log["matched_step"] = "usda_api"
+        match_log["usda_query"] = search_term
+        return result, match_log
+    print("❌ Not found")
 
-    # Step 4
+    # Step 4: Not found
+    print(f"   ❌ NOT FOUND - Will use LLM estimation")
+    match_log["steps_tried"].append("not_found")
+    match_log["matched_step"] = "not_found"
     return {
         "name": name,
         "kcal": None,
@@ -155,4 +188,4 @@ def find_food(name: str, english_name: str | None = None) -> dict:
         "source": "unknown",
         "match_method": "not_found",
         "match_score": 0.0
-    }
+    }, match_log

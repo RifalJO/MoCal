@@ -95,10 +95,11 @@ class FoodLog(Base):
     __tablename__ = "food_logs"
 
     id          = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id     = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=True) # made nullable=True initially to allow dropping/recreating or altering existing db easier, but ideally user_id is required
-    raw_input   = Column(Text, nullable=False)          # teks asli user
-    items       = Column(JSONB, nullable=False)          # detail tiap makanan
+    user_id     = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
+    raw_input   = Column(Text, nullable=False)
+    items       = Column(JSONB, nullable=False)
     total_kcal  = Column(Float, nullable=False)
+    log_detail  = Column(JSONB, nullable=True)        # detail lengkap proses parsing & matching
     logged_at   = Column(DateTime(timezone=True), server_default=func.now())
 
 

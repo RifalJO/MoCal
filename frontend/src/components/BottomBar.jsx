@@ -1,7 +1,11 @@
 import { useAppStore } from '@/stores/appStore'
 
 export default function BottomBar({ onClick }) {
-    const { totalKcal, totalC, totalP, totalF } = useAppStore()
+    const { logs, totalKcal, totalC, totalP, totalF } = useAppStore()
+
+    // Debug log
+    console.log('🔥 BottomBar - Totals:', { totalKcal, totalC, totalP, totalF })
+    console.log('🔥 BottomBar - Logs count:', logs.length)
 
     return (
         <div
@@ -27,21 +31,21 @@ export default function BottomBar({ onClick }) {
 
             <div className="flex items-center gap-1">
                 <span className="text-[13px] font-bold text-carbs">C</span>
-                <span className="text-[15px] font-semibold text-ink">{totalC}</span>
+                <span className="text-[15px] font-semibold text-ink">{totalC > 0 ? totalC : '0'}</span>
             </div>
 
             <span className="text-muted/40 text-lg">·</span>
 
             <div className="flex items-center gap-1">
                 <span className="text-[13px] font-bold text-protein">P</span>
-                <span className="text-[15px] font-semibold text-ink">{totalP}</span>
+                <span className="text-[15px] font-semibold text-ink">{totalP > 0 ? totalP : '0'}</span>
             </div>
 
             <span className="text-muted/40 text-lg">·</span>
 
             <div className="flex items-center gap-1">
                 <span className="text-[13px] font-bold text-fat">F</span>
-                <span className="text-[15px] font-semibold text-ink">{totalF}</span>
+                <span className="text-[15px] font-semibold text-ink">{totalF > 0 ? totalF : '0'}</span>
             </div>
         </div>
     )

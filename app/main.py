@@ -236,8 +236,10 @@ def estimate_calories(req: LogRequest, db: Session = Depends(get_db)):
     1. Parse teks bebas → daftar makanan (LLM)
     2. Cari nutrisi tiap makanan (DB lokal → USDA API → LLM estimasi)
     3. Hitung total kalori
-    4. Return hasil lengkap
+    4. Return hasil lengkap + simpan log detail ke database
     """
+    import time
+    request_start = time.time()
 
     # Validasi input
     text = req.text.strip()
@@ -247,7 +249,7 @@ def estimate_calories(req: LogRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Input terlalu panjang (max 2000 karakter)")
 
     # ── Step 1: Parse teks → daftar makanan ───────────────────────────────────
-    parsed_items = parse_food_text(text)
+    parsed_items, parse_log = parse_food_text(text)
 
     if not parsed_items:
         raise HTTPException(status_code=422, detail="Tidak ada makanan yang terdeteksi dari teks")
@@ -255,6 +257,7 @@ def estimate_calories(req: LogRequest, db: Session = Depends(get_db)):
     # ── Step 2: Cari nutrisi tiap makanan ─────────────────────────────────────
     results      = []
     unknown_items = []
+    match_logs = []
 
     for item in parsed_items:
         name_raw  = item.get("name", "").strip()
@@ -266,16 +269,25 @@ def estimate_calories(req: LogRequest, db: Session = Depends(get_db)):
             continue
 
         # Cari di DB lokal + USDA API
-        food = find_food(name_raw, name_en)
+        food, match_log = find_food(name_raw, name_en)
+        match_logs.append(match_log)
 
         # Fallback LLM estimasi jika benar-benar tidak ketemu
         is_estimate = False
         if food["match_method"] == "not_found":
+            print(f"\n   🤖 Estimating nutrition for '{name_raw}' using LLM...")
+            llm_start = time.time()
             llm_result = estimate_nutrition_llm(name_raw)
+            llm_time = round((time.time() - llm_start) * 1000, 2)
+            
             if llm_result:
                 food = {**food, **llm_result}
                 is_estimate = True
+                match_log["llm_estimate"] = True
+                match_log["llm_estimate_time_ms"] = llm_time
+                print(f"   ✅ LLM estimation: {llm_result.get('kcal', 0)} kcal/100g ({llm_time}ms)")
             else:
+                print(f"   ❌ LLM estimation failed")
                 unknown_items.append(name_raw)
 
         # Konversi porsi ke gram
@@ -310,17 +322,53 @@ def estimate_calories(req: LogRequest, db: Session = Depends(get_db)):
     total_carbs   = round(sum(r.carbs_g     for r in results), 1)
     total_fat     = round(sum(r.fat_g       for r in results), 1)
 
-    # ── Step 4: Simpan log ke DB ──────────────────────────────────────────────
+    # ── Step 4: Siapkan log detail ──────────────────────────────────────────────
+    total_time = round((time.time() - request_start) * 1000, 2)
+    
+    log_detail = {
+        "parsing": parse_log,
+        "matching": match_logs,
+        "summary": {
+            "total_items_parsed": len(parsed_items),
+            "total_items_matched": len(results),
+            "unknown_items": unknown_items,
+            "total_time_ms": total_time
+        },
+        "input": {
+            "raw_text": text,
+            "text_length": len(text)
+        }
+    }
+
+    # ── Step 5: Simpan log ke DB ──────────────────────────────────────────────
     from app.database import FoodLog
     log = FoodLog(
         user_id    = None,
         raw_input  = text,
         items      = [r.model_dump() for r in results],
         total_kcal = total_kcal,
+        log_detail = log_detail,  # Simpan detail lengkap
     )
     db.add(log)
     db.commit()
     db.refresh(log)
+
+    # ── Step 6: Print Summary ──────────────────────────────────────────────
+    print("\n" + "="*80)
+    print("📊 ESTIMATION SUMMARY")
+    print("="*80)
+    print(f"✅ Total items: {len(results)}")
+    print(f"🔥 Total calories: {total_kcal} kcal")
+    print(f"🥩 Protein: {total_protein}g")
+    print(f"🍚 Carbs: {total_carbs}g")
+    print(f"🥑 Fat: {total_fat}g")
+    print(f"⏱️  Total processing time: {total_time}ms")
+    print(f"💾 Saved to database with ID: {log.id}")
+    
+    if unknown_items:
+        print(f"\n⚠️  Unknown items: {unknown_items}")
+    
+    print("="*80 + "\n")
 
     return LogResponse(
         log_id          = str(log.id),
@@ -352,10 +400,10 @@ def get_logs(current_user: User = Depends(get_current_user), db: Session = Depen
     # Ambil logs hari ini
     from datetime import datetime, timezone
     today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-    
+
     # Ambil semua log user ini desc
     logs = db.query(FoodLog).filter(FoodLog.user_id == current_user.id).order_by(FoodLog.logged_at.desc()).all()
-    
+
     # Convert ke response schema
     result = []
     for log in logs:
@@ -364,6 +412,59 @@ def get_logs(current_user: User = Depends(get_current_user), db: Session = Depen
             "raw_input": log.raw_input,
             "items": log.items,
             "total_kcal": log.total_kcal,
+            "log_detail": log.log_detail,  # Include log detail
+            "logged_at": log.logged_at.isoformat() if log.logged_at else None
+        })
+    return result
+
+
+# ─── Endpoint: Get Latest Log Detail (for debugging) ─────────────────────────
+@app.get("/api/logs/latest")
+def get_latest_log_detail(db: Session = Depends(get_db)):
+    """
+    Get the most recent log with full parsing/matching details.
+    Useful for debugging and seeing what the LLM returned.
+    """
+    from app.database import FoodLog
+    
+    log = db.query(FoodLog).order_by(FoodLog.logged_at.desc()).first()
+    
+    if not log:
+        raise HTTPException(status_code=404, detail="No logs found")
+    
+    return {
+        "log_id": str(log.id),
+        "raw_input": log.raw_input,
+        "total_kcal": log.total_kcal,
+        "total_protein_g": sum(item.get("protein_g", 0) for item in log.items),
+        "total_carbs_g": sum(item.get("carbs_g", 0) for item in log.items),
+        "total_fat_g": sum(item.get("fat_g", 0) for item in log.items),
+        "items_count": len(log.items),
+        "items": log.items,
+        "log_detail": log.log_detail,  # Full parsing & matching details
+        "logged_at": log.logged_at.isoformat() if log.logged_at else None
+    }
+
+
+# ─── Endpoint: Get All Logs (public, no auth - for testing) ──────────────────
+@app.get("/api/logs/all")
+def get_all_logs_public(db: Session = Depends(get_db)):
+    """
+    Get all logs with log_detail (no authentication).
+    For testing/debugging purposes only.
+    """
+    from app.database import FoodLog
+    
+    logs = db.query(FoodLog).order_by(FoodLog.logged_at.desc()).limit(50).all()
+    
+    result = []
+    for log in logs:
+        result.append({
+            "log_id": str(log.id),
+            "raw_input": log.raw_input,
+            "total_kcal": log.total_kcal,
+            "items_count": len(log.items),
+            "log_detail": log.log_detail,
             "logged_at": log.logged_at.isoformat() if log.logged_at else None
         })
     return result

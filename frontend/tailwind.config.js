@@ -14,6 +14,9 @@ export default {
                 ink: '#1A1A1A',
                 muted: '#9B9B9B',
                 fire: '#FF6B00',
+                primary: '#df6620',
+                'background-light': '#f8f7f6',
+                'background-dark': '#211711',
                 carbs: '#4CAF50',
                 protein: '#9C27B0',
                 fat: '#FF9800',
@@ -26,6 +29,9 @@ export default {
             },
             fontFamily: {
                 sans: ['Inter', 'sans-serif'],
+                display: ['Spline Sans', 'sans-serif'],
+                title: ['Zen Maru Gothic', 'sans-serif'],
+                mono: ['JetBrains Mono', 'monospace'],
             },
             borderRadius: {
                 full: '9999px',
