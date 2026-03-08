@@ -1,16 +1,21 @@
 import { useAppStore } from '@/stores/appStore'
 
-export default function BottomBar() {
+export default function BottomBar({ onClick }) {
     const { totalKcal, totalC, totalP, totalF } = useAppStore()
 
     return (
-        <div className="
+        <div
+            onClick={onClick}
+            className="
       mx-4 mb-6 mt-2
       bg-white rounded-full
       px-6 py-4
       shadow-sm border border-border/30
       flex items-center justify-center gap-4
-    ">
+      cursor-pointer hover:opacity-90 active:scale-95
+      transition-all duration-200
+    "
+        >
             <div className="flex items-center gap-1.5">
                 <span className="text-base">🔥</span>
                 <span className="text-[15px] font-semibold text-ink">
