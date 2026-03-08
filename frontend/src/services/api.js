@@ -22,7 +22,8 @@ export async function login(email, password) {
         localStorage.setItem('mocal-token', data.access_token)
         localStorage.setItem('mocal-user', JSON.stringify({ email }))
         
-        // Fetch user's logs after login
+        // Clear local logs and fetch user's logs from server
+        store.setLogs([])
         await fetchUserLogs()
         
         return { success: true }
@@ -44,6 +45,8 @@ export async function register(email, password) {
 
 export async function logout() {
     const store = useAppStore.getState()
+    // Clear local logs on logout
+    store.setLogs([])
     store.logout()
 }
 
@@ -57,6 +60,20 @@ export async function getCurrentUser() {
         // Token invalid, clear auth
         logout()
         return null
+    }
+}
+
+// Delete food log
+export async function deleteLog(logId) {
+    try {
+        // For now, just remove from local state since backend doesn't have delete endpoint
+        const store = useAppStore.getState()
+        const newLogs = store.getState().logs.filter(log => log.logged_at !== logId)
+        store.setLogs(newLogs)
+        return { success: true }
+    } catch (error) {
+        console.error('Delete log error:', error)
+        throw new Error('Failed to delete entry')
     }
 }
 

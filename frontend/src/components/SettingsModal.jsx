@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/appStore'
 import { login, register, logout, fetchUserLogs } from '@/services/api'
 
 export default function SettingsModal({ onClose }) {
-    const navigate = useNavigate()
     const { goals, setGoals, hasOnboarding, setHasOnboarding, 
             isAuthenticated, user, setUser, setToken } = useAppStore()
     const { i18n } = useTranslation()
@@ -191,13 +189,6 @@ export default function SettingsModal({ onClose }) {
                         </button>
                     </div>
                 </div>
-
-                {/* History link */}
-                <button onClick={() => { navigate('/history'); onClose() }}
-                    className="w-full flex items-center justify-between py-4 border-b border-border/40">
-                    <span className="text-[15px] font-medium text-ink">Riwayat / History</span>
-                    <span className="text-muted">›</span>
-                </button>
 
                 {/* BMR / Goals section */}
                 <div className="mt-4">

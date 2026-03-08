@@ -70,6 +70,7 @@ export const useAppStore = create(
             },
             addLog: (log) => set(s => ({ logs: [...s.logs, log] })),
             setLogs: (logs) => set({ logs }),
+            deleteLog: (loggedAt) => set(s => ({ logs: s.logs.filter(l => l.logged_at !== loggedAt) })),
             clearToday: () => set({ logs: [] }),
             setLoading: (v) => set({ isLoading: v }),
             setGoals: (goals) => set({ goals }),
