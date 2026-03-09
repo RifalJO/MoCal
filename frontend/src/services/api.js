@@ -1,7 +1,10 @@
 import axios from 'axios'
 import { useAppStore } from '@/stores/appStore'
 
-const api = axios.create({ baseURL: 'http://localhost:8000' })
+// Get base URL from environment variable, fallback to localhost for local dev
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
+const api = axios.create({ baseURL: API_URL })
 
 // Add token to requests if available
 api.interceptors.request.use(config => {
@@ -55,26 +58,26 @@ export async function validateAuth() {
     const store = useAppStore.getState()
     const token = localStorage.getItem('mocal-token')
     const userStr = localStorage.getItem('mocal-user')
-    
+
     // If no token, not authenticated
     if (!token || !userStr) {
         console.log('ℹ️ No token found in localStorage')
         return { authenticated: false }
     }
-    
+
     try {
         // Set token in store for API calls
         store.setToken(token)
         store.setUser(JSON.parse(userStr))
         store.setIsAuthenticated(true)
-        
+
         // Verify token is still valid
         const { data } = await api.get('/api/auth/me')
-        
+
         // Token valid, restore session
         store.setUser(data)
         store.setIsAuthenticated(true)
-        
+
         console.log('✅ Auth session restored successfully')
         return { authenticated: true, user: data }
     } catch (error) {
@@ -119,19 +122,19 @@ export async function deleteLog(logId) {
 // Fetch user logs (authenticated - gets only current user's logs)
 export async function fetchUserLogs() {
     const store = useAppStore.getState()
-    
+
     // If not authenticated, don't fetch
     if (!store.isAuthenticated || !store.token) {
         console.log('ℹ️ Not authenticated, skipping log fetch')
         return []
     }
-    
+
     try {
         // Use authenticated endpoint that filters by user_id
         const { data } = await api.get('/api/logs')
-        
+
         console.log('📥 Fetched user logs:', data.length, 'entries')
-        
+
         store.setLogs(data.map(log => ({
             log_id: log.log_id,
             raw_input: log.raw_input,
@@ -158,7 +161,7 @@ export async function submitLog(text) {
     store.setLoading(true)
     try {
         const { data } = await api.post('/api/estimate', { text })
-        
+
         // Debug: Log the API response
         console.log('📡 API Response:', data)
         console.log('📡 Items data:', data.items)
@@ -169,7 +172,7 @@ export async function submitLog(text) {
                 fat_g: data.items[0].fat_g
             })
         }
-        
+
         store.addLog({
             raw_input: text,
             total_kcal: data.total_kcal || 0,

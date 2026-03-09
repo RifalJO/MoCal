@@ -12,6 +12,7 @@ import uuid
 # ─── Settings ─────────────────────────────────────────────────────────────────
 class Settings(BaseSettings):
     APP_ENV: str = "development"
+    DATABASE_URL: str | None = None
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
     DB_NAME: str = "calorie_tracker"
@@ -31,10 +32,13 @@ class Settings(BaseSettings):
 settings = Settings()
 
 # ─── Engine ───────────────────────────────────────────────────────────────────
-DATABASE_URL = (
-    f"postgresql://{settings.DB_USER}:{settings.DB_PASSWORD}"
-    f"@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
-)
+if settings.DATABASE_URL:
+    DATABASE_URL = settings.DATABASE_URL
+else:
+    DATABASE_URL = (
+        f"postgresql://{settings.DB_USER}:{settings.DB_PASSWORD}"
+        f"@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
+    )
 
 engine = create_engine(DATABASE_URL, echo=False)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)

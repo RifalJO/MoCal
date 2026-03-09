@@ -22,7 +22,8 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],      # ganti dengan domain frontend saat production
+    allow_origins=["*"],      # Biarkan wildcard untuk development & deployment mudah
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
