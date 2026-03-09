@@ -156,8 +156,9 @@ export default function MainApp() {
                 {/* Header */}
                 <header className="flex items-center justify-between mb-12 border-b border-[#df6620]/10 pb-6">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-[#df6620] rounded-xl flex items-center justify-center">
-                            <img src="/logo.png" alt="MoCal" className="w-7 h-7 object-contain" />
+                        {/* Logo - No background, larger size */}
+                        <div className="w-16 h-16">
+                            <img src="/logo.png" alt="MoCal" className="w-full h-full object-contain" />
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold tracking-tight text-[#df6620]">MoCal</h1>

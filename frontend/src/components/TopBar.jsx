@@ -9,7 +9,8 @@ export default function TopBar() {
     return (
         <>
             <div className="flex items-center justify-between px-5 pt-4 pb-2">
-                <div className="w-12 h-12">
+                {/* Logo - No border, larger size */}
+                <div className="w-16 h-16">
                     <img src="/logo.png" alt="MoCal"
                         className="w-full h-full object-contain" />
                 </div>
