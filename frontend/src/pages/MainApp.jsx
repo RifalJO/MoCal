@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAppStore } from '@/stores/appStore'
-import { submitLog, fetchUserLogs, deleteLog } from '@/services/api'
+import { submitLog, fetchUserLogs, deleteLog, validateAuth } from '@/services/api'
 import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
 import LogItem from '@/components/LogItem'
@@ -14,13 +14,33 @@ export default function MainApp() {
     const [showSettings, setShowSettings] = useState(false)
     const [showGoals, setShowGoals] = useState(false)
     const [error, setError] = useState('')
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true)
 
-    // Fetch logs on mount if authenticated
+    // Validate auth session on mount (smart login)
     useEffect(() => {
-        if (isAuthenticated) {
+        const restoreSession = async () => {
+            console.log('🔐 Checking auth session...')
+            const result = await validateAuth()
+            
+            if (result.authenticated) {
+                console.log('✅ User authenticated, fetching logs...')
+                await fetchUserLogs()
+            } else {
+                console.log('ℹ️ No active session, using guest mode')
+            }
+            
+            setIsCheckingAuth(false)
+        }
+        
+        restoreSession()
+    }, [])
+
+    // Fetch logs when auth status changes
+    useEffect(() => {
+        if (isAuthenticated && !isCheckingAuth) {
             fetchUserLogs()
         }
-    }, [isAuthenticated])
+    }, [isAuthenticated, isCheckingAuth])
 
     const handleSubmit = async () => {
         if (!inputText.trim() || isLoading) return
@@ -67,6 +87,16 @@ export default function MainApp() {
 
     return (
         <div className="min-h-screen bg-[#f8f7f6]">
+            {/* Auth Loading */}
+            {isCheckingAuth && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-12 h-12 border-4 border-[#df6620] border-t-transparent rounded-full animate-spin"></div>
+                        <p className="text-slate-600 font-medium">Loading...</p>
+                    </div>
+                </div>
+            )}
+            
             {/* Mobile View - max 430px width */}
             <div className="md:hidden flex flex-col min-h-screen max-w-[430px] mx-auto w-full relative">
                 <TopBar />
@@ -356,23 +386,23 @@ export default function MainApp() {
                         </div>
                     </div>
                 </main>
-            </div>
 
-            {/* Goals Modal for Desktop */}
-            {showGoals && (
-                <>
-                    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
-                        onClick={() => setShowGoals(false)}
-                    />
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
-                        onClick={() => setShowGoals(false)}
-                    >
-                        <div className="w-full max-w-lg" onClick={e => e.stopPropagation()}>
-                            {hasOnboarding && <GoalsCard />}
+                {/* Goals Modal for Desktop - Only show on desktop */}
+                {showGoals && (
+                    <>
+                        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+                            onClick={() => setShowGoals(false)}
+                        />
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                            onClick={() => setShowGoals(false)}
+                        >
+                            <div className="w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                                {hasOnboarding && <GoalsCard />}
+                            </div>
                         </div>
-                    </div>
-                </>
-            )}
+                    </>
+                )}
+            </div>
 
             {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
         </div>

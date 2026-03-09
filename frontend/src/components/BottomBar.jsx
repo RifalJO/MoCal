@@ -1,11 +1,35 @@
 import { useAppStore } from '@/stores/appStore'
 
 export default function BottomBar({ onClick }) {
-    const { logs, totalKcal, totalC, totalP, totalF } = useAppStore()
+    const logs = useAppStore(state => state.logs)
+    
+    // Calculate totals directly from logs
+    const totalKcal = logs.reduce((sum, log) => sum + (log.total_kcal || 0), 0)
+    
+    const totalC = Math.round(logs.reduce((sum, log) => {
+        if (log.items && log.items.length > 0) {
+            return sum + log.items.reduce((s, item) => s + (item.carbs_g || 0), 0)
+        }
+        return sum + (log.total_carbs || 0)
+    }, 0))
+    
+    const totalP = Math.round(logs.reduce((sum, log) => {
+        if (log.items && log.items.length > 0) {
+            return sum + log.items.reduce((s, item) => s + (item.protein_g || 0), 0)
+        }
+        return sum + (log.total_protein || 0)
+    }, 0))
+    
+    const totalF = Math.round(logs.reduce((sum, log) => {
+        if (log.items && log.items.length > 0) {
+            return sum + log.items.reduce((s, item) => s + (item.fat_g || 0), 0)
+        }
+        return sum + (log.total_fat || 0)
+    }, 0))
 
     // Debug log
-    console.log('🔥 BottomBar - Totals:', { totalKcal, totalC, totalP, totalF })
-    console.log('🔥 BottomBar - Logs count:', logs.length)
+    console.log('🔥 BottomBar - Logs:', logs)
+    console.log('🔥 BottomBar - Calculated Totals:', { totalKcal, totalC, totalP, totalF })
 
     return (
         <div

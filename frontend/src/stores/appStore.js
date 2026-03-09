@@ -75,6 +75,7 @@ export const useAppStore = create(
             setLoading: (v) => set({ isLoading: v }),
             setGoals: (goals) => set({ goals }),
             setHasOnboarding: (v) => set({ hasOnboarding: v }),
+            setIsAuthenticated: (v) => set({ isAuthenticated: v }),
         }),
         {
             name: 'mocal-storage',

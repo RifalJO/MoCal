@@ -230,7 +230,7 @@ def root():
 
 # ─── Endpoint: Estimate kalori ────────────────────────────────────────────────
 @app.post("/api/estimate", response_model=LogResponse)
-def estimate_calories(req: LogRequest, db: Session = Depends(get_db)):
+def estimate_calories(req: LogRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """
     Endpoint utama:
     1. Parse teks bebas → daftar makanan (LLM)
@@ -340,10 +340,10 @@ def estimate_calories(req: LogRequest, db: Session = Depends(get_db)):
         }
     }
 
-    # ── Step 5: Simpan log ke DB ──────────────────────────────────────────────
+    # ── Step 5: Simpan log ke DB dengan user_id ───────────────────────────────
     from app.database import FoodLog
     log = FoodLog(
-        user_id    = None,
+        user_id    = current_user.id,  # ← Save to current user's account
         raw_input  = text,
         items      = [r.model_dump() for r in results],
         total_kcal = total_kcal,
@@ -363,7 +363,8 @@ def estimate_calories(req: LogRequest, db: Session = Depends(get_db)):
     print(f"🍚 Carbs: {total_carbs}g")
     print(f"🥑 Fat: {total_fat}g")
     print(f"⏱️  Total processing time: {total_time}ms")
-    print(f"💾 Saved to database with ID: {log.id}")
+    print(f"👤 User ID: {current_user.id}")
+    print(f"💾 Saved to database with ID: {log.id} (user: {current_user.id})")
     
     if unknown_items:
         print(f"\n⚠️  Unknown items: {unknown_items}")
@@ -396,15 +397,18 @@ def search_food(q: str, db: Session = Depends(get_db)):
 # ─── Endpoint: Get Logs ──────────────────────────────────────────────────────
 @app.get("/api/logs")
 def get_logs(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """
+    Get current user's food logs only.
+    """
     from app.database import FoodLog
-    # Ambil logs hari ini
     from datetime import datetime, timezone
-    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-
-    # Ambil semua log user ini desc
-    logs = db.query(FoodLog).filter(FoodLog.user_id == current_user.id).order_by(FoodLog.logged_at.desc()).all()
-
-    # Convert ke response schema
+    
+    # Get logs for current user only, ordered by latest first
+    logs = db.query(FoodLog).filter(
+        FoodLog.user_id == current_user.id
+    ).order_by(FoodLog.logged_at.desc()).all()
+    
+    # Convert to response schema
     result = []
     for log in logs:
         result.append({
@@ -412,7 +416,9 @@ def get_logs(current_user: User = Depends(get_current_user), db: Session = Depen
             "raw_input": log.raw_input,
             "items": log.items,
             "total_kcal": log.total_kcal,
-            "log_detail": log.log_detail,  # Include log detail
+            "total_protein_g": sum(item.get("protein_g", 0) for item in log.items),
+            "total_carbs_g": sum(item.get("carbs_g", 0) for item in log.items),
+            "total_fat_g": sum(item.get("fat_g", 0) for item in log.items),
             "logged_at": log.logged_at.isoformat() if log.logged_at else None
         })
     return result

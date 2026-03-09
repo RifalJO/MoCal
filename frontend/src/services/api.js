@@ -21,11 +21,11 @@ export async function login(email, password) {
         store.setUser({ email })
         localStorage.setItem('mocal-token', data.access_token)
         localStorage.setItem('mocal-user', JSON.stringify({ email }))
-        
+
         // Clear local logs and fetch user's logs from server
         store.setLogs([])
         await fetchUserLogs()
-        
+
         return { success: true }
     } catch (error) {
         console.error('Login error:', error)
@@ -48,6 +48,45 @@ export async function logout() {
     // Clear local logs on logout
     store.setLogs([])
     store.logout()
+}
+
+// Validate and restore auth session
+export async function validateAuth() {
+    const store = useAppStore.getState()
+    const token = localStorage.getItem('mocal-token')
+    const userStr = localStorage.getItem('mocal-user')
+    
+    // If no token, not authenticated
+    if (!token || !userStr) {
+        console.log('ℹ️ No token found in localStorage')
+        return { authenticated: false }
+    }
+    
+    try {
+        // Set token in store for API calls
+        store.setToken(token)
+        store.setUser(JSON.parse(userStr))
+        store.setIsAuthenticated(true)
+        
+        // Verify token is still valid
+        const { data } = await api.get('/api/auth/me')
+        
+        // Token valid, restore session
+        store.setUser(data)
+        store.setIsAuthenticated(true)
+        
+        console.log('✅ Auth session restored successfully')
+        return { authenticated: true, user: data }
+    } catch (error) {
+        console.log('❌ Auth validation failed - token expired or invalid')
+        // Token invalid/expired, clear session
+        localStorage.removeItem('mocal-token')
+        localStorage.removeItem('mocal-user')
+        store.setToken(null)
+        store.setUser(null)
+        store.setIsAuthenticated(false)
+        return { authenticated: false }
+    }
 }
 
 export async function getCurrentUser() {
@@ -77,18 +116,29 @@ export async function deleteLog(logId) {
     }
 }
 
-// Fetch user logs
+// Fetch user logs (authenticated - gets only current user's logs)
 export async function fetchUserLogs() {
     const store = useAppStore.getState()
+    
+    // If not authenticated, don't fetch
+    if (!store.isAuthenticated || !store.token) {
+        console.log('ℹ️ Not authenticated, skipping log fetch')
+        return []
+    }
+    
     try {
-        // Try authenticated endpoint first
-        const { data } = await api.get('/api/logs/all') // Using public endpoint for now
+        // Use authenticated endpoint that filters by user_id
+        const { data } = await api.get('/api/logs')
+        
+        console.log('📥 Fetched user logs:', data.length, 'entries')
+        
         store.setLogs(data.map(log => ({
+            log_id: log.log_id,
             raw_input: log.raw_input,
             total_kcal: log.total_kcal,
-            total_carbs: log.items?.reduce((s, i) => s + (i.carbs_g || 0), 0) || 0,
-            total_protein: log.items?.reduce((s, i) => s + (i.protein_g || 0), 0) || 0,
-            total_fat: log.items?.reduce((s, i) => s + (i.fat_g || 0), 0) || 0,
+            total_carbs: log.total_carbs_g || 0,
+            total_protein: log.total_protein_g || 0,
+            total_fat: log.total_fat_g || 0,
             total_sugar: 0,
             total_fiber: 0,
             total_sodium: 0,

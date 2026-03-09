@@ -51,7 +51,6 @@ cf2b91ec-cec2-44e3-b5b5-3a2871d4155b,artichoke 1 medium steamed,,60.0,4.2,13.4,0
 859ba936-f751-4c9a-8960-9b5699956ccc,asam payak segar,,135.0,0.8,32.1,0.4,100.0,indo_nutrition,False
 ee0fe764-5d6f-4004-be29-a9f646c90e43,asan kandis kering,,261.0,0.9,63.3,1.6,100.0,indo_nutrition,False
 6683e2bf-8fd4-4e7b-85e4-aa9cadae29db,asem asem ati ampela,,45.8,0.0,0.0,0.0,100.0,dapur_umami,False
-e5756905-9464-47e8-b6c1-efdb6785dc34,asem asem daging,,1076.0,64.0,30.7,77.3,100.0,dapur_umami,False
 d8851a0d-98cd-43d5-a4ff-d115fac54b15,asem-asem ayam kampung,,211.3,9.8,3.5,17.8,100.0,dapur_umami,False
 d6b17f7a-ff39-4c45-b007-65cb8c53c879,asinan bogor sayuran,,98.0,3.9,14.8,2.6,100.0,indo_nutrition,False
 fd57c69a-0cd5-4647-a95d-30c741c85123,asparagus 1 cup steamed,,40.0,4.3,7.4,0.4,100.0,daily_nutrition,False
@@ -95,7 +94,6 @@ cd162e86-c8f7-4a55-b962-0f5a755317f7,ayam goreng kriuk sajiku,,257.0,14.0,28.3,2
 1edb6359-5b7d-4b34-ac64-73e10409e54d,ayam goreng lengkuas sajiku,,36.6,2.9,0.5,2.5,100.0,dapur_umami,True
 700b24db-bbc9-42e7-b2b7-11ab423040fa,ayam goreng madu mayumi,,255.0,9.0,4.5,22.5,100.0,dapur_umami,True
 454c6a02-00b8-4afa-af31-20fbb2ecd789,ayam goreng mayo,,129.0,8.7,0.7,7.7,100.0,dapur_umami,True
-85b2906b-78e4-4741-a049-d090bf93ac54,ayam goreng mayonaise,,1020.0,32.0,233.5,61.0,100.0,dapur_umami,True
 1549e442-69ea-406f-8423-7b42f8c7b701,ayam goreng mbok berek dada,,295.0,39.2,1.0,13.6,100.0,indo_nutrition,True
 941e971b-7762-408c-a6ae-7f0fb735f52a,ayam goreng oriental saori,,452.0,36.5,4.5,30.5,100.0,dapur_umami,True
 8bc27698-a72b-440e-92a8-02555ae1849c,ayam goreng paha,,287.0,31.0,1.7,15.7,100.0,indo_nutrition,True
@@ -126,7 +124,6 @@ b4d51253-35dd-415d-b967-9e7931ee5089,ayam kremes sajiku,,98.8,9.8,2.3,12.5,100.0
 cd7f4f05-072f-4b1f-a284-59c6fbea586e,ayam kungpao,,182.3,10.3,2.7,14.7,100.0,dapur_umami,False
 a53c35f5-4226-466a-90e8-79f707263df7,ayam lada hitam,,85.3,10.7,1.7,3.3,100.0,dapur_umami,False
 2e5fe8e6-9f09-4682-a7d5-10b5522d02c0,ayam madu,,302.3,22.3,8.8,18.8,100.0,dapur_umami,False
-106a61c3-f45f-4a26-9e5d-fa0a663d29ee,ayam mangep merdeka masako,,1000.5,51.0,10.0,84.0,100.0,dapur_umami,False
 49447c7d-7246-4d94-bc3b-4a1034e4ba85,ayam panggang daun pandan,,32.5,0.0,0.0,0.0,100.0,dapur_umami,False
 855dd673-5f0f-4a55-89bb-1cad8db58982,ayam panggang lada hitam,,230.5,11.5,0.0,20.8,100.0,dapur_umami,False
 9d9c40c1-f64b-4a06-b49f-cc70ebf06543,ayam panggang madu,,272.8,29.6,11.5,12.0,100.0,dapur_umami,False
@@ -148,7 +145,6 @@ e4fefbac-1180-4561-b58c-564a04ebd315,ayam saori saus teriyaki,,171.7,9.3,1.2,14.
 5f0f3251-0057-4ec3-ad2f-7f8127a0c773,ayam saus telur asin,,400.8,24.0,48.5,32.0,100.0,dapur_umami,False
 f5ad5b90-103d-4901-a12d-a49144c66038,ayam suwir buncis,,138.8,9.5,2.3,10.0,100.0,dapur_umami,False
 5db8a3b0-b292-4488-bbcf-ef679ef9e119,ayam suwir sambal matah,,798.0,36.0,4.5,69.0,100.0,dapur_umami,False
-71998648-758c-48e6-a9af-6308840f446e,ayam taliwang aji-no-moto,,1073.0,56.5,14.5,88.5,100.0,dapur_umami,False
 0ceb66a3-afdb-4d56-a397-bf83be8c287d,ayam taliwang masakan,,264.0,18.2,2.7,20.1,100.0,indo_nutrition,False
 dc7ddbd9-d8c5-464d-93f0-06fe50234931,ayam terasi bawang,,99.8,7.8,24.5,9.8,100.0,dapur_umami,False
 10f532a0-03eb-41ff-9711-1f177ef526c3,ayam teriyaki,,227.5,9.5,3.0,20.0,100.0,dapur_umami,False
@@ -246,9 +242,7 @@ a58493c0-524f-4faa-9984-e1688c8701ea,bbq sauce 2 tbsp,,60.0,0.5,15.0,0.0,100.0,d
 894fa8a3-4f9c-4a7a-afb1-1cf3954f74d5,bean sprouts 14 cup garnish,,8.0,0.8,1.5,0.1,100.0,daily_nutrition,False
 b6f6629a-92bd-4db8-9ac7-daa24eb25c0d,bebek alabio daging segar,,303.0,11.3,3.7,27.0,100.0,indo_nutrition,False
 8c5d8e01-4cd5-4275-b32c-ba79028a4d6a,bebek daging goreng,,300.0,24.0,4.5,20.7,100.0,indo_nutrition,False
-54c98fe3-aa3e-41c9-b616-349cdc042e10,bebek goreng sambal mangga,,929.0,40.8,8.5,81.8,100.0,dapur_umami,False
 1dbfcc58-e4a6-4554-a108-db2b00e868f8,bebek itik,,326.0,16.0,0.0,28.6,100.0,indo_nutrition,False
-d3972bff-87ca-4cf0-8075-e8c65915c91f,bebek panggang hijau,,985.0,42.3,7.8,87.5,100.0,dapur_umami,False
 7b126c6f-c5c8-489e-8924-868f4f95d0cb,bebek sambal bali,,96.0,0.0,0.0,0.0,100.0,dapur_umami,False
 9144904d-833f-4206-ae66-9f3029c23e2d,beberuk,,65.0,1.1,3.5,5.2,100.0,indo_nutrition,False
 6b6f1bcf-ffb1-4681-a3a7-556102c71c66,beef bulgogi,,238.2,11.6,6.1,18.5,100.0,dapur_umami,False
@@ -336,9 +330,7 @@ cbd7cfe7-7739-4e44-a585-20d058e52f75,biryani chicken 15 cups,,520.0,28.0,60.0,18
 dc6972a3-cd84-414b-b5b2-e637feb86c55,biskuit,,458.0,6.9,75.1,14.4,100.0,indo_nutrition,False
 f4d36930-dc28-4c36-bac2-af43b6ff508d,bison burger 1 patty,,150.0,22.0,0.0,7.0,100.0,daily_nutrition,False
 732fe128-2809-4140-844b-502747d4c9a2,bistik ayam,,249.5,23.0,11.8,12.3,100.0,dapur_umami,False
-9c424789-e8b3-45fb-bc8b-380ecdf61b80,bistik ayam krispi,,1658.0,76.0,118.0,100.0,100.0,dapur_umami,False
 b4bd26e8-2427-4978-a16e-68c6458ffd31,bistik daging brokoli,,340.5,19.8,12.0,24.8,100.0,dapur_umami,False
-508de5c2-cabd-4977-ba06-b47eaedcf973,bistik daging cincang,,1331.0,77.5,75.0,78.5,100.0,dapur_umami,False
 39b67898-7380-425d-a6ef-c8438b2cf231,bit,,42.0,1.6,9.6,0.1,100.0,indo_nutrition,False
 db5f8716-43aa-4657-adf3-eea665e2c053,bitterbalen talas,,62.2,2.0,2.1,8.1,100.0,dapur_umami,False
 d553838d-9ef9-4fb2-90f6-e75e551337bd,biwah segar,,51.0,0.3,12.1,0.1,100.0,indo_nutrition,False
@@ -441,7 +433,6 @@ b775c7ae-e3ff-4081-8e09-44d303238191,buras,,125.7,3.3,23.9,1.9,100.0,indo_nutrit
 4fa76335-7519-43d7-a36b-a846871e9fb8,burger kriuk sajiku,,452.8,16.3,48.0,21.8,100.0,dapur_umami,False
 61816aa2-2e84-4d94-ae82-35cebdb39e52,burger mie ayam crispy,,510.0,27.5,63.0,27.0,100.0,dapur_umami,True
 18a8e1e8-86f2-4379-bbd8-6b0c5a80da21,burger sayur,,121.0,6.0,4.5,8.7,100.0,dapur_umami,False
-65cb9a58-76d0-46bf-8e54-7f5fdb87e65d,burger semur masako,,2033.0,137.0,70.0,131.0,100.0,dapur_umami,True
 f5ae949f-1a06-48f9-8767-fa8d58523de5,burger tempe,,10.6,0.0,0.0,0.0,100.0,dapur_umami,True
 a35ca75c-2654-45e7-93dc-e266ed1244cf,burung sarang segar,,281.0,37.5,32.1,0.3,100.0,indo_nutrition,False
 b69dcbd5-4cf8-4028-8256-fb99fbbace1d,butter 1 tbsp,,100.0,0.1,0.0,11.0,100.0,daily_nutrition,False
@@ -516,7 +507,6 @@ bf61e34b-64ba-4524-9dbd-f78837be4025,cheese danish,,340.0,7.0,38.0,18.0,100.0,da
 619969ce-c97a-41be-b191-df7243355b78,cheese roll sayur,,322.0,7.6,24.8,14.2,100.0,dapur_umami,False
 897f1941-eba5-4239-a177-6364573eb7ce,cheese whiz 2 tbsp,,90.0,4.0,3.0,7.0,100.0,daily_nutrition,False
 4c24a59b-07bb-4d68-b6c9-6882a5b22db2,cheesecake 1 slice,,320.0,5.0,28.0,21.0,100.0,daily_nutrition,False
-071fdd0b-bdfa-4caf-91ab-059995ce3109,cheesy berry dessert box,,1073.0,30.0,110.0,56.0,100.0,dapur_umami,False
 0cf7f719-6db7-4bce-a34d-4bda6f2424e8,cheesy grits 1 cup,,210.0,6.0,34.0,6.0,100.0,daily_nutrition,False
 570f69f5-e4ac-4996-8d50-4c493b611af5,cherries 1 cup,,77.0,1.6,19.0,0.5,100.0,daily_nutrition,False
 dde8a4b2-222e-431f-8bb3-f373b704937d,chicken alfredo 15 cups,,680.0,35.0,45.0,38.0,100.0,daily_nutrition,False
@@ -608,10 +598,8 @@ a84b6a03-0c63-40f4-9e7b-2ec78c573416,crab cakes 2 medium,,340.0,20.0,18.0,20.0,1
 805a7221-b245-4a16-ac5d-e0c829113733,cream cheese 2 tbsp,,100.0,2.0,2.0,10.0,100.0,daily_nutrition,False
 ad9fc738-bac0-47ff-8a25-e216bbd721af,creamed spinach 12 cup,,190.0,5.0,8.0,16.0,100.0,daily_nutrition,False
 78775c19-55d8-4498-ae1f-ad3bea5a9066,crepe 1 plain,,90.0,3.5,14.0,2.0,100.0,daily_nutrition,False
-35059ab5-5eda-4221-b401-1a8901d2d23a,crepe mayo isi buah,,994.0,9.0,134.5,43.0,100.0,dapur_umami,False
 d077fdbd-5fe7-4f56-a360-1e63f1bac42f,crepes sayur mayo mayumi,,202.3,7.5,16.0,12.5,100.0,dapur_umami,False
 49f3eac6-aaa0-4d33-a9c3-d208f6265ff9,crepes tuna mayo,,19.9,0.0,0.0,0.0,100.0,dapur_umami,False
-901e0953-8856-4caf-9d1e-393a7eecb4f5,crispy garlic parmesan wings,,1022.0,45.5,58.0,64.5,100.0,dapur_umami,False
 4e89b268-bd76-4892-a472-c23607c4f2c2,croutons 14 cup,,50.0,1.5,7.0,2.0,100.0,daily_nutrition,False
 f48438e3-d1da-4430-9730-1350c9464988,croutons garlic 14 cup,,50.0,1.5,7.0,2.0,100.0,daily_nutrition,False
 9b9bc3df-8dbf-4e01-b769-f82e23fb4314,crushed tomatoes 12 cup sauce,,20.0,1.0,4.0,0.0,100.0,daily_nutrition,False
@@ -756,7 +744,6 @@ c6c64677-c7d7-47b0-ad4a-9559d59bb63f,dideh darah ayam,,77.0,13.8,0.7,1.9,100.0,i
 40175ea1-633c-4575-b4e4-ae4c2e3ad776,dim sum siu mai 3 pcs,,180.0,12.0,10.0,10.0,100.0,daily_nutrition,False
 9a3a6515-4c47-4497-8ede-e7e5a52d204a,djibokum masakan,,248.0,10.0,40.9,2.3,100.0,indo_nutrition,False
 26627012-0d31-4eba-9878-4aec3ae8fe5b,dobu jorim,,301.0,17.0,20.5,18.5,100.0,dapur_umami,False
-49cd1224-46b0-4df7-bff1-20bf6941d3d4,docang,,1227.0,40.0,113.0,73.0,100.0,dapur_umami,False
 f7d39fa7-3b0f-4203-94d8-043721e9dcf5,dodol,,395.0,3.0,81.2,5.7,100.0,indo_nutrition,False
 091266e1-0773-41a6-90d8-795a3a50233d,dodol bali,,298.0,3.7,65.9,2.1,100.0,indo_nutrition,False
 66ef0ee8-962c-4d4a-8dba-6fbf898f9f46,dodol banjarmasin,,368.0,2.6,70.0,8.6,100.0,indo_nutrition,False
@@ -823,7 +810,6 @@ ca4ed38f-0b66-4a76-84ab-2f0f76727837,fettucini udang aglio olio,,267.2,3.2,17.4,
 4cd989fb-3c6d-4627-bab6-4cfffc00a3f4,fillet o-fish,,270.0,12.3,19.3,15.9,100.0,indo_nutrition,False
 d412add9-49da-4690-bc58-864eb0885fed,fiorentina steak 3oz portion,,230.0,24.0,0.0,15.0,100.0,daily_nutrition,False
 94bca820-a492-43a4-b691-e6de051d0398,fish and chips,,493.0,23.0,70.0,13.0,100.0,dapur_umami,False
-ba96a355-41c5-48ac-86b6-451f0c3456cf,fish and chips with salad,,1229.0,44.5,155.0,35.0,100.0,dapur_umami,False
 d4e79a49-f934-47bc-87d8-bb917982a408,fish sauce 1 tsp,,5.0,0.4,0.5,0.0,100.0,daily_nutrition,False
 4b651947-940d-4cb9-9130-d8200910b197,fish tacos 2 tacos,,420.0,25.0,40.0,18.0,100.0,daily_nutrition,False
 e498590c-0a32-4640-aadc-c938d252d60f,flan 1 slice,,220.0,6.0,35.0,7.0,100.0,daily_nutrition,False
@@ -973,7 +959,6 @@ d491dd7c-d13b-4a61-a525-86a0f8401675,hash browns 1 cup,,330.0,3.0,38.0,19.0,100.
 8cc14a12-114d-472f-9e91-f466e9f54961,hati sapi,,136.0,19.7,6.0,3.2,100.0,indo_nutrition,False
 cb4f3045-3525-4c90-af21-1796b99da451,havermout,,390.0,14.2,68.2,7.4,100.0,indo_nutrition,False
 8574bbce-0e7f-4d85-b16e-d25484bbcd27,healthy cajun chicken,,46.3,7.3,1.0,1.3,100.0,dapur_umami,False
-d11c502f-535e-4899-b907-4f2ae0716f37,healthy cute muffin masako,,1481.0,64.0,129.0,92.0,100.0,dapur_umami,False
 ab793f2e-ad8d-4940-9015-5594f65bd0d5,hofaubi hutan segar,,127.0,1.2,29.5,0.5,100.0,indo_nutrition,False
 a31d37d9-38bf-4258-847f-249f8f29309a,hoisin sauce 1 tbsp,,35.0,0.3,8.0,0.2,100.0,daily_nutrition,False
 695e692b-b893-44b4-996e-44ac7859a632,hollandaise sauce 1 tbsp,,55.0,0.5,0.2,6.0,100.0,daily_nutrition,False
@@ -1266,7 +1251,6 @@ a2d97e9b-4571-4a29-82d7-0679c8d29f9c,kacang merah tua kering,,280.0,16.7,63.2,1.
 a0c00fcb-37b5-4269-8757-5b30147db2fe,kacang panjang kuah santan,,70.5,0.0,0.0,0.0,100.0,dapur_umami,False
 6f3ccbab-2681-4d0b-913b-4d2009756dcf,kacang panjang kukus,,39.0,3.0,7.6,0.6,100.0,indo_nutrition,False
 b25c819c-71e2-4ce8-af88-5ddf3009482c,kacang panjang tumis,,150.0,2.5,7.0,12.5,100.0,indo_nutrition,False
-bddaac9f-17d6-45d3-8d94-faf490488ef1,kacang panjang tumis jagung,,3121.8,112.5,58.0,249.3,100.0,dapur_umami,False
 2cf05248-1133-42a7-804c-e7433894a8c4,kacang ranti polong,,37.0,3.1,7.9,0.2,100.0,indo_nutrition,False
 1fea02a4-d577-4e2a-a873-e6759917916f,kacang sukro,,484.0,8.8,57.7,26.1,100.0,indo_nutrition,False
 99181616-05b5-40df-8266-42948f1cdb7b,kacang sukro putih,,488.0,25.6,59.6,25.6,100.0,indo_nutrition,False
@@ -1369,7 +1353,6 @@ ea81b7cb-97ab-4466-ac79-f7365a9a27ab,kembang tahu,,380.0,48.9,23.3,13.8,100.0,in
 35d62ab6-fc60-4335-b249-3b9e9599b352,kenari,,657.0,15.0,13.0,66.0,100.0,indo_nutrition,False
 d8daad0f-d721-4f12-84c9-171528b2a7cc,kenari banda kering,,616.0,13.9,13.7,56.2,100.0,indo_nutrition,False
 c15d4813-a7e9-462d-8bcb-c386d79446ad,kentang,,83.0,2.0,19.1,0.1,100.0,indo_nutrition,False
-c81e6082-b1ce-41bf-88cb-137cc2e174ae,kentang goreng bolognese,,1908.5,68.0,166.5,108.5,100.0,dapur_umami,False
 f96e1ece-b4d1-4a58-ae2a-78ce75db957a,kentang goreng saus mayo,,161.3,5.3,3.3,10.3,100.0,dapur_umami,False
 2c58c415-4cdc-4894-aafc-47079fa92eb2,kentang hitam,,142.0,0.9,33.7,0.4,100.0,indo_nutrition,False
 6584d655-813f-4720-9a3a-d8de39ad9bfc,kentang mangkuk panggang,,173.0,7.4,7.2,10.0,100.0,dapur_umami,False
@@ -1437,7 +1420,6 @@ a146b557-ed68-4062-a436-05be94b14681,ketela pohon kuning,,157.0,0.8,37.9,0.3,100
 48532413-a4c4-42e2-8e7a-f9fe86597446,ketimun madura segar,,9.0,0.5,1.9,0.1,100.0,indo_nutrition,False
 902f8ea2-eb8d-433f-b551-e87fd0528f59,ketoprak,,153.0,7.9,13.0,7.7,100.0,indo_nutrition,True
 6ad8f691-0e7b-4970-a0ad-9883174422aa,ketumbar,,404.0,14.1,54.2,16.1,100.0,indo_nutrition,False
-ebfe4887-a793-4da9-ae03-fab75bc9722d,ketupat kandangan,,965.0,45.8,43.0,73.0,100.0,dapur_umami,False
 2af57245-5751-4242-9ba9-b83a46ecc09d,ketupat ketan,,212.0,4.0,38.6,4.6,100.0,indo_nutrition,False
 ef1edddb-ad70-4625-91de-6b7f756a2c50,ketupat tahu,,109.6,2.6,18.6,2.6,100.0,indo_nutrition,True
 ff8c725c-a75c-472e-8d4b-b6619327b253,kibbeh 1 piece fried,,230.0,9.0,20.0,13.0,100.0,daily_nutrition,False
@@ -1515,7 +1497,6 @@ c4d9e5f9-53c3-4184-bd6b-66e77883f2b5,kwark quark,,242.0,19.0,3.0,17.0,100.0,indo
 6aeb0155-6da7-471b-b019-a5736b74710d,kwetiau capcay sajiku,,428.5,17.5,24.5,28.5,100.0,dapur_umami,False
 29431de8-d20a-4f82-b2be-dbd2fc36c7b8,kwetiau goreng ayam,,403.5,18.0,28.0,24.0,100.0,dapur_umami,False
 f672f86c-e587-447e-956c-5cebf914be1b,kwetiau kuah praktis,,187.3,8.3,16.5,9.5,100.0,dapur_umami,False
-91e43891-81b1-4920-a456-7d159531c2fa,kwetiaw goreng saus tiram saori,,1050.0,43.0,67.0,68.0,100.0,dapur_umami,False
 a713e457-59c2-44e1-91ee-dfb3687b5304,kwetiaw siram,,290.5,10.8,22.0,17.5,100.0,dapur_umami,False
 f4f007f0-a517-474a-ba91-2b81bc23f1d9,labneh 2 tbsp,,60.0,4.0,2.0,4.0,100.0,daily_nutrition,False
 e439680e-d60e-4b35-86d0-aaebb58917f7,labu air,,17.0,0.6,3.8,0.2,100.0,indo_nutrition,False
@@ -1524,7 +1505,6 @@ e439680e-d60e-4b35-86d0-aaebb58917f7,labu air,,17.0,0.6,3.8,0.2,100.0,indo_nutri
 6e2a1a4c-59d3-4319-bc9e-1b18d60e674a,labu siam,,26.0,0.6,6.7,0.1,100.0,indo_nutrition,False
 35728d94-a3c8-4c2b-98ff-daaced17b3e7,labu waluh segar,,32.0,1.1,6.6,0.1,100.0,indo_nutrition,False
 d3f937ef-5985-46a8-98cb-aea5833c9413,laksa,,166.3,2.7,29.5,3.9,100.0,indo_nutrition,False
-b1f03e09-826e-4af1-b8c2-094720a31925,laksa pengantin,,1016.0,60.2,71.0,55.4,100.0,dapur_umami,False
 d3cf12c9-be0c-4b31-bbd0-ef79e6cc1b0c,lamtoro biji tua,,148.0,10.6,26.2,0.5,100.0,indo_nutrition,False
 fa1043f7-37c1-4981-bf21-c871a6749c91,lamtoro pete cina biji muda,,85.0,5.7,15.4,0.3,100.0,indo_nutrition,False
 5011e120-3b4a-4ec3-97f9-39453d1ec091,lamtoro tempe,,142.0,11.0,20.4,2.5,100.0,indo_nutrition,True
@@ -1549,7 +1529,6 @@ fdb24ad9-6852-4d44-912e-b3f8ba2c8e4b,lawara penjah masakan,,207.0,7.4,9.6,15.4,1
 d831d45f-0d44-4db4-956d-394a718ff060,ledre pisang,,405.0,4.8,84.9,5.1,100.0,indo_nutrition,False
 87d53664-3a90-4393-b61b-efb91d592993,lele crispy sajiku,,72.5,7.5,3.8,3.0,100.0,dapur_umami,False
 4d8781a0-c300-4b9c-aadf-cee654ef630b,lema rebung asam,,15.0,1.0,1.9,0.4,100.0,indo_nutrition,False
-a9e3c755-c31e-4d14-b0de-3b627d456d89,lemak babi,,902.0,0.0,0.0,100.0,100.0,indo_nutrition,False
 43472b8c-c3b4-45f7-8939-0cb4aa921738,lemak babi bacon,,630.0,9.1,1.1,65.0,100.0,indo_nutrition,False
 5d50d84a-353c-4cb4-a15c-d48333762c9b,lemak ikan,,372.0,12.0,14.4,29.4,100.0,indo_nutrition,False
 28450d7d-08be-4d04-8ec2-adffa648ac5c,lemak kerbau,,818.0,1.5,0.0,90.0,100.0,indo_nutrition,False
@@ -1586,7 +1565,6 @@ b684e1c1-2992-4898-84bd-d41b93c5a32e,lobster bisque 1 cup,,250.0,8.0,12.0,18.0,1
 215ef26c-1f21-441b-ad7c-2b613691418b,lokan segar,,217.0,11.0,5.1,1.7,100.0,indo_nutrition,False
 8c5a0721-35f3-4fdf-9ffd-b50aa7f1f5b1,lomo saltado 15 cups,,500.0,35.0,45.0,22.0,100.0,daily_nutrition,False
 2b3b280b-6494-4ae5-9acd-9dea010b7c83,lontar segar,,27.0,0.4,6.0,0.2,100.0,indo_nutrition,False
-227ceb24-07ad-46fa-838b-a433bf08dfc3,lontong balap,,1198.5,56.5,113.0,58.0,100.0,dapur_umami,True
 4351b62a-71af-4f6c-a525-9950d399772a,lontong isi ayam saori saus teriyaki,,157.7,4.5,19.2,7.0,100.0,dapur_umami,True
 2a499baa-d33b-45bb-ad22-ff9af38abcb1,lontong kikil,,457.0,19.5,53.5,18.0,100.0,dapur_umami,True
 012f09c5-f60b-48c9-85cb-37586bf4c36b,lontong sayur,,438.3,11.5,37.0,28.8,100.0,dapur_umami,True
@@ -1634,7 +1612,6 @@ d4b7b584-6222-4657-9947-1d57765889eb,mangga muda,,59.0,0.5,15.1,0.4,100.0,indo_n
 e316eb79-e514-472b-a0a7-5ca22d9981d8,manggis,,63.0,0.6,15.6,0.6,100.0,indo_nutrition,False
 72e77987-bf9d-41c6-a993-31d0ab2f2446,mango 1 cup slices,,99.0,1.4,24.7,0.6,100.0,daily_nutrition,False
 9f18ed52-ee90-46ba-908f-926cb8a8c885,mango smoothies healthy,,125.0,2.0,23.5,2.5,100.0,dapur_umami,False
-004ab637-ddf2-4d2b-945d-2e73ab7ca9ea,mango sticky rice,,950.0,13.0,115.0,50.0,100.0,dapur_umami,False
 71f2896e-e9e5-4b01-93a5-72403c0191e9,manicotti 2 shells cheese,,380.0,20.0,35.0,18.0,100.0,daily_nutrition,False
 f6c5ad64-02ec-4d09-865a-3ef962e12777,mantao abon mayumi,,79.5,3.0,9.8,6.8,100.0,dapur_umami,False
 538e289e-4b00-455b-bacc-a906b6cd2cb0,maple syrup 1 tbsp,,52.0,0.0,13.5,0.0,100.0,daily_nutrition,False
@@ -1696,7 +1673,6 @@ e0aa65ba-d677-437c-adeb-5739b3ee78b0,mie goreng,,468.0,7.6,62.4,20.4,100.0,indo_
 66a27e27-42a3-47c0-b273-88d71e8220d5,mie goreng bulgogi,,288.0,9.0,72.3,5.0,100.0,dapur_umami,True
 21e4e3cd-7683-4ce9-910e-cfd698af37bd,mie goreng imlek,,150.7,7.7,5.0,10.3,100.0,dapur_umami,True
 d54d4656-044f-424b-8454-da5164ba8ac2,mie goreng jamur shitake saori,,677.0,16.0,15.0,35.0,100.0,dapur_umami,True
-b465da07-bb69-468e-823f-538526642e5e,mie goreng jawa,,1443.0,39.0,110.0,92.0,100.0,dapur_umami,True
 37f5212c-f12c-4f1f-808a-68eb97e80f48,mie goreng mayumi,,318.7,14.0,11.0,6.0,100.0,dapur_umami,True
 5455975e-ccc2-45cf-8d6d-489042fee2d5,mie goreng sambal matah,,434.5,17.0,8.5,18.5,100.0,dapur_umami,True
 86be253a-5e1e-4b2f-8ad0-9aa2d30b5363,mie goreng saori saus tiram,,591.5,22.0,10.0,24.0,100.0,dapur_umami,True
@@ -1728,13 +1704,8 @@ ad3b6d0d-d933-435a-af13-8b1978c05f48,mini quiche,,448.0,25.0,188.5,67.5,100.0,da
 e3236a3c-1b79-4877-bb44-97df6708d767,mint 1 tbsp in tabouli,,1.0,0.1,0.1,0.0,100.0,daily_nutrition,False
 a951daf4-b722-41f4-a9dd-64311b08d294,mint chutney 1 tbsp,,5.0,0.2,0.5,0.0,100.0,daily_nutrition,False
 fb69cfeb-f201-4bca-af5b-7bd09ec3bc91,mint tea 1 cup,,2.0,0.1,0.5,0.0,100.0,daily_nutrition,False
-2f2dda2a-f3a7-4d56-a738-69d65d405a8c,minyak hati hiu eulamia,,902.0,0.0,0.0,100.0,100.0,indo_nutrition,False
-b345b815-c9ec-4b2c-8eff-1a92a75691d0,minyak ikan,,902.0,0.0,0.0,100.0,100.0,indo_nutrition,False
-848b0c8a-6756-4b01-ad16-72226b021910,minyak kacang tanah,,902.0,0.0,0.0,100.0,100.0,indo_nutrition,False
 cb18a5f9-aeca-4ce6-a9f8-a2734bc71fc5,minyak kedelai,,883.0,0.0,0.0,99.9,100.0,indo_nutrition,False
 b2aa965d-4313-41f8-8b79-ed5d73e05244,minyak kelapa,,870.0,1.0,0.0,98.0,100.0,indo_nutrition,False
-9ca5881b-f22b-4695-aaaf-577c4e3bddf2,minyak kelapa sawit,,902.0,0.0,0.0,100.0,100.0,indo_nutrition,False
-4572c5cb-d9d1-4944-b952-d1ff271db5e3,minyak wijen,,902.0,0.0,0.0,100.0,100.0,indo_nutrition,False
 e04d1665-11fb-4e26-bc85-e453f5af392e,minyak zaitun,,884.0,0.0,0.0,100.0,100.0,indo_nutrition,False
 ddd3342c-93eb-47a3-a486-86a8956e66e4,misoa,,345.0,8.5,78.0,2.2,100.0,indo_nutrition,False
 6cadc6a3-19d0-4061-9bb3-39666a32efd5,misoa goreng ayam masako,,128.3,4.4,13.3,6.5,100.0,dapur_umami,False
@@ -1776,13 +1747,11 @@ fa951433-b161-47c3-8f18-907cca377bb8,nasi goreng anak sehat,,330.5,8.5,47.5,11.5
 44f97fdc-41db-4b76-84f2-40a10f8072f4,nasi goreng cakalang pedas,,307.5,16.5,42.0,15.5,100.0,dapur_umami,True
 81b8d180-3c9d-4ddc-8738-24e522895854,nasi goreng daging sayur sajiku,,362.5,10.5,43.5,16.0,100.0,dapur_umami,True
 dbd28b61-a400-420a-8de9-7884e6b8fd0c,nasi goreng gila,,339.9,13.6,27.1,19.0,100.0,dapur_umami,True
-b05d2778-0668-4e05-a1c2-0bd8ddd0cec5,nasi goreng gyoza,,1527.0,58.0,168.0,67.0,100.0,dapur_umami,True
 d0370f37-6499-481e-99b2-1864d6f463ff,nasi goreng hijau berkalsium,,747.0,20.0,116.5,21.5,100.0,dapur_umami,True
 2c418db0-32a0-4410-b709-dea3348f6c71,nasi goreng hongkong,,511.0,22.0,50.5,26.0,100.0,dapur_umami,True
 fa104a18-a16c-433e-92cd-7c24317d6052,nasi goreng kampung sajiku,,293.8,9.0,33.3,13.3,100.0,dapur_umami,True
 9718d7c9-63f1-4308-a98d-cf26cc0ccd60,nasi goreng kecombrang sajiku,,180.5,11.0,12.5,11.5,100.0,dapur_umami,True
 ed53bb7d-db00-4a0b-9de1-7b7f59cf4d19,nasi goreng kencur bakso ikan,,304.3,10.6,26.3,16.9,100.0,dapur_umami,True
-675023c8-2a60-4992-943e-76b011fe59be,nasi goreng kunyit,,952.0,44.5,79.0,49.5,100.0,dapur_umami,True
 03077d61-2829-421f-adca-cc3401439973,nasi goreng mawut,,78.5,0.0,0.0,0.0,100.0,dapur_umami,True
 545fdf7d-5db5-44b3-8a8b-b9853030c418,nasi goreng merah,,86.5,0.0,0.0,0.0,100.0,dapur_umami,True
 7d755fd2-218d-4a00-8f2b-16478de04e25,nasi goreng nanas,,84.8,0.0,0.0,0.0,100.0,dapur_umami,True
@@ -1792,13 +1761,11 @@ d4ad5424-dd15-474a-8598-86286046481b,nasi goreng onigiri,,795.0,19.0,123.0,23.5,
 23838f58-272d-43a1-bdc0-a925410cd6f0,nasi goreng pedas sajiku,,755.5,34.0,100.0,23.0,100.0,dapur_umami,True
 bbdd1382-a634-4283-802a-6654b7b1ad97,nasi goreng sambal matah,,477.5,16.5,56.5,19.5,100.0,dapur_umami,True
 14ba14f1-6dac-43d6-9a85-adb84726f9e4,nasi goreng saori saus teriyaki,,565.0,13.5,67.5,26.5,100.0,dapur_umami,True
-8ec5e4e6-57a2-4db8-9fd9-596794995377,nasi goreng sayur kaya serat,,1010.5,29.5,154.0,30.5,100.0,dapur_umami,True
 9284293c-ba42-4465-84db-1832d7e0ec8a,nasi goreng seafood,,620.0,36.5,67.5,21.5,100.0,dapur_umami,True
 4fdf3218-fd52-4da8-9348-9b11ac7bc33a,nasi goreng sembunyi,,95.5,0.0,0.0,0.0,100.0,dapur_umami,True
 ac3d1b60-220b-4cd2-86d6-1bda1a83b3c1,nasi goreng shitake saori,,88.3,0.0,0.0,0.0,100.0,dapur_umami,True
 bc71160f-5117-4681-b391-0f7ccd47093b,nasi goreng smoke beef sajiku,,267.8,9.5,31.8,11.3,100.0,dapur_umami,True
 3dc75f14-af18-4cba-96f8-aa70b17efd22,nasi goreng sushi,,729.5,17.5,81.5,35.5,100.0,dapur_umami,True
-311e5995-4cbb-4a79-804d-e38331d757b5,nasi goreng tauge kaya zat besi,,940.0,33.0,120.0,38.5,100.0,dapur_umami,True
 6d7e9a6d-9220-4a10-b0ef-80f0de7e07c3,nasi goreng terasi,,187.0,6.0,22.0,30.0,100.0,dapur_umami,True
 ebd38e04-b5ed-4e77-9ccc-5222204892ae,nasi goreng teri medan saori,,813.0,28.0,128.0,40.0,100.0,dapur_umami,True
 18a18339-0d07-492a-8f78-4c4dcf23766f,nasi goreng tomat,,57.4,2.6,9.4,4.6,100.0,dapur_umami,True
@@ -1809,11 +1776,8 @@ ab1a6147-977e-44c6-8b4b-14c5a1375f35,nasi kari jepang,,356.8,8.5,46.3,11.8,100.0
 d5b85fa6-3d81-4488-9b85-02e134813e75,nasi kepal korea,,105.0,2.3,16.4,3.3,100.0,dapur_umami,True
 34a9f092-df30-40c8-afab-701a2c361424,nasi langgi,,146.0,4.8,21.3,5.0,100.0,dapur_umami,True
 db714039-63d4-4f93-bcec-90c188a47ab1,nasi lebah umami,,121.5,6.0,8.8,6.3,100.0,dapur_umami,True
-171aa8ba-5163-4054-a260-acff64077199,nasi lengko,,2352.0,112.0,267.0,102.0,100.0,dapur_umami,True
-d889c5ea-514a-400a-9e1c-9399fcb3331f,nasi liwet khas sunda masako,,3576.0,168.5,344.0,174.0,100.0,dapur_umami,True
 0c765d31-66ee-4959-bc42-e0e37d0f23f9,nasi liwet teri,,320.8,10.3,65.5,1.0,100.0,dapur_umami,True
 5561f988-2df7-4c21-8e80-998ca548c07f,nasi masako,,237.3,5.0,53.5,0.5,100.0,dapur_umami,True
-6178175d-5728-45ce-bbc6-aa15c681891b,nasi mentai,,1048.5,9.0,62.0,84.5,100.0,dapur_umami,True
 5e285f52-a5d0-49a0-99dd-0fbe24d872e4,nasi minyak,,207.0,3.5,37.1,5.0,100.0,indo_nutrition,True
 2d7fcd88-2d99-4feb-8d84-7c5d3354ba17,nasi rames,,155.0,10.3,19.1,4.2,100.0,indo_nutrition,True
 24da983f-2f3d-4e2c-b859-5d78e1832d2f,nasi selimut,,201.5,14.3,15.8,7.8,100.0,dapur_umami,True
@@ -1883,12 +1847,10 @@ a89c1b77-a165-4331-9624-59ebc89dec4a,onion ring crispy,,65.5,0.5,5.0,5.0,100.0,d
 e0ca8ab6-0ef1-4340-b14c-d70a240fc3b2,onion rings 6 rings,,280.0,4.0,30.0,16.0,100.0,daily_nutrition,False
 477ab525-bd6f-44f5-aeb7-320b324a0476,onion soup gyoza,,272.0,14.1,37.9,7.1,100.0,dapur_umami,False
 a8a15c20-89c8-4dff-89df-3f20cf35acd0,onions sautéed 14 cup,,30.0,0.5,5.0,1.0,100.0,daily_nutrition,False
-d6a45e7a-dadb-4df6-9545-eee6b7183008,opak singkong,,940.0,36.0,104.0,42.0,100.0,indo_nutrition,False
 61e46151-ca5a-498f-8aea-29c2450f0cb8,opor ayam jawa tengah,,361.8,19.2,4.2,25.8,100.0,dapur_umami,True
 5a561e04-a9be-4bc1-9f31-5e2092d789bd,opor ayam khas solo,,318.1,4.6,12.1,28.7,100.0,dapur_umami,True
 5bd13c30-a336-47d7-872d-c2e7a1f8650d,opor nangka,,98.8,0.0,0.0,0.0,100.0,dapur_umami,True
 80400e78-ff71-4127-9449-e99406c9c69c,opor tahu telur,,232.5,13.3,9.0,16.5,100.0,dapur_umami,True
-ad39a3e6-fc0e-426d-a67c-39b79a1b5ac9,opor telur labu siam,,975.5,25.0,28.0,76.0,100.0,dapur_umami,True
 f627a978-326c-4009-9a03-348bc028b9ea,orak arik mentega,,142.8,4.5,11.3,9.0,100.0,dapur_umami,False
 db2f4e21-6b0a-4144-812c-1e9995b24019,orak arik telur spesial,,221.8,9.3,9.3,17.3,100.0,dapur_umami,False
 046afe50-e5e3-4a39-93e3-d29ceafb75bb,oramu ninahu ndawa olaho masakan,,117.0,13.7,4.3,5.0,100.0,indo_nutrition,False
@@ -1918,7 +1880,6 @@ dc55e16b-b5d9-4e64-a3d7-4c21faf73d8e,paku hinela wulelenggapaya,,77.0,3.5,5.4,4.
 e8e5cf82-6561-498b-9d18-217adf711344,pala biji,,494.0,7.5,40.1,36.4,100.0,indo_nutrition,False
 99f1ed64-a554-4ec2-8cc9-171974818599,pala daging,,42.0,0.3,10.9,0.2,100.0,indo_nutrition,False
 a9c30685-90e2-4824-aad5-977b3c2caede,pancah daging,,74.3,0.0,0.0,0.0,100.0,dapur_umami,False
-d71f8b5c-c215-4b43-8598-fc3d253de0c7,pancake bakso lada hitam masako,,1011.0,20.0,57.5,55.0,100.0,dapur_umami,True
 e0ee1756-2b67-40db-9e25-1cbe122abea5,pancake labu kuning,,51.3,0.0,0.0,0.0,100.0,dapur_umami,False
 fb62ae93-ad2b-4ead-a4ad-5f2801adaa60,pancake mayo strawberry mayumi,,77.7,1.2,9.3,4.0,100.0,dapur_umami,False
 313b3a93-d55b-423a-9f5a-72a8bb419a66,pancake mini brokoli,,60.0,1.2,2.1,3.2,100.0,dapur_umami,False
@@ -2136,7 +2097,6 @@ ccb19921-52ed-4dbc-9668-2055bc9bc31b,rambutan sinyonya,,4.0,0.0,0.9,0.0,100.0,in
 e3edeb2a-102a-4b61-8880-a15ea8ee332d,rasbi beras ubi,,394.0,2.2,76.6,8.8,100.0,indo_nutrition,False
 08dfc58d-52b7-4b13-81a8-c9c54d9bd949,rasi beras singkong,,350.0,0.9,85.7,0.4,100.0,indo_nutrition,False
 e049f808-1b3e-49f3-9ab3-518da6808bdd,raspberries 1 cup,,64.0,1.5,14.7,0.8,100.0,daily_nutrition,False
-d441d7cd-d712-454f-96b3-84bc3c07ad92,rawon,,1236.5,67.0,12.0,102.0,100.0,dapur_umami,True
 e5fb0a96-511b-44ef-afda-5c1e62ed326e,rawon jawa timur,,241.5,11.0,1.0,21.3,100.0,dapur_umami,True
 59213a67-9728-44b6-8462-4484faccaf05,rawon masakan,,60.0,5.4,4.0,2.5,100.0,indo_nutrition,True
 f1fe1926-ed7b-4d80-bc5d-217d273517ab,rawon nguling,,400.8,17.5,6.5,33.5,100.0,dapur_umami,True
@@ -2150,7 +2110,6 @@ c3b5f619-5ee9-4a40-aae8-b2d70340a1a4,red onion 14 cup in ceviche,,16.0,0.3,3.7,0
 18b46f64-0c1d-40b7-a525-d9cb59d66baf,red wine 5 oz glass,,125.0,0.1,3.8,0.0,100.0,daily_nutrition,False
 281989d2-3260-4a5b-86e9-b6751a4009dc,refried beans 12 cup,,115.0,7.0,19.0,1.0,100.0,daily_nutrition,False
 32012660-7358-4296-ae3d-1444fedf6457,rempeyek ikan tabur masako,,486.5,38.5,40.0,18.5,100.0,dapur_umami,False
-96cb00f2-08ee-4c57-8bc1-24951cfdb8b0,rempeyek kacang,,989.5,22.5,93.5,61.5,100.0,dapur_umami,False
 ba2cd20e-408e-4c4a-b74d-2a58a8ee8585,rempeyek kacang tolo,,451.0,11.2,59.7,20.2,100.0,indo_nutrition,False
 d8b8f94c-8cb6-4366-b451-868ef7f28bc5,rempeyek kacang uci,,497.0,17.0,50.8,27.6,100.0,indo_nutrition,False
 2c3290af-3d0c-4d74-a30a-7e99d818e545,rendang ayam,,528.2,13.7,6.0,51.8,100.0,dapur_umami,True
@@ -2257,7 +2216,6 @@ d43b5adb-7e54-4143-8ff4-2fd833f78bed,sambal goreng kentang,,211.0,8.3,4.0,13.5,1
 6908a62c-9e27-4066-a8a9-f27b2774fbcf,samosa daging,,316.3,19.3,9.8,23.5,100.0,dapur_umami,False
 ef6e7239-a0bb-45a6-96c3-85c7cbfce41d,samosa tempe,,9.4,0.0,0.0,0.0,100.0,dapur_umami,True
 966de6db-0c5c-4e78-806b-6fe2f880b3ff,sandwich bayam mayumi,,355.8,16.3,52.0,8.8,100.0,dapur_umami,False
-289a9967-63a0-4082-8ab8-ff340235a8e6,sandwich donat ayam saori saus teriyaki,,1339.5,32.5,63.5,64.5,100.0,dapur_umami,False
 71e6d06d-ed2b-41f0-aebf-2c9d4401ccf1,sandwich isi,,621.5,27.7,46.8,37.7,100.0,dapur_umami,False
 d6a74241-bfe4-43f2-9f00-7611c008bc27,sandwich mayo,,808.5,34.0,41.5,56.0,100.0,dapur_umami,False
 c43c5d61-20fe-47a3-af96-5f5a5cf22038,sandwich telur mayumi,,13.7,0.0,0.0,0.0,100.0,dapur_umami,False
@@ -2302,7 +2260,6 @@ ee3f15d7-3c8f-45c3-b47a-cd1a8afcea88,sate bandeng,,283.0,12.1,20.9,16.8,100.0,in
 ef02eaad-2025-4cd8-9f64-010c97a23c95,sate kambing teriyaki,,23.6,2.3,0.0,1.7,100.0,dapur_umami,False
 eb56ac08-7b8f-401a-a89b-396c5da49b66,sate kerang,,219.1,16.0,6.4,14.8,100.0,dapur_umami,False
 8ffef138-1bfd-491a-b3b1-73a3a8a8d709,sate kikil,,236.7,13.0,10.3,16.5,100.0,dapur_umami,False
-9f84f1fa-2ed2-4f4b-a1e9-6aa9d744d49e,sate komoh umami masako,,2212.0,88.5,40.5,200.0,100.0,dapur_umami,False
 8ec2233f-48b4-4a22-9cbe-d3d07c098ba7,sate kulit,,110.0,15.5,11.5,0.5,100.0,indo_nutrition,False
 14514f7e-541d-44df-b3f5-be3640f58039,sate lilit,,177.5,9.8,7.8,12.4,100.0,dapur_umami,False
 818901ac-df5d-4ed3-9f1e-8bd5a63b8ead,sate lilit wortel,,565.3,31.7,13.3,43.3,100.0,dapur_umami,False
@@ -2360,7 +2317,6 @@ bf2b6491-6dc9-4eae-bcd0-0d91477414e6,sayur sop,,27.0,1.3,1.0,2.0,100.0,indo_nutr
 aadff760-8398-471c-94dd-dd8511e06784,sayur sop sajiku,,84.0,11.5,25.5,12.0,100.0,dapur_umami,False
 f0aae6c9-7f26-4b75-acf5-2e4268984dc8,sayur umbut kelapa,,67.0,5.2,5.1,2.9,100.0,indo_nutrition,False
 6e5521af-ed32-4eb7-b950-f49032c9fac1,sayur umbut rotan,,57.0,5.4,3.1,2.6,100.0,indo_nutrition,False
-ab7d31ea-aabe-49a0-9843-8d79ce54e68e,sayuran dan buah siram,,2311.5,123.0,90.8,182.0,100.0,dapur_umami,False
 ef0e31d4-3e43-4432-b35b-4e23eddcee98,scallops 3oz seared,,95.0,17.0,5.0,1.0,100.0,daily_nutrition,False
 d461b39c-6580-4373-950c-394bd9bc7ac2,scrambled eggs 2 large,,180.0,12.0,2.0,14.0,100.0,daily_nutrition,False
 2e7b7396-4132-4609-a6f3-8c680e7819eb,sea salt coarse 14 tsp,,0.0,0.0,0.0,0.0,100.0,daily_nutrition,False
@@ -2374,7 +2330,6 @@ d7d49411-5b0a-4f82-a175-83c539da4dce,selada,,15.0,1.2,2.9,0.2,100.0,indo_nutriti
 469bd79d-b2b5-4cb8-a72c-49cb75291cce,selada air rebus,,19.0,2.7,2.9,0.2,100.0,indo_nutrition,False
 608f2d5a-7afb-4041-8ccb-c8b124347cd4,seledri,,20.0,1.0,4.6,0.1,100.0,indo_nutrition,False
 38a6c111-457f-47e0-93c8-7c16f507a98c,semangka,,28.0,0.5,6.9,0.2,100.0,indo_nutrition,False
-2c66bb2d-eae6-48f6-a058-1b4c62973eb9,semar mendem saori,,2227.5,50.0,127.0,89.5,100.0,dapur_umami,False
 e28f2d64-6934-4619-a360-f2fba09f7528,sempol ayam pedas,,140.6,6.5,26.9,15.0,100.0,dapur_umami,False
 fbc0b5d9-3822-42e1-b38f-2de58403e625,semur bakso,,204.8,7.0,14.5,12.0,100.0,dapur_umami,True
 eea8444e-b984-4e5b-bb53-364fa0a0197c,semur daging teriyaki,,111.0,9.0,4.0,7.0,100.0,dapur_umami,True
@@ -2428,9 +2383,7 @@ c4198fd9-735d-46cd-8eeb-e626e4c051b0,siomay ikan,,9.8,0.0,0.0,0.0,100.0,dapur_um
 86a52ebf-d9a7-4943-8e7f-358c9549b68e,smoothie fruit yogurt,,280.0,12.0,55.0,3.0,100.0,daily_nutrition,False
 056ab404-49eb-47ab-bdd5-26baa7abd527,smore 1 serving,,140.0,2.0,25.0,4.0,100.0,daily_nutrition,False
 c6c70480-48f2-485a-8814-17ca3a2a0cb3,soda 1 can coke,,140.0,0.0,39.0,0.0,100.0,daily_nutrition,False
-4c686cce-7651-4744-a286-deb3423e58a6,soes isi mayumi,,1030.5,29.0,6.0,98.0,100.0,dapur_umami,False
 20373530-6899-4ee0-8b09-71b1c57480c2,sohu goreng tomat isi saus bumbu bali masako,,438.0,26.5,53.5,15.5,100.0,dapur_umami,False
-28ba4e84-920e-4736-900f-00fd16f46481,sop ayam kampung,,1475.0,90.0,9.0,120.0,100.0,dapur_umami,False
 3e872428-de59-4753-ba1b-30ea3c6e7429,sop bola-bola udang,,174.5,16.5,13.0,5.0,100.0,dapur_umami,False
 4bd8f814-c3ea-4957-b756-fcda68e0f3d0,sop buntut,,593.5,28.0,11.0,48.5,100.0,dapur_umami,False
 7e12bf99-5021-4bf9-bf32-183bb21db8f5,sop buntut masakan,,71.0,7.5,2.2,3.6,100.0,indo_nutrition,False
@@ -2470,7 +2423,6 @@ cfc9a3d2-6ef5-40c7-8450-45c883fc3446,soto banjar masakan,,110.0,2.9,3.2,9.5,100.
 5589787d-30b6-4ae1-9153-1149988b261d,soto betawi masakan,,135.0,2.5,11.5,8.8,100.0,indo_nutrition,True
 ff64b1e5-6f68-4d87-9896-9d09d8d41d4b,soto betawi masako,,805.3,25.3,35.3,63.5,100.0,dapur_umami,True
 48a30b7f-5c0a-4e19-b457-7cbd3594e367,soto ceker lobak,,556.6,23.8,8.8,49.6,100.0,dapur_umami,True
-3fdbaaa4-75b8-4f5c-8b70-7e4e622530a6,soto daging,,1182.7,34.0,60.3,33.0,100.0,dapur_umami,True
 5be12f2b-dd1c-4bb4-aaaf-28b963a3eebd,soto daging santan kuning,,127.3,8.7,2.3,9.3,100.0,dapur_umami,True
 70594953-0220-4474-b4ef-4283a26e6d2e,soto dengan daging,,127.5,2.6,8.3,9.4,100.0,indo_nutrition,True
 a4d1f447-c075-4cc3-a726-91f70687d45a,soto jeroan masakan,,92.0,11.8,1.4,4.3,100.0,indo_nutrition,True
@@ -2480,7 +2432,6 @@ b026849f-c208-43a0-a1d4-33f4ca4cae23,soto kudus masakan,,38.0,2.6,1.8,2.3,100.0,
 5d4c2f58-63e0-4975-bada-4805642272ba,soto lamongan,,351.8,22.8,27.0,16.0,100.0,dapur_umami,True
 e0e17bdd-c658-4907-b200-1524924dfedf,soto madura,,139.0,2394.8,3.5,8.0,100.0,dapur_umami,True
 dfdc0559-78a3-45e6-b759-934db013cf05,soto madura masakan,,60.0,3.5,1.3,4.5,100.0,indo_nutrition,True
-968c59ba-038f-4ac8-8808-12a299ed2636,soto medan,,1603.0,50.0,90.5,97.0,100.0,dapur_umami,True
 44276091-3cf5-4479-bc3a-113b932cfa27,soto medan aji-no-moto,,552.3,19.0,3.5,27.0,100.0,dapur_umami,True
 bd029d74-218f-4779-992f-9c4a0ebea2e7,soto mie,,272.0,10.0,19.8,16.8,100.0,dapur_umami,True
 f298caa0-cb18-4427-a68f-d004a974a560,soto mie bogor,,824.5,38.0,88.5,35.0,100.0,dapur_umami,True
@@ -2491,7 +2442,6 @@ ef3555f5-90ee-4d6f-9b31-be7310fe01e0,soto sokaraja sajiku,,85.8,17.8,17.5,22.8,1
 06b56eab-5711-492e-aef6-295ec73b232f,soto sukaraja masakan,,80.0,3.2,9.0,3.5,100.0,indo_nutrition,True
 b12ef48e-0268-4617-9965-226aa247969b,soto sulung masakan,,86.0,2.3,0.0,8.5,100.0,indo_nutrition,True
 539e507a-c88d-4786-8fba-67654083413e,soto tanpa daging,,117.1,0.4,9.6,8.6,100.0,indo_nutrition,True
-5ceeab1b-8324-4ccb-aae6-ae24856c16fa,soun asam pedas saori,,1011.0,32.0,107.0,50.0,100.0,dapur_umami,False
 0ca5a94c-f440-48e4-9adb-0acf59ba6012,soun goreng korea,,746.0,19.0,114.0,17.5,100.0,dapur_umami,False
 32252087-387c-4693-8a7f-00a22462334f,soun kuah kangkung,,227.0,9.2,28.0,8.2,100.0,dapur_umami,False
 8ac920e7-9195-4366-b45b-aa25fb89b06d,soun telur bebek,,233.2,11.7,25.3,9.3,100.0,dapur_umami,False
@@ -2552,7 +2502,6 @@ d13d6fd1-235b-461e-b6f8-7937bb426f29,sumpia ebi,,69.8,0.0,0.0,0.0,100.0,dapur_um
 22e28625-fa13-4a6e-ae51-acc41b887d6e,sunny egg potato,,200.0,8.3,10.5,14.0,100.0,dapur_umami,False
 fbee68d2-513e-4bb8-b026-6f72eba3255c,sup ayam jahe,,339.0,34.5,0.0,28.0,100.0,dapur_umami,False
 ca48fe18-34c9-467c-9a0c-c219de4baff7,sup ayam suwir,,367.1,28.7,23.1,18.5,100.0,dapur_umami,False
-4e43e0b1-f865-405e-8570-d3da89a335a5,sup bakso,,1067.0,46.0,19.0,95.0,100.0,dapur_umami,True
 d3b2c629-01c1-4fe2-a180-ab3f17cfff4e,sup bakso suki,,134.5,5.5,11.0,7.5,100.0,dapur_umami,True
 382e1c63-1a40-4bd9-9579-d4d4ae544d37,sup bakso tahu,,277.6,20.2,12.0,17.2,100.0,dapur_umami,True
 8caaa870-ccc9-46f5-9d54-90cc94b3dfda,sup bayam asparagus,,224.0,10.5,26.5,9.3,100.0,dapur_umami,False
@@ -2571,7 +2520,6 @@ d8023292-f51c-48ee-b0bd-24d46180a1db,sup ikan sawi asin,,41.0,0.0,0.0,0.0,100.0,
 6a8c5af3-69cf-4ce8-8be3-151b275bbc4d,sup jagung sajiku,,200.0,8.0,27.3,6.5,100.0,dapur_umami,False
 4ec3b0ed-54bd-476b-9ccc-6af74e21bf14,sup jamur kancing,,144.0,5.5,8.5,10.5,100.0,dapur_umami,False
 ff5b225a-4370-4753-9c13-0a12c9737098,sup kacang merah masako,,194.8,9.5,14.0,11.5,100.0,dapur_umami,False
-8aa04879-53b9-46a2-87de-0a4f931d6013,sup kaldu kacang hijau,,941.8,64.7,143.0,14.7,100.0,dapur_umami,False
 fbc6d97f-1d8f-4a3e-ada6-d454b4b45b9b,sup kimlo,,110.8,4.5,2.3,9.5,100.0,dapur_umami,False
 a49fa5c4-c757-468b-b458-3a498ca7d11a,sup krim aji-no-moto,,82.3,14.0,18.5,22.0,100.0,dapur_umami,False
 62ad152a-636d-421a-9fa6-8ab9fa2751d3,sup krim baso kentang,,194.3,6.8,12.3,10.5,100.0,dapur_umami,False
@@ -2600,7 +2548,6 @@ d2eb5e75-3ea7-4d90-87ae-acb889d91a4d,supplì 1 piece fried rice ball,,200.0,8.0,
 4d3f558e-02be-4712-9e25-b120b1f887a0,surabi spesial mayumi,,129.3,5.0,10.1,6.0,100.0,dapur_umami,False
 f07eb770-88de-4f70-80db-5b655f2f24a0,sus goreng masako,,361.8,3.8,3.0,31.3,100.0,dapur_umami,False
 4aa28356-f148-44f0-bc45-53db1ea16351,sushi,,302.3,10.3,27.0,16.8,100.0,dapur_umami,False
-87c55803-f16b-473e-a69e-f1428e8db6be,sushi goreng,,1055.0,31.0,289.0,77.0,100.0,dapur_umami,False
 e963709a-8c07-4c04-9e2d-799b1af775a5,sushi roll ayam mayumi,,54.5,2.5,9.3,1.1,100.0,dapur_umami,False
 77544c0b-e15e-4ac7-9d26-03eecfb710b1,sushi roll saori saus teriyaki,,80.3,3.3,2.2,3.5,100.0,dapur_umami,False
 12efe40b-0a27-42c5-9863-127a5aa7524b,susu asam untuk bayi bubuk,,418.0,19.0,65.5,9.0,100.0,indo_nutrition,False
@@ -2652,9 +2599,7 @@ c647a254-c6e9-445c-91b1-5cd4f0c863f7,tahu tempe goreng lengkuas,,230.3,11.8,9.0,
 83332d35-0228-4abc-85fe-e567b94cd527,tahu tumis batang sawi,,355.0,15.0,13.0,29.5,100.0,dapur_umami,True
 60713427-4aae-4925-ad3e-e6d4b99a486a,takoyaki sosis,,366.0,6.4,2.9,27.6,100.0,dapur_umami,False
 c10ed7d8-ee75-4f7c-8a3f-40cd14dd16a3,takwa,,148.0,13.8,4.0,8.5,100.0,indo_nutrition,False
-8e845987-5d77-4382-b5e7-74bdf212a631,talam ayam pedas merdeka sajiku,,984.0,29.0,141.5,20.0,100.0,dapur_umami,False
 7eba68a0-10b2-4a09-b85b-b1103738458b,talam pelangi,,27.5,0.0,0.0,0.0,100.0,dapur_umami,False
-e949c51d-1af1-493e-b988-889afee00114,talam udang gurih masako,,1653.0,49.0,247.0,10.0,100.0,dapur_umami,False
 7edd412c-d3c1-4c19-a5cc-50cacf062d17,talas bogor kukus,,120.0,1.5,28.2,0.3,100.0,indo_nutrition,False
 7aeba9ee-07d9-48a1-92c4-2d5b26958dcb,talas pontianak segar,,163.0,2.3,36.4,0.5,100.0,indo_nutrition,False
 1952ef62-505a-4b26-9edc-f9c4e49b7402,talas viqueque segar,,115.0,1.8,25.9,0.5,100.0,indo_nutrition,False
@@ -2671,7 +2616,6 @@ abf75203-dc5d-46ea-9490-f4ce65c07df8,taokoa,,104.0,12.9,1.2,6.8,100.0,indo_nutri
 bf64d331-cc24-4e12-88ec-23057262fb4e,tapai ketan hitam,,166.0,3.8,34.4,1.0,100.0,indo_nutrition,False
 631edc57-06a9-470b-a07b-4aa4f635e39d,tapai ketan putih,,172.0,3.0,37.5,0.5,100.0,indo_nutrition,False
 aed1f5b8-4842-4d6a-945c-d3450632a2e2,tapai singkong,,169.0,1.4,40.2,0.3,100.0,indo_nutrition,False
-82360467-4511-458f-9a2a-14ed4942a04b,tape goreng keju,,1885.0,56.0,493.0,69.0,100.0,dapur_umami,False
 ef30009a-a8e8-44c1-a5c5-caed083bda48,tapioca pearls 14 cup boba,,100.0,0.0,25.0,0.0,100.0,daily_nutrition,False
 277454c3-a5e6-41c7-9bae-c5a8edb2753e,tartar sauce 2 tbsp,,60.0,0.2,2.0,5.5,100.0,daily_nutrition,False
 732dbfc0-09ad-4b56-ad5c-bd38edec1aa9,tauco cap das cake,,358.0,7.5,70.4,4.3,100.0,indo_nutrition,False
@@ -2837,12 +2781,10 @@ dcb2147d-0786-4f57-a492-d8d19bad1b36,tongseng ayam,,331.0,14.3,11.8,12.3,100.0,d
 4be0d583-f036-4ef1-b72c-094c7048cb39,tongseng daging tomat,,91.0,0.0,0.0,0.0,100.0,dapur_umami,False
 56746b73-22cd-4f3b-a6c2-c72f3c052c69,tortilla chips 1 oz,,140.0,2.0,19.0,7.0,100.0,daily_nutrition,False
 00dc3371-9b26-4d05-b124-480ef9efb01c,tortilla isi ayam,,75.4,3.7,6.9,3.7,100.0,dapur_umami,False
-e412a4e2-349f-4dfd-9236-a2c7258cd93f,tortilla rendang ayam kentang pedas sajiku,,1282.5,39.0,60.5,79.5,100.0,dapur_umami,True
 e16a687d-64f3-40e7-8634-7c904ec38e71,trail mix 14 cup,,190.0,5.0,20.0,12.0,100.0,daily_nutrition,False
 4fa250aa-492b-4b0f-ad80-bf71b15c6983,trofie pasta 1 cup cooked,,210.0,7.0,43.0,1.0,100.0,daily_nutrition,False
 0a54ca6e-5e77-43f7-87a2-fca169423224,tumis asparagus,,97.3,8.0,5.3,5.5,100.0,dapur_umami,False
 c883d407-8fc7-4709-81b2-b7f1036034fc,tumis ayam jagung manis,,193.0,12.5,5.3,14.0,100.0,dapur_umami,False
-f75f3761-d3be-47fc-95fd-b91d6430b2d8,tumis ayam kecap,,1229.0,93.0,17.0,88.0,100.0,dapur_umami,False
 89318b99-a528-4807-bff7-d716d0ba2e74,tumis ayam sayur,,192.0,9.5,4.0,15.0,100.0,dapur_umami,False
 a1ebd80f-4b70-476f-b6a6-264a05920f7c,tumis ayam suwir,,125.0,15.5,0.0,6.5,100.0,dapur_umami,False
 37e12bc4-c85a-460a-b53c-6f0d380deef9,tumis ayam timun jepang,,552.3,28.3,33.3,33.3,100.0,dapur_umami,False
@@ -2855,7 +2797,6 @@ a0f3c43a-2e8c-4493-aad0-d49add26ed3b,tumis batang kembang kol,,261.0,17.7,4.7,19
 cfe80708-f035-4648-8ca2-c0f8c8fc8d64,tumis brokoli kerang hijau saori,,122.0,0.0,0.0,0.0,100.0,dapur_umami,False
 aa813eb3-fcda-4bdf-91ad-a3841b127e21,tumis brokoli wortel jamur champignon,,71.5,2.5,6.5,4.0,100.0,dapur_umami,False
 2086f29e-ec28-4d8c-8f8b-926914c1f561,tumis buncis bakso,,144.8,5.3,8.0,10.5,100.0,dapur_umami,True
-e9bbe1f1-3faa-44e9-ae10-28b301a433b7,tumis buncis telur,,1560.8,56.3,29.0,124.8,100.0,dapur_umami,False
 a91612c6-0f78-4306-9e1b-463c3e57da1d,tumis buncis udang,,74.5,6.5,6.5,2.5,100.0,dapur_umami,False
 c88525e9-4318-4454-b7dc-b50f3c2cc62b,tumis bunga pepaya,,27.5,0.0,0.0,0.0,100.0,dapur_umami,False
 f51d1c6d-eac7-4e60-b006-123c83a79f5c,tumis cumi hitam,,233.0,17.0,5.0,16.0,100.0,dapur_umami,False
