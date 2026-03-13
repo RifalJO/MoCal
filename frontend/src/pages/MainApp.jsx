@@ -7,12 +7,15 @@ import LogItem from '@/components/LogItem'
 import GoalsCard from '@/components/GoalsCard'
 import LoadingRow from '@/components/LoadingRow'
 import SettingsModal from '@/components/SettingsModal'
+import DatePickerModal from '@/components/DatePickerModal'
 
 export default function MainApp() {
     const { logs, isLoading, hasOnboarding, goals, isAuthenticated, deleteLog: deleteLogAction } = useAppStore()
     const [inputText, setInputText] = useState('')
     const [showSettings, setShowSettings] = useState(false)
     const [showGoals, setShowGoals] = useState(false)
+    const [showDatePicker, setShowDatePicker] = useState(false)
+    const [selectedDate, setSelectedDate] = useState(new Date())
     const [error, setError] = useState('')
     const [isCheckingAuth, setIsCheckingAuth] = useState(true)
 
@@ -42,6 +45,18 @@ export default function MainApp() {
         }
     }, [isAuthenticated, isCheckingAuth])
 
+    // Fetch logs when selected date changes
+    useEffect(() => {
+        if (isAuthenticated && !isCheckingAuth) {
+            const dateStr = selectedDate.toISOString().split('T')[0]
+            const today = new Date()
+            const isToday = selectedDate.toDateString() === today.toDateString()
+            
+            // Only add date parameter if not today
+            fetchUserLogs(isToday ? null : dateStr)
+        }
+    }, [selectedDate, isAuthenticated, isCheckingAuth])
+
     const handleSubmit = async () => {
         if (!inputText.trim() || isLoading) return
         try {
@@ -56,6 +71,30 @@ export default function MainApp() {
 
     const handleDelete = (loggedAt) => {
         deleteLogAction(loggedAt)
+    }
+
+    // Format date for display
+    const formatDateDisplay = (date) => {
+        const today = new Date()
+        const yesterday = new Date(today)
+        yesterday.setDate(yesterday.getDate() - 1)
+        
+        if (date.toDateString() === today.toDateString()) {
+            return 'Today'
+        } else if (date.toDateString() === yesterday.toDateString()) {
+            return 'Yesterday'
+        } else {
+            return date.toLocaleDateString('en-US', { 
+                month: 'long', 
+                day: 'numeric', 
+                year: 'numeric' 
+            })
+        }
+    }
+
+    // Format date for API
+    const formatDateForAPI = (date) => {
+        return date.toISOString().split('T')[0]
     }
 
     // Calculate totals for desktop summary - from items data
@@ -121,7 +160,7 @@ export default function MainApp() {
                     {/* Log items */}
                     {logs.length === 0 && !isLoading && (
                         <p className="text-slate-400 text-lg mt-2">
-                            
+
                         </p>
                     )}
                     {logs.map((log, i) => <LogItem key={i} log={log} />)}
@@ -189,7 +228,20 @@ export default function MainApp() {
                         <div className="bg-white rounded-xl shadow-sm border border-slate-200 min-h-[600px] flex flex-col p-8 transition-all hover:shadow-md">
                             {/* Toolbar */}
                             <div className="flex items-center justify-between mb-6 border-b border-slate-100 pb-4">
-                                <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-3">
+                                    {/* Calendar Button */}
+                                    <button
+                                        onClick={() => setShowDatePicker(true)}
+                                        className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                                        title="Select date"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" stroke-linecap="round" stroke-linejoin="round" className="text-[#94a3b8]">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </svg>
+                                    </button>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" strokeWidth="2" className="text-slate-400">
                                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -199,6 +251,9 @@ export default function MainApp() {
                                         <polyline points="10 9 9 9 8 9" />
                                     </svg>
                                     <span className="text-sm font-medium text-slate-400">Daily Journal</span>
+                                    <span className="text-xs text-[#94a3b8] font-medium ml-2">
+                                        {formatDateDisplay(selectedDate)}
+                                    </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <span className="text-xs text-slate-400 mr-2">
@@ -288,7 +343,13 @@ export default function MainApp() {
                                             </div>
                                         ))}
                                     </div>
-                                    {isLoading && <LoadingRow />}
+                                </div>
+                            )}
+                            
+                            {/* Loading Indicator */}
+                            {isLoading && (
+                                <div className="mt-6 pt-6 border-t border-slate-100">
+                                    <LoadingRow />
                                 </div>
                             )}
                         </div>
@@ -404,6 +465,14 @@ export default function MainApp() {
                     </>
                 )}
             </div>
+
+            {/* Date Picker Modal */}
+            <DatePickerModal
+                isOpen={showDatePicker}
+                onClose={() => setShowDatePicker(false)}
+                onSelectDate={setSelectedDate}
+                selectedDate={selectedDate}
+            />
 
             {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
         </div>

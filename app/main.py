@@ -397,18 +397,36 @@ def search_food(q: str, db: Session = Depends(get_db)):
 
 # ─── Endpoint: Get Logs ──────────────────────────────────────────────────────
 @app.get("/api/logs")
-def get_logs(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_logs(current_user: User = Depends(get_current_user), db: Session = Depends(get_db), date: str = None):
     """
     Get current user's food logs only.
+    Optional date parameter (YYYY-MM-DD) to filter logs by specific date.
     """
     from app.database import FoodLog
     from datetime import datetime, timezone
+
+    # Build base query
+    query = db.query(FoodLog).filter(FoodLog.user_id == current_user.id)
     
-    # Get logs for current user only, ordered by latest first
-    logs = db.query(FoodLog).filter(
-        FoodLog.user_id == current_user.id
-    ).order_by(FoodLog.logged_at.desc()).all()
+    # Filter by date if provided
+    if date:
+        try:
+            # Parse date string and filter by that day
+            target_date = datetime.fromisoformat(date).date()
+            next_day = datetime.fromisoformat(date).date()
+            from datetime import timedelta
+            next_day = target_date + timedelta(days=1)
+            
+            query = query.filter(
+                FoodLog.logged_at >= target_date,
+                FoodLog.logged_at < next_day
+            )
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
     
+    # Get logs ordered by latest first
+    logs = query.order_by(FoodLog.logged_at.desc()).all()
+
     # Convert to response schema
     result = []
     for log in logs:

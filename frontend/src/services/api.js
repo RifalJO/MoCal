@@ -120,7 +120,7 @@ export async function deleteLog(logId) {
 }
 
 // Fetch user logs (authenticated - gets only current user's logs)
-export async function fetchUserLogs() {
+export async function fetchUserLogs(date = null) {
     const store = useAppStore.getState()
 
     // If not authenticated, don't fetch
@@ -131,9 +131,11 @@ export async function fetchUserLogs() {
 
     try {
         // Use authenticated endpoint that filters by user_id
-        const { data } = await api.get('/api/logs')
+        // Optional date parameter (YYYY-MM-DD) to filter by specific date
+        const url = date ? `/api/logs?date=${date}` : '/api/logs'
+        const { data } = await api.get(url)
 
-        console.log('📥 Fetched user logs:', data.length, 'entries')
+        console.log('📥 Fetched user logs:', data.length, 'entries', date ? `for ${date}` : '')
 
         store.setLogs(data.map(log => ({
             log_id: log.log_id,
