@@ -10,7 +10,7 @@ import SettingsModal from '@/components/SettingsModal'
 import DatePickerModal from '@/components/DatePickerModal'
 
 export default function MainApp() {
-    const { logs, isLoading, hasOnboarding, goals, isAuthenticated, deleteLog: deleteLogAction } = useAppStore()
+    const { logs, isLoading, hasOnboarding, goals, isAuthenticated } = useAppStore()
     const [inputText, setInputText] = useState('')
     const [showSettings, setShowSettings] = useState(false)
     const [showGoals, setShowGoals] = useState(false)
@@ -76,8 +76,18 @@ export default function MainApp() {
         }
     }
 
-    const handleDelete = (logId) => {
-        deleteLogAction(logId)
+    const handleDelete = async (logId) => {
+        try {
+            await deleteLog(logId)
+            // Refresh logs after deletion
+            const dateStr = selectedDate.toISOString().split('T')[0]
+            const today = new Date()
+            const isToday = selectedDate.toDateString() === today.toDateString()
+            await fetchUserLogs(isToday ? null : dateStr)
+        } catch (err) {
+            setError(err.message || 'Gagal menghapus entry')
+            setTimeout(() => setError(''), 3000)
+        }
     }
 
     // Format date for display
