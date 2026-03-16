@@ -139,6 +139,9 @@ def get_db():
 
 
 def init_db():
-    """Buat semua tabel jika belum ada"""
+    """Buat semua tabel jika belum ada (skip di production — tabel sudah ada)"""
+    if settings.APP_ENV == "production":
+        print("⏭️  Production mode — skip create_all (tabel sudah ada di Supabase)")
+        return
     Base.metadata.create_all(bind=engine)
     print("✅ Tabel berhasil dibuat")

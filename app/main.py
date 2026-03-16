@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from app.database import get_db, init_db, settings
-from app.matcher import find_food, load_food_cache
+from app.matcher import find_food
 from app.parser import parse_food_text, estimate_nutrition_llm, convert_to_gram
 from app.auth import get_password_hash, verify_password, create_access_token, get_current_user
 from app.database import get_db, init_db, settings, User, UserProfile
@@ -32,9 +32,8 @@ app.add_middleware(
 # ─── Startup ──────────────────────────────────────────────────────────────────
 @app.on_event("startup")
 async def startup():
-    init_db()
-    db = next(get_db())
-    load_food_cache(db)
+    init_db()  # No-op in production (tabel sudah ada di Supabase)
+    # Food cache akan di-load secara lazy saat find_food() pertama kali dipanggil
     print("🚀 Server siap!")
 
 

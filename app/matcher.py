@@ -3,32 +3,55 @@
 
 from rapidfuzz import process, fuzz
 from sqlalchemy.orm import Session
-from app.database import Food, settings
+from sqlalchemy import select
+from app.database import Food, settings, SessionLocal
 import requests
 
 
-# ─── Cache nama makanan (load sekali saat startup) ────────────────────────────
+# ─── Cache nama makanan (lazy load — hanya saat pertama dibutuhkan) ───────────
 _food_cache: list[dict] = []
+_cache_loaded: bool = False
 
-def load_food_cache(db: Session):
-    """Load semua nama makanan ke memory untuk fuzzy matching yang cepat"""
-    global _food_cache
-    foods = db.query(Food).all()
-    _food_cache = [
-        {
-            "id":    str(f.id),
-            "name":  f.name,
-            "aliases": f.name_aliases.split("|") if f.name_aliases else [],
-            "kcal":  f.cal,
-            "protein_g":  f.protein,
-            "carbs_g":    f.carbs,
-            "fat_g":      f.fat,
-            "default_portion_g": f.default_portion_g,
-            "source": f.source,
-        }
-        for f in foods
-    ]
-    print(f"✅ Cache loaded: {len(_food_cache)} makanan")
+def load_food_cache(db: Session | None = None):
+    """Load semua nama makanan ke memory untuk fuzzy matching yang cepat.
+    Dipanggil otomatis saat pertama kali find_food() dipanggil.
+    """
+    global _food_cache, _cache_loaded
+
+    if _cache_loaded:
+        return
+
+    # Gunakan session yang diberikan atau buat baru
+    own_session = db is None
+    if own_session:
+        db = SessionLocal()
+
+    try:
+        # Hanya query kolom yang dibutuhkan (lebih cepat dari .all())
+        foods = db.query(
+            Food.id, Food.name, Food.name_aliases,
+            Food.cal, Food.protein, Food.carbs, Food.fat,
+            Food.default_portion_g, Food.source
+        ).all()
+        _food_cache = [
+            {
+                "id":    str(f.id),
+                "name":  f.name,
+                "aliases": f.name_aliases.split("|") if f.name_aliases else [],
+                "kcal":  f.cal,
+                "protein_g":  f.protein,
+                "carbs_g":    f.carbs,
+                "fat_g":      f.fat,
+                "default_portion_g": f.default_portion_g,
+                "source": f.source,
+            }
+            for f in foods
+        ]
+        _cache_loaded = True
+        print(f"✅ Cache loaded: {len(_food_cache)} makanan")
+    finally:
+        if own_session:
+            db.close()
 
 
 def _all_searchable_names() -> list[tuple[str, dict]]:
@@ -129,6 +152,9 @@ def find_food(name: str, english_name: str | None = None) -> tuple[dict, dict]:
 
     Returns: (food_result, match_log)
     """
+    # Pastikan cache sudah loaded (lazy load)
+    load_food_cache()
+
     match_log = {
         "search_name": name,
         "search_name_en": english_name,
