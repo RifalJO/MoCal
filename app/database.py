@@ -35,7 +35,7 @@ settings = Settings()
 if settings.DATABASE_URL:
     db_url = settings.DATABASE_URL
     # Fix for Supabase/SQLAlchemy compatibility
-    if db_url.startswith("postgres://"):
+    if db_url and db_url.startswith("postgres://"):
         db_url = db_url.replace("postgres://", "postgresql://", 1)
     DATABASE_URL = db_url
 else:
