@@ -444,5 +444,5 @@ if __name__ == "__main__":
 
     for tc in test_cases:
         print(f"\nInput : {tc}")
-        result = parse_food_input(tc)
+        result, log = parse_food_text(tc)
         print(f"Output: {json.dumps(result, ensure_ascii=False, indent=2)}")

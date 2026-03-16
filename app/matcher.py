@@ -3,7 +3,6 @@
 
 from rapidfuzz import process, fuzz
 from sqlalchemy.orm import Session
-from sqlalchemy import select
 from app.database import Food, settings, SessionLocal
 import requests
 
