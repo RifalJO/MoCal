@@ -24,26 +24,33 @@ export default function MainApp() {
         const restoreSession = async () => {
             console.log('🔐 Checking auth session...')
             const result = await validateAuth()
-            
+
             if (result.authenticated) {
                 console.log('✅ User authenticated, fetching logs...')
-                await fetchUserLogs()
+                // Always fetch with current selected date on login
+                const dateStr = selectedDate.toISOString().split('T')[0]
+                const today = new Date()
+                const isToday = selectedDate.toDateString() === today.toDateString()
+                await fetchUserLogs(isToday ? null : dateStr)
             } else {
                 console.log('ℹ️ No active session, using guest mode')
             }
-            
+
             setIsCheckingAuth(false)
         }
-        
+
         restoreSession()
     }, [])
 
-    // Fetch logs when auth status changes
+    // Fetch logs when auth status changes (but not on initial mount - handled above)
     useEffect(() => {
         if (isAuthenticated && !isCheckingAuth) {
-            fetchUserLogs()
+            const dateStr = selectedDate.toISOString().split('T')[0]
+            const today = new Date()
+            const isToday = selectedDate.toDateString() === today.toDateString()
+            fetchUserLogs(isToday ? null : dateStr)
         }
-    }, [isAuthenticated, isCheckingAuth])
+    }, [isAuthenticated])
 
     // Fetch logs when selected date changes
     useEffect(() => {
@@ -51,11 +58,11 @@ export default function MainApp() {
             const dateStr = selectedDate.toISOString().split('T')[0]
             const today = new Date()
             const isToday = selectedDate.toDateString() === today.toDateString()
-            
+
             // Only add date parameter if not today
             fetchUserLogs(isToday ? null : dateStr)
         }
-    }, [selectedDate, isAuthenticated, isCheckingAuth])
+    }, [selectedDate])
 
     const handleSubmit = async () => {
         if (!inputText.trim() || isLoading) return
@@ -78,16 +85,16 @@ export default function MainApp() {
         const today = new Date()
         const yesterday = new Date(today)
         yesterday.setDate(yesterday.getDate() - 1)
-        
+
         if (date.toDateString() === today.toDateString()) {
             return 'Today'
         } else if (date.toDateString() === yesterday.toDateString()) {
             return 'Yesterday'
         } else {
-            return date.toLocaleDateString('en-US', { 
-                month: 'long', 
-                day: 'numeric', 
-                year: 'numeric' 
+            return date.toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
             })
         }
     }
@@ -135,7 +142,7 @@ export default function MainApp() {
                     </div>
                 </div>
             )}
-            
+
             {/* Mobile View - max 430px width */}
             <div className="md:hidden flex flex-col min-h-screen max-w-[430px] mx-auto w-full relative">
                 <TopBar />
@@ -280,9 +287,9 @@ export default function MainApp() {
                             {error && (
                                 <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
                                     <svg className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <circle cx="12" cy="12" r="10"/>
-                                        <line x1="12" y1="8" x2="12" y2="12"/>
-                                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="12" y1="8" x2="12" y2="12" />
+                                        <line x1="12" y1="16" x2="12.01" y2="16" />
                                     </svg>
                                     <p className="text-sm text-red-700">{error}</p>
                                 </div>
@@ -345,7 +352,7 @@ export default function MainApp() {
                                     </div>
                                 </div>
                             )}
-                            
+
                             {/* Loading Indicator */}
                             {isLoading && (
                                 <div className="mt-6 pt-6 border-t border-slate-100">
