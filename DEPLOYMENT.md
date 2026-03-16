@@ -9,10 +9,13 @@ Aplikasi ini menggunakan PostgreSQL. Cara termudah adalah menggunakan **Supabase
 1. Buat akun di [supabase.com](https://supabase.com).
 2. Buat project baru bernama `MoCal`.
 3. Buka **Project Settings** > **Database**.
-4. Cari **Connection String** (pilih format **URI**).
-   - Contoh: `postgres://postgres:[PASSWORD]@db.xxxx.supabase.co:5432/postgres`
-5. Ganti `[PASSWORD]` dengan password database yang kamu buat.
-6. **PENTING:** Simpan URL ini. Aplikasi sudah otomatis menangani jika URL diawali dengan `postgres://` (akan diubah menjadi `postgresql://`).
+4. Cari bagian **Connection String**.
+5. **PENTING UNTUK VERCEL:** Cari tab/opsian **Connection Pooler** (Proxy).
+   - Pastikan **Mode** diatur ke **Transaction** atau **Session**.
+   - Gunakan URL yang diberikan (biasanya menggunakan port **6543**).
+   - Contoh: `postgres://postgres.xxxx:[PASSWORD]@aws-0-xxxx.pooler.supabase.com:6543/postgres?pgbouncer=true`
+6. Ganti `[PASSWORD]` dengan password database kamu.
+7. Simpan URL ini untuk dimasukkan ke Vercel Environment Variables.
 
 ---
 
