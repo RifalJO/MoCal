@@ -33,7 +33,11 @@ settings = Settings()
 
 # ─── Engine ───────────────────────────────────────────────────────────────────
 if settings.DATABASE_URL:
-    DATABASE_URL = settings.DATABASE_URL
+    db_url = settings.DATABASE_URL
+    # Fix for Supabase/SQLAlchemy compatibility
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    DATABASE_URL = db_url
 else:
     DATABASE_URL = (
         f"postgresql://{settings.DB_USER}:{settings.DB_PASSWORD}"

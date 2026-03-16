@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { useAppStore } from '@/stores/appStore'
 
-// Get base URL from environment variable, fallback to localhost for local dev
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+// Use relative path for production (works with Vercel routing), fallback for local dev
+const API_URL = import.meta.env.VITE_API_URL || ""
 
 const api = axios.create({ baseURL: API_URL })
 
