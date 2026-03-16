@@ -397,30 +397,34 @@ def search_food(q: str, db: Session = Depends(get_db)):
 def get_logs(current_user: User = Depends(get_current_user), db: Session = Depends(get_db), date: str = None):
     """
     Get current user's food logs only.
+    If no date is provided, returns only today's logs.
     Optional date parameter (YYYY-MM-DD) to filter logs by specific date.
     """
     from app.database import FoodLog
-    from datetime import datetime, timezone
+    from datetime import datetime, timedelta, timezone
 
     # Build base query
     query = db.query(FoodLog).filter(FoodLog.user_id == current_user.id)
-    
-    # Filter by date if provided
-    if date:
-        try:
-            # Parse date string and filter by that day
+
+    # Filter by date - if not provided, default to today
+    try:
+        if date:
+            # Parse provided date string
             target_date = datetime.fromisoformat(date).date()
-            next_day = datetime.fromisoformat(date).date()
-            from datetime import timedelta
-            next_day = target_date + timedelta(days=1)
-            
-            query = query.filter(
-                FoodLog.logged_at >= target_date,
-                FoodLog.logged_at < next_day
-            )
-        except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
-    
+        else:
+            # Default to today in UTC
+            target_date = datetime.now(timezone.utc).date()
+        
+        # Filter by the entire day (from 00:00:00 to 23:59:59.999999)
+        next_day = target_date + timedelta(days=1)
+
+        query = query.filter(
+            FoodLog.logged_at >= target_date,
+            FoodLog.logged_at < next_day
+        )
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
+
     # Get logs ordered by latest first
     logs = query.order_by(FoodLog.logged_at.desc()).all()
 
