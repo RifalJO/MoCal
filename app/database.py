@@ -4,8 +4,10 @@
 from sqlalchemy import create_engine, Column, String, Float, Boolean, Text, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.pool import NullPool
 from sqlalchemy.sql import func
 from pydantic_settings import BaseSettings
+from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 import uuid
 
 
@@ -32,19 +34,35 @@ class Settings(BaseSettings):
 settings = Settings()
 
 # ─── Engine ───────────────────────────────────────────────────────────────────
+def _clean_database_url(url: str) -> str:
+    """Clean database URL for psycopg2 compatibility."""
+    # Fix for Supabase/SQLAlchemy: postgres:// -> postgresql://
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://", 1)
+    # Strip ?pgbouncer=true — psycopg2 doesn't recognize it
+    if "pgbouncer" in url:
+        parsed = urlparse(url)
+        qs = parse_qs(parsed.query)
+        qs.pop("pgbouncer", None)
+        clean_query = urlencode(qs, doseq=True)
+        url = urlunparse(parsed._replace(query=clean_query))
+    return url
+
 if settings.DATABASE_URL:
-    db_url = settings.DATABASE_URL
-    # Fix for Supabase/SQLAlchemy compatibility
-    if db_url and db_url.startswith("postgres://"):
-        db_url = db_url.replace("postgres://", "postgresql://", 1)
-    DATABASE_URL = db_url
+    DATABASE_URL = _clean_database_url(settings.DATABASE_URL)
 else:
     DATABASE_URL = (
         f"postgresql://{settings.DB_USER}:{settings.DB_PASSWORD}"
         f"@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
     )
 
-engine = create_engine(DATABASE_URL, echo=False)
+# Use NullPool for serverless (Vercel) to avoid stale connections
+_is_serverless = settings.APP_ENV == "production"
+engine = create_engine(
+    DATABASE_URL,
+    echo=False,
+    poolclass=NullPool if _is_serverless else None,
+)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 Base = declarative_base()
 
