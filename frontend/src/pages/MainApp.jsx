@@ -76,8 +76,8 @@ export default function MainApp() {
         }
     }
 
-    const handleDelete = (loggedAt) => {
-        deleteLogAction(loggedAt)
+    const handleDelete = (logId) => {
+        deleteLogAction(logId)
     }
 
     // Format date for display
@@ -338,7 +338,7 @@ export default function MainApp() {
                                                         {log.total_kcal} kcal
                                                     </span>
                                                     <button
-                                                        onClick={() => handleDelete(log.logged_at)}
+                                                        onClick={() => handleDelete(log.log_id)}
                                                         className="opacity-0 group-hover:opacity-100 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                                                         title="Delete entry"
                                                     >

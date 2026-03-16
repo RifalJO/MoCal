@@ -108,14 +108,18 @@ export async function getCurrentUser() {
 // Delete food log
 export async function deleteLog(logId) {
     try {
-        // For now, just remove from local state since backend doesn't have delete endpoint
+        // Call backend delete endpoint
+        await api.delete(`/api/logs/${logId}`)
+
+        // Remove from local state after successful deletion
         const store = useAppStore.getState()
-        const newLogs = store.getState().logs.filter(log => log.logged_at !== logId)
+        const newLogs = store.logs.filter(log => log.log_id !== logId)
         store.setLogs(newLogs)
+
         return { success: true }
     } catch (error) {
         console.error('Delete log error:', error)
-        throw new Error('Failed to delete entry')
+        throw new Error(error.response?.data?.detail || 'Failed to delete entry')
     }
 }
 

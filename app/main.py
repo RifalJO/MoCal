@@ -444,3 +444,34 @@ def get_logs(current_user: User = Depends(get_current_user), db: Session = Depen
     return result
 
 
+# ─── Endpoint: Delete Log ──────────────────────────────────────────────────────
+@app.delete("/api/logs/{log_id}")
+def delete_log(log_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """
+    Delete a food log entry by ID.
+    Only allows deletion of logs belonging to the current user.
+    """
+    from app.database import FoodLog
+    import uuid
+
+    try:
+        log_uuid = uuid.UUID(log_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid log ID format")
+
+    # Find log by ID and verify it belongs to current user
+    log = db.query(FoodLog).filter(
+        FoodLog.id == log_uuid,
+        FoodLog.user_id == current_user.id
+    ).first()
+
+    if not log:
+        raise HTTPException(status_code=404, detail="Log entry not found")
+
+    # Delete the log
+    db.delete(log)
+    db.commit()
+
+    return {"message": "Log entry deleted successfully", "log_id": log_id}
+
+
