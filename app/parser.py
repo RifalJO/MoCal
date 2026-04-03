@@ -315,11 +315,50 @@ def parse_food_text(text: str) -> tuple[list[dict], dict]:
     raw = re.sub(r"```(?:json)?", "", raw).strip()
     raw = re.sub(r"```", "", raw).strip()
 
-    # ── Parse JSON ──
+    # ── Parse JSON (robust: handles multiple arrays from LLM) ──
+    items = None
+
+    # Attempt 1: Direct parse
     try:
         items = json.loads(raw)
-        print("✅ JSON parsed successfully")
+        print("✅ JSON parsed successfully (direct)")
     except json.JSONDecodeError:
+        pass
+
+    # Attempt 2: Fix back-to-back arrays  ][  →  ,
+    if items is None:
+        try:
+            fixed = re.sub(r'\]\s*\[', ',', raw)
+            # Wrap in array if the fix removed outer brackets
+            start_idx = fixed.find('[')
+            end_idx = fixed.rfind(']')
+            if start_idx != -1 and end_idx != -1:
+                json_str = fixed[start_idx:end_idx + 1]
+                items = json.loads(json_str)
+                print("✅ JSON parsed after merging back-to-back arrays")
+        except json.JSONDecodeError:
+            pass
+
+    # Attempt 3: Extract all [...] blocks via regex and merge
+    if items is None:
+        try:
+            blocks = re.findall(r'\[.*?\]', raw, re.DOTALL)
+            if blocks:
+                merged = []
+                for block in blocks:
+                    parsed_block = json.loads(block)
+                    if isinstance(parsed_block, list):
+                        merged.extend(parsed_block)
+                    else:
+                        merged.append(parsed_block)
+                if merged:
+                    items = merged
+                    print(f"✅ JSON parsed by merging {len(blocks)} separate arrays")
+        except json.JSONDecodeError:
+            pass
+
+    # Attempt 4: Extract between first [ and last ]
+    if items is None:
         start_idx = raw.find('[')
         end_idx = raw.rfind(']')
         if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
