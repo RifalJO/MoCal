@@ -502,7 +502,7 @@ export default function MainApp() {
                     <div className="relative bg-white rounded-2xl p-8 mx-4 max-w-sm w-full shadow-2xl text-center"
                         onClick={e => e.stopPropagation()}>
                         <div className="text-5xl mb-4">🔒</div>
-                        <h3 className="text-xl font-bold text-slate-900 mb-2">Buat Akun Dulu, Yuk!</h3>
+                        <h3 className="text-xl font-bold text-slate-900 mb-2">Buat Akun Dulu Meowww...</h3>
                         <p className="text-slate-500 text-sm mb-6 leading-relaxed">
                             Kamu sudah mencoba 1 kali gratis. Buat akun untuk menyimpan data makanan dan melanjutkan tracking kalorimu.
                         </p>
@@ -513,7 +513,7 @@ export default function MainApp() {
                             }}
                             className="w-full h-12 bg-[#df6620] text-white rounded-xl font-bold text-[15px] hover:opacity-90 active:scale-95 transition-all mb-3 shadow-lg shadow-[#df6620]/20"
                         >
-                            Buat Akun 🚀
+                            Buat Akun
                         </button>
                         <button
                             onClick={() => setShowAuthWarning(false)}
