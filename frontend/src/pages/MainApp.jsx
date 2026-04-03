@@ -501,8 +501,8 @@ export default function MainApp() {
                     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
                     <div className="relative bg-white rounded-2xl p-8 mx-4 max-w-sm w-full shadow-2xl text-center"
                         onClick={e => e.stopPropagation()}>
-                        <div className="text-5xl mb-4">🔒</div>
-                        <h3 className="text-xl font-bold text-slate-900 mb-2">Buat Akun Dulu Meowww...</h3>
+                        <div className="text-5xl mb-4">🐈</div>
+                        <h3 className="text-xl font-bold text-slate-900 mb-2">Buat Akun Dulu Meowww... 🐱</h3>
                         <p className="text-slate-500 text-sm mb-6 leading-relaxed">
                             Kamu sudah mencoba 1 kali gratis. Buat akun untuk menyimpan data makanan dan melanjutkan tracking kalorimu.
                         </p>
