@@ -161,25 +161,33 @@ export async function fetchUserLogs(date = null) {
     }
 }
 
-// Submit food log
+// Submit food log (handles both authenticated and guest trial)
 export async function submitLog(text) {
     const store = useAppStore.getState()
+    
+    // Guest trial flow
+    if (!store.isAuthenticated) {
+        const trialUsed = localStorage.getItem('mocal-guest-trial') === 'true'
+        
+        if (trialUsed) {
+            // Trial already used — trigger auth warning
+            store.setShowAuthWarning(true)
+            throw new Error('GUEST_TRIAL_EXCEEDED')
+        }
+        
+        // First try — use guest endpoint
+        return await submitGuestLog(text)
+    }
+    
+    // Authenticated flow (original)
     store.setLoading(true)
     try {
         const { data } = await api.post('/api/estimate', { text })
 
-        // Debug: Log the API response
         console.log('📡 API Response:', data)
-        console.log('📡 Items data:', data.items)
-        if (data.items && data.items.length > 0) {
-            console.log('📡 First item macros:', {
-                carbs_g: data.items[0].carbs_g,
-                protein_g: data.items[0].protein_g,
-                fat_g: data.items[0].fat_g
-            })
-        }
 
         store.addLog({
+            log_id: data.log_id,
             raw_input: text,
             total_kcal: data.total_kcal || 0,
             total_carbs: data.total_carbs || 0,
@@ -194,6 +202,48 @@ export async function submitLog(text) {
         return { success: true, data }
     } catch (error) {
         console.error('API Error:', error)
+        if (error.response?.status === 422) {
+            throw new Error('Tidak ada makanan yang terdeteksi. Pastikan Anda memasukkan nama makanan.')
+        } else if (error.response?.status === 400) {
+            throw new Error(error.response.data.detail || 'Input tidak valid')
+        } else {
+            throw new Error('Gagal memproses makanan. Coba lagi.')
+        }
+    } finally {
+        store.setLoading(false)
+    }
+}
+
+// Guest trial submit (no auth, no DB save)
+async function submitGuestLog(text) {
+    const store = useAppStore.getState()
+    store.setLoading(true)
+    try {
+        const { data } = await api.post('/api/estimate/guest', { text })
+
+        console.log('🧪 Guest Trial Response:', data)
+
+        store.addLog({
+            log_id: 'guest-trial',
+            raw_input: text,
+            total_kcal: data.total_kcal || 0,
+            total_carbs: data.total_carbs || 0,
+            total_protein: data.total_protein || 0,
+            total_fat: data.total_fat || 0,
+            total_sugar: 0,
+            total_fiber: 0,
+            total_sodium: 0,
+            items: data.items || [],
+            logged_at: new Date().toISOString(),
+        })
+
+        // Mark trial as used
+        localStorage.setItem('mocal-guest-trial', 'true')
+        store.setGuestTrialUsed(true)
+
+        return { success: true, data }
+    } catch (error) {
+        console.error('Guest API Error:', error)
         if (error.response?.status === 422) {
             throw new Error('Tidak ada makanan yang terdeteksi. Pastikan Anda memasukkan nama makanan.')
         } else if (error.response?.status === 400) {

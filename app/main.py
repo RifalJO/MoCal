@@ -381,6 +381,98 @@ def estimate_calories(req: LogRequest, current_user: User = Depends(get_current_
     )
 
 
+# ─── Endpoint: Guest Estimate (no auth, no DB save) ─────────────────────────
+@app.post("/api/estimate/guest")
+def estimate_calories_guest(req: LogRequest):
+    """
+    Guest trial endpoint — sama dengan /api/estimate tapi:
+    - TIDAK perlu login (no auth)
+    - TIDAK simpan ke database
+    - Rate limit dilakukan di frontend (localStorage)
+    """
+    import time
+    request_start = time.time()
+
+    text = req.text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Input teks tidak boleh kosong")
+    if len(text) > 2000:
+        raise HTTPException(status_code=400, detail="Input terlalu panjang (max 2000 karakter)")
+
+    # Step 1: Parse
+    parsed_items, parse_log = parse_food_text(text)
+    if not parsed_items:
+        raise HTTPException(status_code=422, detail="Tidak ada makanan yang terdeteksi dari teks")
+
+    # Step 2: Match + nutrition
+    results = []
+    unknown_items = []
+
+    for item in parsed_items:
+        name_raw = item.get("name", "").strip()
+        name_en = item.get("name_en", None)
+        qty = float(item.get("qty", 1))
+        unit = item.get("unit", "porsi")
+
+        if not name_raw:
+            continue
+
+        food, match_log = find_food(name_raw, name_en)
+
+        is_estimate = False
+        if food["match_method"] == "not_found":
+            llm_result = estimate_nutrition_llm(name_raw)
+            if llm_result:
+                food = {**food, **llm_result}
+                is_estimate = True
+            else:
+                unknown_items.append(name_raw)
+
+        gram = convert_to_gram(qty, unit, food.get("default_portion_g", 100.0))
+        kcal_100g = food.get("kcal")
+        kcal = round((gram / 100) * kcal_100g, 1) if kcal_100g else None
+        protein = round((gram / 100) * (food.get("protein_g") or 0), 1)
+        carbs = round((gram / 100) * (food.get("carbs_g") or 0), 1)
+        fat = round((gram / 100) * (food.get("fat_g") or 0), 1)
+
+        results.append(FoodItemResult(
+            name_raw=name_raw,
+            name_matched=food.get("name", name_raw),
+            qty=qty,
+            unit=unit,
+            gram=round(gram, 1),
+            kcal=kcal,
+            protein_g=protein,
+            carbs_g=carbs,
+            fat_g=fat,
+            match_method=food.get("match_method", "not_found"),
+            match_score=food.get("match_score", 0.0),
+            source=food.get("source", "unknown"),
+            is_estimate=is_estimate,
+        ))
+
+    # Step 3: Totals
+    total_kcal = round(sum(r.kcal or 0 for r in results), 1)
+    total_protein = round(sum(r.protein_g for r in results), 1)
+    total_carbs = round(sum(r.carbs_g for r in results), 1)
+    total_fat = round(sum(r.fat_g for r in results), 1)
+
+    total_time = round((time.time() - request_start) * 1000, 2)
+    print(f"\n🧪 GUEST TRIAL — {len(results)} items, {total_kcal} kcal, {total_time}ms (NOT saved)")
+
+    # NO database save for guest
+    return LogResponse(
+        log_id="guest-trial",
+        raw_input=text,
+        items=results,
+        total_kcal=total_kcal,
+        total_protein_g=total_protein,
+        total_carbs_g=total_carbs,
+        total_fat_g=total_fat,
+        unknown_items=unknown_items,
+    )
+
+
 # ─── Endpoint: Cari makanan manual ───────────────────────────────────────────
 @app.get("/api/foods/search")
 def search_food(q: str, db: Session = Depends(get_db)):

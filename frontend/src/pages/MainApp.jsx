@@ -10,7 +10,7 @@ import SettingsModal from '@/components/SettingsModal'
 import DatePickerModal from '@/components/DatePickerModal'
 
 export default function MainApp() {
-    const { logs, isLoading, hasOnboarding, goals, isAuthenticated } = useAppStore()
+    const { logs, isLoading, hasOnboarding, goals, isAuthenticated, showAuthWarning, setShowAuthWarning } = useAppStore()
     const [inputText, setInputText] = useState('')
     const [showSettings, setShowSettings] = useState(false)
     const [showGoals, setShowGoals] = useState(false)
@@ -71,6 +71,8 @@ export default function MainApp() {
             setInputText('')
             setError('')
         } catch (err) {
+            // Don't show error toast for guest trial exceeded (modal handles it)
+            if (err.message === 'GUEST_TRIAL_EXCEEDED') return
             setError(err.message || 'Terjadi kesalahan saat memproses makanan')
             setTimeout(() => setError(''), 5000)
         }
@@ -492,6 +494,36 @@ export default function MainApp() {
             />
 
             {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+
+            {/* Auth Warning Modal — Guest trial exceeded */}
+            {showAuthWarning && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center" onClick={() => setShowAuthWarning(false)}>
+                    <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
+                    <div className="relative bg-white rounded-2xl p-8 mx-4 max-w-sm w-full shadow-2xl text-center"
+                        onClick={e => e.stopPropagation()}>
+                        <div className="text-5xl mb-4">🔒</div>
+                        <h3 className="text-xl font-bold text-slate-900 mb-2">Buat Akun Dulu, Yuk!</h3>
+                        <p className="text-slate-500 text-sm mb-6 leading-relaxed">
+                            Kamu sudah mencoba 1 kali gratis. Buat akun untuk menyimpan data makanan dan melanjutkan tracking kalorimu.
+                        </p>
+                        <button
+                            onClick={() => {
+                                setShowAuthWarning(false)
+                                setShowSettings(true)
+                            }}
+                            className="w-full h-12 bg-[#df6620] text-white rounded-xl font-bold text-[15px] hover:opacity-90 active:scale-95 transition-all mb-3 shadow-lg shadow-[#df6620]/20"
+                        >
+                            Buat Akun 🚀
+                        </button>
+                        <button
+                            onClick={() => setShowAuthWarning(false)}
+                            className="w-full text-sm text-slate-400 hover:text-slate-600 transition-colors py-2"
+                        >
+                            Nanti saja
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
