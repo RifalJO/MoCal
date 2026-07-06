@@ -181,19 +181,21 @@ export default function MainApp() {
                         }}
                     />
 
-                    {/* Log items */}
-                    {logs.length === 0 && !isLoading && (
-                        <p className="text-slate-400 text-lg mt-2">
-
-                        </p>
+                    {/* Error toast (mobile) */}
+                    {error && (
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-xl mb-2">
+                            <p className="text-sm text-red-700">{error}</p>
+                        </div>
                     )}
+
+                    {/* Log items */}
                     {logs.map((log, i) => <LogItem key={i} log={log} />)}
                     {isLoading && <LoadingRow />}
                 </div>
 
-                {/* BottomBar */}
+                {/* BottomBar — tap: buka Goals; kalau belum onboarding, buka Settings */}
                 <div className="relative z-10">
-                    <BottomBar onClick={() => setShowGoals(!showGoals)} />
+                    <BottomBar onClick={() => hasOnboarding ? setShowGoals(!showGoals) : setShowSettings(true)} />
                 </div>
 
                 {/* Goals Panel Overlay - pops up from bottom */}

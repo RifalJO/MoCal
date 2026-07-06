@@ -89,18 +89,18 @@ export default function SettingsModal({ onClose }) {
                 {/* Profil / Auth */}
                 {isAuthenticated ? (
                     <div className="mb-6 p-4 bg-bg rounded-xl border border-border/30">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-fire/10 rounded-full flex items-center justify-center">
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                                <div className="w-10 h-10 bg-fire/10 rounded-full flex items-center justify-center shrink-0">
                                     <span className="text-lg">👤</span>
                                 </div>
-                                <div>
-                                    <p className="text-sm font-medium text-ink">{user?.email || 'User'}</p>
+                                <div className="min-w-0">
+                                    <p className="text-sm font-medium text-ink truncate">{user?.email || 'User'}</p>
                                     <p className="text-xs text-muted">{t('settings.loggedIn')}</p>
                                 </div>
                             </div>
                             <button onClick={handleLogout}
-                                className="text-sm text-red-500 hover:text-red-600 font-medium">
+                                className="text-sm text-red-500 hover:text-red-600 font-medium shrink-0">
                                 {t('settings.logout')}
                             </button>
                         </div>

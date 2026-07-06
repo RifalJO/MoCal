@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/appStore'
 import SettingsModal from './SettingsModal'
 
 export default function TopBar() {
+    const navigate = useNavigate()
     const { t } = useTranslation()
     const logCount = useAppStore(s => s.logs.length)
     const [showSettings, setShowSettings] = useState(false)
@@ -17,10 +19,13 @@ export default function TopBar() {
                         className="w-full h-full object-contain" />
                 </div>
 
-                <button className="
+                <button
+                    onClick={() => navigate('/riwayat')}
+                    className="
           bg-white rounded-full px-6 py-2
           text-[15px] font-semibold text-ink
           shadow-sm border border-border/40
+          active:scale-95 transition-transform
         ">
                     {t('common.today')}
                 </button>

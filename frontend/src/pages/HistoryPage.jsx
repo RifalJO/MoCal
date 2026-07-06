@@ -77,9 +77,9 @@ export default function HistoryPage() {
 
     return (
         <div className="min-h-screen bg-[#f8f7f6]">
-            <div className="max-w-5xl mx-auto px-6 py-8">
+            <div className="max-w-5xl mx-auto px-4 py-5 sm:px-6 sm:py-8">
                 {/* Header */}
-                <header className="flex items-center justify-between mb-10 border-b border-[#df6620]/10 pb-6">
+                <header className="flex items-center justify-between mb-6 sm:mb-10 border-b border-[#df6620]/10 pb-4 sm:pb-6">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => navigate('/')}
@@ -106,7 +106,7 @@ export default function HistoryPage() {
                     </button>
                 </header>
 
-                <main className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <main className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 pb-8">
                     {/* Kolom kiri — kalender + total */}
                     <div className="md:col-span-5 lg:col-span-4 flex flex-col gap-6">
                         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">

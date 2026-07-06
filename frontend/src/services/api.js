@@ -208,8 +208,14 @@ export async function fetchOnboarding() {
         console.log('✅ Onboarding data restored from server')
     } catch (error) {
         if (error.response?.status === 404) {
-            // No profile on server yet — keep whatever is in localStorage
-            console.log('ℹ️ No onboarding data found on server')
+            // No profile on server yet. If goals were set as guest (local only),
+            // push them to the server now so onboarding follows the account.
+            if (store.hasOnboarding && store.profile) {
+                console.log('⬆️ Syncing local onboarding to server...')
+                await saveOnboarding(store.profile)
+            } else {
+                console.log('ℹ️ No onboarding data found on server')
+            }
         } else {
             console.error('Fetch onboarding error:', error)
         }
