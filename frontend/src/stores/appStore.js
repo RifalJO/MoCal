@@ -1,6 +1,11 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+const DEFAULT_GOALS = {
+    kcal: 2000, carbs: 250, protein: 150, fat: 67,
+    sugar: 50, fiber: 25, sodium: 2300
+}
+
 export const useAppStore = create(
     persist(
         (set) => ({
@@ -15,10 +20,7 @@ export const useAppStore = create(
 
             // Goals
             hasOnboarding: false,
-            goals: {
-                kcal: 2000, carbs: 250, protein: 150, fat: 67,
-                sugar: 50, fiber: 25, sodium: 2300
-            },
+            goals: { ...DEFAULT_GOALS },
             // Data isian onboarding (nama, usia, berat, dll.) — untuk prefill form Settings
             profile: null,
 
@@ -28,7 +30,13 @@ export const useAppStore = create(
             logout: () => {
                 localStorage.removeItem('mocal-token')
                 localStorage.removeItem('mocal-user')
-                set({ user: null, token: null, isAuthenticated: false, logs: [] })
+                // Reset juga profile/goals/hasOnboarding — kalau tertinggal, data
+                // onboarding akun lama akan ter-upload ke akun yang login berikutnya
+                // (fetchOnboarding menganggapnya data guest yang perlu disinkronkan)
+                set({
+                    user: null, token: null, isAuthenticated: false, logs: [],
+                    profile: null, hasOnboarding: false, goals: { ...DEFAULT_GOALS },
+                })
             },
             addLog: (log) => set(s => ({ logs: [...s.logs, log] })),
             setLogs: (logs) => set({ logs }),

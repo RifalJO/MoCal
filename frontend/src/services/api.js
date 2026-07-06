@@ -92,12 +92,9 @@ export async function validateAuth() {
         return { authenticated: true, user: data }
     } catch (error) {
         console.log('❌ Auth validation failed - token expired or invalid')
-        // Token invalid/expired, clear session
-        localStorage.removeItem('mocal-token')
-        localStorage.removeItem('mocal-user')
-        store.setToken(null)
-        store.setUser(null)
-        store.setIsAuthenticated(false)
+        // Token invalid/expired — bersihkan seluruh sesi termasuk profile/goals,
+        // supaya data onboarding akun lama tidak bocor ke akun yang login berikutnya
+        store.logout()
         return { authenticated: false }
     }
 }
