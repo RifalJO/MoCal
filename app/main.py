@@ -32,7 +32,7 @@ app.add_middleware(
 async def startup():
     init_db()  # No-op in production (tabel sudah ada di Supabase)
     # Food cache akan di-load secara lazy saat find_food() pertama kali dipanggil
-    print("🚀 Server siap!")
+    print("[OK] Server siap!")
 
 
 # ─── Schemas ──────────────────────────────────────────────────────────────────
@@ -189,7 +189,22 @@ def get_onboarding(current_user: User = Depends(get_current_user), db: Session =
     profile = db.query(UserProfile).filter(UserProfile.user_id == current_user.id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
-    return profile
+    return {
+        "name": profile.name,
+        "age": profile.age,
+        "gender": profile.gender,
+        "weight_kg": profile.weight_kg,
+        "height_cm": profile.height_cm,
+        "activity_level": profile.activity_level,
+        "goal": profile.goal,
+        "bmr": profile.bmr,
+        "tdee": profile.tdee,
+        "daily_kcal_target": profile.daily_kcal_target,
+        "protein_target_g": profile.protein_target_g,
+        "carbs_target_g": profile.carbs_target_g,
+        "fat_target_g": profile.fat_target_g,
+        "onboarding_completed": profile.onboarding_completed,
+    }
 
 @app.put("/api/onboarding", response_model=OnboardingResponse)
 def update_onboarding(data: OnboardingRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -477,7 +492,8 @@ def estimate_calories_guest(req: LogRequest):
 @app.get("/api/foods/search")
 def search_food(q: str, db: Session = Depends(get_db)):
     """Search makanan di database lokal — untuk keperluan testing"""
-    from app.matcher import fuzzy_match, exact_match
+    from app.matcher import fuzzy_match, exact_match, load_food_cache
+    load_food_cache(db)
     result = exact_match(q) or fuzzy_match(q)
     if not result:
         raise HTTPException(status_code=404, detail=f"Makanan '{q}' tidak ditemukan")
@@ -486,11 +502,13 @@ def search_food(q: str, db: Session = Depends(get_db)):
 
 # ─── Endpoint: Get Logs ──────────────────────────────────────────────────────
 @app.get("/api/logs")
-def get_logs(current_user: User = Depends(get_current_user), db: Session = Depends(get_db), date: str = None):
+def get_logs(current_user: User = Depends(get_current_user), db: Session = Depends(get_db), date: str = None, tz_offset: int = 0):
     """
     Get current user's food logs only.
     If no date is provided, returns only today's logs.
     Optional date parameter (YYYY-MM-DD) to filter logs by specific date.
+    tz_offset: client timezone offset in minutes east of UTC (e.g. 420 for WIB/UTC+7).
+    logged_at is stored in UTC, so day boundaries are computed in the client's timezone.
     """
     from app.database import FoodLog
     from datetime import datetime, timedelta, timezone
@@ -498,21 +516,23 @@ def get_logs(current_user: User = Depends(get_current_user), db: Session = Depen
     # Build base query
     query = db.query(FoodLog).filter(FoodLog.user_id == current_user.id)
 
-    # Filter by date - if not provided, default to today
+    # Filter by date - if not provided, default to today (in client's timezone)
     try:
+        client_tz = timezone(timedelta(minutes=tz_offset))
         if date:
-            # Parse provided date string
+            # Parse provided date string (a local date for the client)
             target_date = datetime.fromisoformat(date).date()
         else:
-            # Default to today in UTC
-            target_date = datetime.now(timezone.utc).date()
-        
-        # Filter by the entire day (from 00:00:00 to 23:59:59.999999)
-        next_day = target_date + timedelta(days=1)
+            # Default to today as seen by the client
+            target_date = datetime.now(client_tz).date()
+
+        # Day boundaries at client-local midnight, expressed as absolute instants
+        day_start = datetime(target_date.year, target_date.month, target_date.day, tzinfo=client_tz)
+        day_end = day_start + timedelta(days=1)
 
         query = query.filter(
-            FoodLog.logged_at >= target_date,
-            FoodLog.logged_at < next_day
+            FoodLog.logged_at >= day_start,
+            FoodLog.logged_at < day_end
         )
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")

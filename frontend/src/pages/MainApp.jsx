@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/appStore'
 import { submitLog, fetchUserLogs, deleteLog, validateAuth } from '@/services/api'
 import TopBar from '@/components/TopBar'
@@ -7,15 +9,18 @@ import LogItem from '@/components/LogItem'
 import GoalsCard from '@/components/GoalsCard'
 import LoadingRow from '@/components/LoadingRow'
 import SettingsModal from '@/components/SettingsModal'
-import DatePickerModal from '@/components/DatePickerModal'
+import AuthModal from '@/components/AuthModal'
 
 export default function MainApp() {
+    const navigate = useNavigate()
+    const { t, i18n } = useTranslation()
+    const locale = i18n.language === 'id' ? 'id-ID' : 'en-US'
     const { logs, isLoading, hasOnboarding, goals, isAuthenticated, showAuthWarning, setShowAuthWarning } = useAppStore()
     const [inputText, setInputText] = useState('')
     const [showSettings, setShowSettings] = useState(false)
     const [showGoals, setShowGoals] = useState(false)
-    const [showDatePicker, setShowDatePicker] = useState(false)
-    const [selectedDate, setSelectedDate] = useState(new Date())
+    const [showAuthModal, setShowAuthModal] = useState(false)
+    const [selectedDate] = useState(new Date())
     const [error, setError] = useState('')
     const [isCheckingAuth, setIsCheckingAuth] = useState(true)
 
@@ -73,7 +78,7 @@ export default function MainApp() {
         } catch (err) {
             // Don't show error toast for guest trial exceeded (modal handles it)
             if (err.message === 'GUEST_TRIAL_EXCEEDED') return
-            setError(err.message || 'Terjadi kesalahan saat memproses makanan')
+            setError(err.message || t('journal.processError'))
             setTimeout(() => setError(''), 5000)
         }
     }
@@ -99,11 +104,11 @@ export default function MainApp() {
         yesterday.setDate(yesterday.getDate() - 1)
 
         if (date.toDateString() === today.toDateString()) {
-            return 'Today'
+            return t('common.today')
         } else if (date.toDateString() === yesterday.toDateString()) {
-            return 'Yesterday'
+            return t('common.yesterday')
         } else {
-            return date.toLocaleDateString('en-US', {
+            return date.toLocaleDateString(locale, {
                 month: 'long',
                 day: 'numeric',
                 year: 'numeric'
@@ -150,7 +155,7 @@ export default function MainApp() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
                     <div className="flex flex-col items-center gap-4">
                         <div className="w-12 h-12 border-4 border-[#df6620] border-t-transparent rounded-full animate-spin"></div>
-                        <p className="text-slate-600 font-medium">Loading...</p>
+                        <p className="text-slate-600 font-medium">{t('common.loading')}</p>
                     </div>
                 </div>
             )}
@@ -165,7 +170,7 @@ export default function MainApp() {
                      text-[17px] text-slate-900 leading-relaxed
                      placeholder:text-slate-400 caret-[#df6620]
                      min-h-[80px]"
-                        placeholder="Sudah makan apa hari ini? ..."
+                        placeholder={t('journal.placeholderMobile')}
                         value={inputText}
                         onChange={e => setInputText(e.target.value)}
                         onKeyDown={e => {
@@ -220,14 +225,14 @@ export default function MainApp() {
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold tracking-tight text-[#df6620]">MoCal</h1>
-                            <p className="text-xs uppercase tracking-widest opacity-60 font-medium">Every calorie tells a story...</p>
+                            <p className="text-xs uppercase tracking-widest opacity-60 font-medium">{t('app.tagline')}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-6">
                         <div className="text-right hidden sm:block">
-                            <p className="text-sm font-medium opacity-60">Today</p>
+                            <p className="text-sm font-medium opacity-60">{t('common.today')}</p>
                             <p className="text-lg font-bold">
-                                {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                                {new Date().toLocaleDateString(locale, { month: 'long', day: 'numeric', year: 'numeric' })}
                             </p>
                         </div>
                         <button onClick={() => setShowSettings(true)}
@@ -248,13 +253,13 @@ export default function MainApp() {
                             {/* Toolbar */}
                             <div className="flex items-center justify-between mb-6 border-b border-slate-100 pb-4">
                                 <div className="flex items-center gap-3">
-                                    {/* Calendar Button */}
+                                    {/* Calendar Button — buka halaman Riwayat */}
                                     <button
-                                        onClick={() => setShowDatePicker(true)}
+                                        onClick={() => navigate('/riwayat')}
                                         className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-                                        title="Select date"
+                                        title={t('journal.viewHistory')}
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" stroke-linecap="round" stroke-linejoin="round" className="text-[#94a3b8]">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#94a3b8]">
                                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                                             <line x1="16" y1="2" x2="16" y2="6"></line>
                                             <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -269,14 +274,14 @@ export default function MainApp() {
                                         <line x1="16" y1="17" x2="8" y2="17" />
                                         <polyline points="10 9 9 9 8 9" />
                                     </svg>
-                                    <span className="text-sm font-medium text-slate-400">Daily Journal</span>
+                                    <span className="text-sm font-medium text-slate-400">{t('journal.title')}</span>
                                     <span className="text-xs text-[#94a3b8] font-medium ml-2">
                                         {formatDateDisplay(selectedDate)}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <span className="text-xs text-slate-400 mr-2">
-                                        {logs.length} {logs.length === 1 ? 'meal' : 'meals'} logged
+                                        {t('journal.mealsLogged', { count: logs.length })}
                                     </span>
                                 </div>
                             </div>
@@ -284,7 +289,7 @@ export default function MainApp() {
                             {/* Writing Area */}
                             <textarea
                                 className="w-full flex-1 bg-transparent resize-none text-lg leading-relaxed placeholder:text-slate-300 focus:ring-0 border-none outline-none ring-0 font-mono"
-                                placeholder="Pagi ini saya makan nasi padang pakai kerupuk putih 1"
+                                placeholder={t('journal.placeholder')}
                                 value={inputText}
                                 onChange={e => setInputText(e.target.value)}
                                 onKeyDown={e => {
@@ -310,21 +315,23 @@ export default function MainApp() {
                             {/* Footer */}
                             <div className="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center">
                                 <p className="text-xs text-slate-400 font-mono">
-                                    {logs.length > 0 ? `Last entry: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Start your food journal...'}
+                                    {logs.length > 0
+                                        ? t('journal.lastEntry', { time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
+                                        : t('journal.startJournal')}
                                 </p>
                                 <button
                                     onClick={handleSubmit}
                                     disabled={!inputText.trim() || isLoading}
                                     className="bg-[#df6620] text-white px-8 py-2.5 rounded-lg font-bold shadow-lg shadow-[#df6620]/20 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all active:scale-95"
                                 >
-                                    Add Entry
+                                    {t('journal.addEntry')}
                                 </button>
                             </div>
 
                             {/* Log Items */}
                             {logs.length > 0 && (
                                 <div className="mt-6 pt-6 border-t border-slate-100">
-                                    <h3 className="text-sm font-medium text-slate-400 uppercase tracking-widest mb-4">Today's Entries</h3>
+                                    <h3 className="text-sm font-medium text-slate-400 uppercase tracking-widest mb-4">{t('journal.todaysEntries')}</h3>
                                     <div className="space-y-0">
                                         {logs.map((log, i) => (
                                             <div key={i} className="group flex items-center justify-between py-3 px-4 bg-slate-50 rounded-lg mb-2 hover:bg-slate-100 transition-colors">
@@ -346,16 +353,17 @@ export default function MainApp() {
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-lg font-bold text-[#df6620] min-w-[80px] text-right">
+                                                    <span className="text-sm font-bold text-[#df6620] bg-[#df6620]/5 border border-[#df6620]/20 rounded-full px-3 py-1 whitespace-nowrap">
                                                         {log.total_kcal} kcal
                                                     </span>
                                                     <button
                                                         onClick={() => handleDelete(log.log_id)}
-                                                        className="opacity-0 group-hover:opacity-100 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                                                        title="Delete entry"
+                                                        className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                                        title={t('journal.deleteEntry')}
                                                     >
-                                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" />
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                            <line x1="18" y1="6" x2="6" y2="18" />
+                                                            <line x1="6" y1="6" x2="18" y2="18" />
                                                         </svg>
                                                     </button>
                                                 </div>
@@ -380,15 +388,14 @@ export default function MainApp() {
                             {/* Calorie Tally Card */}
                             <div className="bg-[#df6620] text-white p-8 rounded-xl shadow-xl shadow-[#df6620]/20 relative overflow-hidden group">
                                 <div className="relative z-10">
-                                    <p className="text-sm font-medium opacity-80 uppercase tracking-widest mb-1">Meowlorie</p>
-                                    <h2 className="text-5xl font-bold mb-4">{totalKcal.toLocaleString()}</h2>
-                                    <p className="text-lg opacity-90 mb-6 font-medium">kcal consumed</p>
+                                    <h2 className="text-5xl font-bold mb-2">{totalKcal.toLocaleString('id-ID')}</h2>
+                                    <p className="text-lg opacity-90 mb-6 font-medium">{t('summary.kcalConsumed')}</p>
                                     <div className="w-full bg-white/20 rounded-full h-2 mb-2">
                                         <div className="bg-white h-2 rounded-full transition-all" style={{ width: `${kcalPct}%` }} />
                                     </div>
                                     <div className="flex justify-between text-xs font-mono opacity-80">
-                                        <span>{kcalPct.toFixed(0)}% of daily goal</span>
-                                        <span>Target: {goals?.kcal.toLocaleString()}</span>
+                                        <span>{kcalPct.toFixed(0)}{t('summary.ofDailyGoal')}</span>
+                                        <span>{t('summary.target')} {goals?.kcal.toLocaleString(locale)}</span>
                                     </div>
                                 </div>
                                 <div className="absolute -right-4 -bottom-4 text-white/10 text-9xl rotate-12 group-hover:rotate-0 transition-transform duration-500">
@@ -404,12 +411,12 @@ export default function MainApp() {
                                         <circle cx="12" cy="12" r="10" />
                                         <path d="M12 2a10 10 0 0 1 10 10" />
                                     </svg>
-                                    Macro Breakdown
+                                    {t('summary.macroBreakdown')}
                                 </h3>
                                 <div className="space-y-4">
                                     <div>
                                         <div className="flex justify-between text-sm mb-1">
-                                            <span className="opacity-60">Protein</span>
+                                            <span className="opacity-60">{t('summary.protein')}</span>
                                             <span className="font-mono font-medium">{totalP}g / {goals?.protein}g</span>
                                         </div>
                                         <div className="w-full bg-slate-100 rounded-full h-1.5">
@@ -418,7 +425,7 @@ export default function MainApp() {
                                     </div>
                                     <div>
                                         <div className="flex justify-between text-sm mb-1">
-                                            <span className="opacity-60">Carbs</span>
+                                            <span className="opacity-60">{t('summary.carbs')}</span>
                                             <span className="font-mono font-medium">{totalC}g / {goals?.carbs}g</span>
                                         </div>
                                         <div className="w-full bg-slate-100 rounded-full h-1.5">
@@ -427,7 +434,7 @@ export default function MainApp() {
                                     </div>
                                     <div>
                                         <div className="flex justify-between text-sm mb-1">
-                                            <span className="opacity-60">Fats</span>
+                                            <span className="opacity-60">{t('summary.fats')}</span>
                                             <span className="font-mono font-medium">{totalF}g / {goals?.fat}g</span>
                                         </div>
                                         <div className="w-full bg-slate-100 rounded-full h-1.5">
@@ -444,23 +451,23 @@ export default function MainApp() {
                                     className="bg-slate-50 p-6 rounded-xl border border-dashed border-slate-300 hover:border-[#df6620] hover:bg-[#df6620]/5 transition-all group"
                                 >
                                     <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 group-hover:text-[#df6620]">
-                                        View Detailed Goals
+                                        {t('summary.viewDetailedGoals')}
                                     </h3>
                                     <p className="text-sm text-slate-500">
-                                        See your complete macro and micronutrient breakdown
+                                        {t('summary.viewGoalsDesc')}
                                     </p>
                                 </button>
                             )}
 
                             {!hasOnboarding && (
                                 <div className="bg-slate-50 p-6 rounded-xl border border-dashed border-slate-300">
-                                    <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Get Started</h3>
+                                    <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">{t('summary.getStarted')}</h3>
                                     <p className="text-sm text-slate-500 mb-4">
-                                        Set your daily calorie and macro goals based on your personal info
+                                        {t('summary.getStartedDesc')}
                                     </p>
                                     <button onClick={() => setShowSettings(true)}
                                         className="w-full py-3 bg-[#df6620] text-white rounded-lg font-bold hover:opacity-90 transition-opacity">
-                                        Set Goals →
+                                        {t('summary.setGoalsCta')}
                                     </button>
                                 </div>
                             )}
@@ -485,15 +492,10 @@ export default function MainApp() {
                 )}
             </div>
 
-            {/* Date Picker Modal */}
-            <DatePickerModal
-                isOpen={showDatePicker}
-                onClose={() => setShowDatePicker(false)}
-                onSelectDate={setSelectedDate}
-                selectedDate={selectedDate}
-            />
-
             {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+
+            {/* Auth Modal — Login / Buat Akun */}
+            {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} initialMode="register" />}
 
             {/* Auth Warning Modal — Guest trial exceeded */}
             {showAuthWarning && (
@@ -502,24 +504,24 @@ export default function MainApp() {
                     <div className="relative bg-white rounded-2xl p-8 mx-4 max-w-sm w-full shadow-2xl text-center"
                         onClick={e => e.stopPropagation()}>
                         <div className="text-5xl mb-4">🐈</div>
-                        <h3 className="text-xl font-bold text-slate-900 mb-2">Buat Akun Dulu Meowww... 🐱</h3>
+                        <h3 className="text-xl font-bold text-slate-900 mb-2">{t('authWarning.title')}</h3>
                         <p className="text-slate-500 text-sm mb-6 leading-relaxed">
-                            Kamu sudah mencoba 1 kali gratis. Buat akun untuk menyimpan data makanan dan melanjutkan tracking kalorimu.
+                            {t('authWarning.desc')}
                         </p>
                         <button
                             onClick={() => {
                                 setShowAuthWarning(false)
-                                setShowSettings(true)
+                                setShowAuthModal(true)
                             }}
                             className="w-full h-12 bg-[#df6620] text-white rounded-xl font-bold text-[15px] hover:opacity-90 active:scale-95 transition-all mb-3 shadow-lg shadow-[#df6620]/20"
                         >
-                            Buat Akun
+                            {t('authWarning.cta')}
                         </button>
                         <button
                             onClick={() => setShowAuthWarning(false)}
                             className="w-full text-sm text-slate-400 hover:text-slate-600 transition-colors py-2"
                         >
-                            Nanti saja
+                            {t('authWarning.later')}
                         </button>
                     </div>
                 </div>

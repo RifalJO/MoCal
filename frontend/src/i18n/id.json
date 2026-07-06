@@ -6,5 +6,105 @@
             "Ngitung kalorinya...",
             "Bentar ya... 🐟"
         ]
+    },
+    "app": {
+        "tagline": "Setiap kalori punya cerita..."
+    },
+    "common": {
+        "today": "Hari Ini",
+        "yesterday": "Kemarin",
+        "loading": "Memuat..."
+    },
+    "journal": {
+        "title": "Jurnal Harian",
+        "mealsLogged_other": "{{count}} makanan tercatat",
+        "placeholder": "Pagi ini saya makan nasi padang pakai kerupuk putih 1",
+        "placeholderMobile": "Sudah makan apa hari ini? ...",
+        "startJournal": "Mulai jurnal makananmu...",
+        "lastEntry": "Entri terakhir: {{time}}",
+        "addEntry": "Tambah Entri",
+        "todaysEntries": "Entri Hari Ini",
+        "deleteEntry": "Hapus entri",
+        "viewHistory": "Lihat riwayat",
+        "processError": "Terjadi kesalahan saat memproses makanan"
+    },
+    "goals": {
+        "title": "Goals",
+        "calories": "Kalori",
+        "carbs": "Karbo",
+        "protein": "Protein",
+        "fat": "Lemak"
+    },
+    "summary": {
+        "kcalConsumed": "Meowlorie",
+        "ofDailyGoal": "% dari target harian",
+        "target": "Target:",
+        "macroBreakdown": "Rincian Makro",
+        "protein": "Protein",
+        "carbs": "Karbo",
+        "fats": "Lemak",
+        "viewDetailedGoals": "Lihat Detail Goals",
+        "viewGoalsDesc": "Lihat rincian lengkap makro dan mikronutrienmu",
+        "getStarted": "Mulai",
+        "getStartedDesc": "Atur target kalori dan makro harianmu berdasarkan data pribadi",
+        "setGoalsCta": "Atur Goals →"
+    },
+    "history": {
+        "title": "Riwayat",
+        "back": "Kembali",
+        "goToToday": "Ke hari ini",
+        "pickDate": "Pilih tanggal untuk melihat entri pada hari tersebut",
+        "totalSelected": "total kalori tanggal terpilih",
+        "entriesTitle": "Entri Makanan",
+        "empty": "\"Belum ada riwayat tersimpan\"",
+        "loginPrompt": "Login dulu untuk melihat riwayat makananmu, meoww...",
+        "loading": "Mengambil riwayat...",
+        "dayInitials": ["S", "S", "R", "K", "J", "S", "M"]
+    },
+    "settings": {
+        "title": "Settings",
+        "loginRegister": "Login / Daftar",
+        "loggedIn": "Sudah login",
+        "logout": "Keluar",
+        "language": "Bahasa",
+        "editGoals": "Ubah Goals",
+        "setYourGoals": "Atur Goals-mu",
+        "optional": "Opsional",
+        "name": "Nama",
+        "age": "Usia",
+        "male": "Laki-laki",
+        "female": "Perempuan",
+        "weight": "Berat (kg)",
+        "height": "Tinggi (cm)",
+        "activitySedentary": "Sedentary — Jarang bergerak",
+        "activityLight": "Ringan — Olahraga 1–3x/minggu",
+        "activityModerate": "Moderat — Olahraga 3–5x/minggu",
+        "activityActive": "Aktif — Latihan berat",
+        "goalLose": "Turun Berat — Defisit 500 kkal",
+        "goalMaintain": "Jaga Berat — Sesuai TDEE",
+        "goalGain": "Naik Berat — Surplus 300 kkal",
+        "saveGoals": "Simpan Goals 🔥",
+        "deleteGoals": "Hapus Goals"
+    },
+    "auth": {
+        "title": "Login / Buat Akun",
+        "login": "Login",
+        "register": "Daftar",
+        "email": "Email",
+        "password": "Password",
+        "submitLogin": "Masuk",
+        "submitRegister": "Buat Akun",
+        "wait": "Tunggu sebentar...",
+        "noAccount": "Belum punya akun?",
+        "haveAccount": "Sudah punya akun?",
+        "createAccount": "Buat Akun",
+        "registerSuccess": "Registrasi berhasil! Silakan login.",
+        "failed": "Autentikasi gagal"
+    },
+    "authWarning": {
+        "title": "Buat Akun Dulu Meowww... 🐱",
+        "desc": "Kamu sudah mencoba 1 kali gratis. Buat akun untuk menyimpan data makanan dan melanjutkan tracking kalorimu.",
+        "cta": "Buat Akun",
+        "later": "Nanti saja"
     }
 }

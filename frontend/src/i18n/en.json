@@ -6,5 +6,106 @@
             "One paw at a time...",
             "Almost there, meow..."
         ]
+    },
+    "app": {
+        "tagline": "Every calorie tells a story..."
+    },
+    "common": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "loading": "Loading..."
+    },
+    "journal": {
+        "title": "Daily Journal",
+        "mealsLogged_one": "{{count}} meal logged",
+        "mealsLogged_other": "{{count}} meals logged",
+        "placeholder": "This morning I ate nasi padang with a piece of kerupuk",
+        "placeholderMobile": "What have you eaten today? ...",
+        "startJournal": "Start your food journal...",
+        "lastEntry": "Last entry: {{time}}",
+        "addEntry": "Add Entry",
+        "todaysEntries": "Today's Entries",
+        "deleteEntry": "Delete entry",
+        "viewHistory": "View history",
+        "processError": "Something went wrong while processing your food"
+    },
+    "goals": {
+        "title": "Goals",
+        "calories": "Calories",
+        "carbs": "Carbs",
+        "protein": "Protein",
+        "fat": "Fat"
+    },
+    "summary": {
+        "kcalConsumed": "Meowlorie",
+        "ofDailyGoal": "% of daily goal",
+        "target": "Target:",
+        "macroBreakdown": "Macro Breakdown",
+        "protein": "Protein",
+        "carbs": "Carbs",
+        "fats": "Fats",
+        "viewDetailedGoals": "View Detailed Goals",
+        "viewGoalsDesc": "See your complete macro and micronutrient breakdown",
+        "getStarted": "Get Started",
+        "getStartedDesc": "Set your daily calorie and macro goals based on your personal info",
+        "setGoalsCta": "Set Goals →"
+    },
+    "history": {
+        "title": "History",
+        "back": "Back",
+        "goToToday": "Go to today",
+        "pickDate": "Pick a date to see its entries",
+        "totalSelected": "total calories on selected date",
+        "entriesTitle": "Food Entries",
+        "empty": "\"No history saved yet\"",
+        "loginPrompt": "Login first to see your food history, meoww...",
+        "loading": "Fetching history...",
+        "dayInitials": ["M", "T", "W", "T", "F", "S", "S"]
+    },
+    "settings": {
+        "title": "Settings",
+        "loginRegister": "Login / Register",
+        "loggedIn": "Logged in",
+        "logout": "Logout",
+        "language": "Language",
+        "editGoals": "Edit Goals",
+        "setYourGoals": "Set Your Goals",
+        "optional": "Optional",
+        "name": "Name",
+        "age": "Age",
+        "male": "Male",
+        "female": "Female",
+        "weight": "Weight (kg)",
+        "height": "Height (cm)",
+        "activitySedentary": "Sedentary — Rarely active",
+        "activityLight": "Light — Exercise 1–3x/week",
+        "activityModerate": "Moderate — Exercise 3–5x/week",
+        "activityActive": "Active — Hard training",
+        "goalLose": "Lose Weight — 500 kcal deficit",
+        "goalMaintain": "Maintain — Match TDEE",
+        "goalGain": "Gain Weight — 300 kcal surplus",
+        "saveGoals": "Save Goals 🔥",
+        "deleteGoals": "Delete Goals"
+    },
+    "auth": {
+        "title": "Login / Create Account",
+        "login": "Login",
+        "register": "Register",
+        "email": "Email",
+        "password": "Password",
+        "submitLogin": "Login",
+        "submitRegister": "Create Account",
+        "wait": "Please wait...",
+        "noAccount": "Don't have an account?",
+        "haveAccount": "Already have an account?",
+        "createAccount": "Create Account",
+        "registerSuccess": "Registration successful! Please login.",
+        "failed": "Authentication failed"
+    },
+    "authWarning": {
+        "title": "Create an Account First, Meowww... 🐱",
+        "desc": "You've used your 1 free try. Create an account to save your food data and keep tracking your calories.",
+        "cta": "Create Account",
+        "later": "Maybe later"
     }
 }

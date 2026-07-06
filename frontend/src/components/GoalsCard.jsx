@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/appStore'
 import RingChart from './RingChart'
 
 export default function GoalsCard() {
+    const { t } = useTranslation()
     const { logs, goals, hasOnboarding } = useAppStore()
 
     if (!hasOnboarding || !goals) return null
@@ -46,12 +48,12 @@ export default function GoalsCard() {
 
     return (
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-border/30">
-            <h3 className="text-[17px] font-bold text-ink mb-4">Goals</h3>
+            <h3 className="text-[17px] font-bold text-ink mb-4">{t('goals.title')}</h3>
             <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                         <span className="text-base">🔥</span>
-                        <span className="text-[15px] font-medium text-ink">Calories</span>
+                        <span className="text-[15px] font-medium text-ink">{t('goals.calories')}</span>
                     </div>
                     <span className="text-[15px] font-semibold text-ink tabular-nums">
                         {totalKcal.toLocaleString('id-ID')} / {goals.kcal.toLocaleString('id-ID')}
@@ -63,9 +65,9 @@ export default function GoalsCard() {
                 </div>
             </div>
             <div className="grid grid-cols-3 gap-4">
-                <RingChart label="Carbs" value={totalC} unit="g" pct={carbsPct} color={ringColor(carbsPct)} />
-                <RingChart label="Protein" value={totalP} unit="g" pct={proteinPct} color={ringColor(proteinPct)} />
-                <RingChart label="Fat" value={totalF} unit="g" pct={fatPct} color={ringColor(fatPct)} />
+                <RingChart label={t('goals.carbs')} value={totalC} unit="g" pct={carbsPct} color={ringColor(carbsPct)} />
+                <RingChart label={t('goals.protein')} value={totalP} unit="g" pct={proteinPct} color={ringColor(proteinPct)} />
+                <RingChart label={t('goals.fat')} value={totalF} unit="g" pct={fatPct} color={ringColor(fatPct)} />
             </div>
         </div>
     )

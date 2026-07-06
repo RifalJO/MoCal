@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 
 export const useAppStore = create(
     persist(
-        (set, get) => ({
+        (set) => ({
             // Authentication
             user: null,
             token: null,
@@ -13,52 +13,14 @@ export const useAppStore = create(
             logs: [],
             isLoading: false,
 
-            // Totals - calculated from items data (more accurate)
-            get totalKcal() { 
-                return get().logs.reduce((s, l) => s + (l.total_kcal || 0), 0) 
-            },
-            get totalC() { 
-                return Math.round(get().logs.reduce((s, l) => {
-                    // Prefer calculating from items if available
-                    if (l.items && l.items.length > 0) {
-                        return s + l.items.reduce((sum, item) => sum + (item.carbs_g || 0), 0)
-                    }
-                    return s + (l.total_carbs || 0)
-                }, 0))
-            },
-            get totalP() { 
-                return Math.round(get().logs.reduce((s, l) => {
-                    if (l.items && l.items.length > 0) {
-                        return s + l.items.reduce((sum, item) => sum + (item.protein_g || 0), 0)
-                    }
-                    return s + (l.total_protein || 0)
-                }, 0))
-            },
-            get totalF() { 
-                return Math.round(get().logs.reduce((s, l) => {
-                    if (l.items && l.items.length > 0) {
-                        return s + l.items.reduce((sum, item) => sum + (item.fat_g || 0), 0)
-                    }
-                    return s + (l.total_fat || 0)
-                }, 0))
-            },
-            get totalSugar() { 
-                return Math.round(get().logs.reduce((s, l) => s + (l.total_sugar || 0), 0)) 
-            },
-            get totalFiber() { 
-                return Math.round(get().logs.reduce((s, l) => s + (l.total_fiber || 0), 0)) 
-            },
-            get totalSodium() { 
-                return Math.round(get().logs.reduce((s, l) => s + (l.total_sodium || 0), 0)) 
-            },
-            get logCount() { return get().logs.length },
-
             // Goals
             hasOnboarding: false,
             goals: {
                 kcal: 2000, carbs: 250, protein: 150, fat: 67,
                 sugar: 50, fiber: 25, sodium: 2300
             },
+            // Data isian onboarding (nama, usia, berat, dll.) — untuk prefill form Settings
+            profile: null,
 
             // Actions
             setUser: (user) => set({ user, isAuthenticated: !!user }),
@@ -74,6 +36,7 @@ export const useAppStore = create(
             clearToday: () => set({ logs: [] }),
             setLoading: (v) => set({ isLoading: v }),
             setGoals: (goals) => set({ goals }),
+            setProfile: (profile) => set({ profile }),
             setHasOnboarding: (v) => set({ hasOnboarding: v }),
             setIsAuthenticated: (v) => set({ isAuthenticated: v }),
 
@@ -85,6 +48,17 @@ export const useAppStore = create(
         }),
         {
             name: 'mocal-storage',
+            // Simpan hanya data — state UI sementara (isLoading, showAuthWarning) tidak ikut
+            partialize: (state) => ({
+                user: state.user,
+                token: state.token,
+                isAuthenticated: state.isAuthenticated,
+                logs: state.logs,
+                goals: state.goals,
+                profile: state.profile,
+                hasOnboarding: state.hasOnboarding,
+                guestTrialUsed: state.guestTrialUsed,
+            }),
             onRehydrateStorage: () => (state) => {
                 if (state) {
                     const today = new Date().toDateString()
@@ -100,6 +74,10 @@ export const useAppStore = create(
                         state.token = token
                         state.user = JSON.parse(user)
                         state.isAuthenticated = true
+                    } else {
+                        // No auth token — clear cached logs so guests don't see stale data
+                        state.logs = []
+                        state.isAuthenticated = false
                     }
                 }
             }

@@ -8,6 +8,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<MainApp />} />
         <Route path="/history" element={<HistoryPage />} />
+        <Route path="/riwayat" element={<HistoryPage />} />
         <Route path="*" element={<MainApp />} />
       </Routes>
     </BrowserRouter>

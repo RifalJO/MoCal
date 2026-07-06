@@ -6,6 +6,10 @@ const API_URL = import.meta.env.VITE_API_URL || ""
 
 const api = axios.create({ baseURL: API_URL })
 
+// Offset zona waktu klien dalam menit di timur UTC (WIB = 420).
+// Dipakai backend untuk menghitung batas hari lokal karena logged_at disimpan dalam UTC.
+const tzOffsetMinutes = () => -new Date().getTimezoneOffset()
+
 // Add token to requests if available
 api.interceptors.request.use(config => {
     const store = useAppStore.getState()
@@ -28,6 +32,9 @@ export async function login(email, password) {
         // Clear local logs and fetch user's logs from server
         store.setLogs([])
         await fetchUserLogs()
+
+        // Restore onboarding/profile data from server
+        await fetchOnboarding()
 
         return { success: true }
     } catch (error) {
@@ -77,6 +84,9 @@ export async function validateAuth() {
         // Token valid, restore session
         store.setUser(data)
         store.setIsAuthenticated(true)
+
+        // Restore onboarding/profile data from server
+        await fetchOnboarding()
 
         console.log('✅ Auth session restored successfully')
         return { authenticated: true, user: data }
@@ -136,7 +146,8 @@ export async function fetchUserLogs(date = null) {
     try {
         // Use authenticated endpoint that filters by user_id
         // Optional date parameter (YYYY-MM-DD) to filter by specific date
-        const url = date ? `/api/logs?date=${date}` : '/api/logs'
+        const tz = tzOffsetMinutes()
+        const url = date ? `/api/logs?date=${date}&tz_offset=${tz}` : `/api/logs?tz_offset=${tz}`
         const { data } = await api.get(url)
 
         console.log('📥 Fetched user logs:', data.length, 'entries', date ? `for ${date}` : '')
@@ -157,6 +168,110 @@ export async function fetchUserLogs(date = null) {
         return data
     } catch (error) {
         console.error('Fetch logs error:', error)
+        return []
+    }
+}
+
+// ─── Onboarding sync ─────────────────────────────────────────────────────────
+
+// Fetch onboarding/profile data from server and restore to store
+export async function fetchOnboarding() {
+    const store = useAppStore.getState()
+    if (!store.isAuthenticated || !store.token) return
+
+    try {
+        const { data } = await api.get('/api/onboarding')
+
+        // Restore profile to store (field names match SettingsModal form)
+        store.setProfile({
+            name: data.name || '',
+            age: String(data.age || ''),
+            gender: data.gender || 'male',
+            weight: String(data.weight_kg || ''),
+            height: String(data.height_cm || ''),
+            activity: data.activity_level || 'light',
+            goal: data.goal || 'maintain',
+        })
+
+        // Restore calculated goals
+        store.setGoals({
+            kcal: Math.round(data.daily_kcal_target || 2000),
+            carbs: Math.round(data.carbs_target_g || 250),
+            protein: Math.round(data.protein_target_g || 150),
+            fat: Math.round(data.fat_target_g || 67),
+            sugar: 50,
+            fiber: 25,
+            sodium: 2300,
+        })
+
+        store.setHasOnboarding(true)
+        console.log('✅ Onboarding data restored from server')
+    } catch (error) {
+        if (error.response?.status === 404) {
+            // No profile on server yet — keep whatever is in localStorage
+            console.log('ℹ️ No onboarding data found on server')
+        } else {
+            console.error('Fetch onboarding error:', error)
+        }
+    }
+}
+
+// Save onboarding/profile data to server (POST if new, PUT if exists)
+export async function saveOnboarding(formData) {
+    const store = useAppStore.getState()
+    if (!store.isAuthenticated || !store.token) return
+
+    const payload = {
+        name: formData.name || '',
+        age: parseInt(formData.age) || 0,
+        gender: formData.gender || 'male',
+        weight_kg: parseFloat(formData.weight) || 0,
+        height_cm: parseFloat(formData.height) || 0,
+        activity_level: formData.activity || 'light',
+        goal: formData.goal || 'maintain',
+    }
+
+    try {
+        // Try POST first (create new profile)
+        await api.post('/api/onboarding', payload)
+        console.log('✅ Onboarding saved to server (created)')
+    } catch (error) {
+        if (error.response?.status === 400) {
+            // Profile already exists — update instead
+            try {
+                await api.put('/api/onboarding', payload)
+                console.log('✅ Onboarding saved to server (updated)')
+            } catch (putError) {
+                console.error('Update onboarding error:', putError)
+            }
+        } else {
+            console.error('Save onboarding error:', error)
+        }
+    }
+}
+
+// Fetch logs for a specific date (Riwayat page) — returns data without mutating global store
+export async function fetchLogsByDate(date) {
+    const store = useAppStore.getState()
+
+    if (!store.isAuthenticated || !store.token) {
+        return []
+    }
+
+    try {
+        const { data } = await api.get(`/api/logs?date=${date}&tz_offset=${tzOffsetMinutes()}`)
+        return data.map(log => ({
+            log_id: log.log_id,
+            raw_input: log.raw_input,
+            total_kcal: log.total_kcal,
+            total_carbs: log.total_carbs_g || 0,
+            total_protein: log.total_protein_g || 0,
+            total_fat: log.total_fat_g || 0,
+            items: log.items || [],
+            logged_at: log.logged_at,
+        }))
+    } catch (error) {
+        console.error('Fetch logs by date error:', error)
         return []
     }
 }

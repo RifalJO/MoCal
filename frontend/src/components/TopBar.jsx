@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/appStore'
 import SettingsModal from './SettingsModal'
 
 export default function TopBar() {
-    const { logCount } = useAppStore()
+    const { t } = useTranslation()
+    const logCount = useAppStore(s => s.logs.length)
     const [showSettings, setShowSettings] = useState(false)
 
     return (
@@ -20,7 +22,7 @@ export default function TopBar() {
           text-[15px] font-semibold text-ink
           shadow-sm border border-border/40
         ">
-                    Today
+                    {t('common.today')}
                 </button>
 
                 <div className="
