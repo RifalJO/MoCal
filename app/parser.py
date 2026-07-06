@@ -82,9 +82,12 @@ Format:
     "name_en": "nama dalam bahasa Inggris untuk USDA lookup",
     "qty": 1.0,
     "unit": "porsi",
-    "estimated_grams": 200
+    "estimated_grams": 200,
+    "kcal_100g": 130
   }
 ]
+
+"kcal_100g" = estimasi kalori PER 100 GRAM makanan itu dalam kondisi siap makan (bukan total porsi). Contoh: nasi putih 130, ayam goreng 260, teh manis 35, gorengan 300.
 
 Jika input tidak mengandung makanan sama sekali (misalnya: "halo", "terima kasih"), kembalikan: []
 
@@ -95,53 +98,53 @@ CONTOH — PELAJARI DENGAN SEKSAMA
 Input: "makan siang nasi uduk sama udang goreng 5 ekor"
 Output:
 [
-  {"name": "nasi uduk", "name_en": "steamed coconut rice", "qty": 1, "unit": "porsi", "estimated_grams": 250},
-  {"name": "udang goreng", "name_en": "fried shrimp", "qty": 5, "unit": "ekor", "estimated_grams": 75}
+  {"name": "nasi uduk", "name_en": "steamed coconut rice", "qty": 1, "unit": "porsi", "estimated_grams": 250, "kcal_100g": 163},
+  {"name": "udang goreng", "name_en": "fried shrimp", "qty": 5, "unit": "ekor", "estimated_grams": 75, "kcal_100g": 240}
 ]
 
 Input: "soto ayam pakai ceker sama nasi putih"
 Output:
 [
-  {"name": "soto ayam", "name_en": "chicken soup", "qty": 1, "unit": "mangkok", "estimated_grams": 350},
-  {"name": "ceker ayam", "name_en": "chicken feet", "qty": 1, "unit": "porsi", "estimated_grams": 60},
-  {"name": "nasi putih", "name_en": "steamed white rice", "qty": 1, "unit": "porsi", "estimated_grams": 200}
+  {"name": "soto ayam", "name_en": "chicken soup", "qty": 1, "unit": "mangkok", "estimated_grams": 350, "kcal_100g": 65},
+  {"name": "ceker ayam", "name_en": "chicken feet", "qty": 1, "unit": "porsi", "estimated_grams": 60, "kcal_100g": 200},
+  {"name": "nasi putih", "name_en": "steamed white rice", "qty": 1, "unit": "porsi", "estimated_grams": 200, "kcal_100g": 130}
 ]
 
 Input: "mie ayam bakso plus pangsit goreng, teh manis hangat"
 Output:
 [
-  {"name": "mie ayam", "name_en": "chicken noodle", "qty": 1, "unit": "porsi", "estimated_grams": 300},
-  {"name": "bakso", "name_en": "meatball", "qty": 3, "unit": "butir", "estimated_grams": 60},
-  {"name": "pangsit goreng", "name_en": "fried wonton", "qty": 1, "unit": "porsi", "estimated_grams": 50},
-  {"name": "teh manis hangat", "name_en": "sweet hot tea", "qty": 1, "unit": "gelas", "estimated_grams": 250}
+  {"name": "mie ayam", "name_en": "chicken noodle", "qty": 1, "unit": "porsi", "estimated_grams": 300, "kcal_100g": 150},
+  {"name": "bakso", "name_en": "meatball", "qty": 3, "unit": "butir", "estimated_grams": 60, "kcal_100g": 200},
+  {"name": "pangsit goreng", "name_en": "fried wonton", "qty": 1, "unit": "porsi", "estimated_grams": 50, "kcal_100g": 350},
+  {"name": "teh manis hangat", "name_en": "sweet hot tea", "qty": 1, "unit": "gelas", "estimated_grams": 250, "kcal_100g": 35}
 ]
 
 Input: "udang"
 Output:
 [
-  {"name": "udang", "name_en": "shrimp", "qty": 1, "unit": "porsi", "estimated_grams": 100}
+  {"name": "udang", "name_en": "shrimp", "qty": 1, "unit": "porsi", "estimated_grams": 100, "kcal_100g": 100}
 ]
 
 Input: "sarapan roti bakar 2 lembar, telur ceplok, dan segelas susu"
 Output:
 [
-  {"name": "roti bakar", "name_en": "toast", "qty": 2, "unit": "lembar", "estimated_grams": 60},
-  {"name": "telur ceplok", "name_en": "fried egg sunny side up", "qty": 1, "unit": "butir", "estimated_grams": 55},
-  {"name": "susu", "name_en": "milk", "qty": 1, "unit": "gelas", "estimated_grams": 250}
+  {"name": "roti bakar", "name_en": "toast", "qty": 2, "unit": "lembar", "estimated_grams": 60, "kcal_100g": 310},
+  {"name": "telur ceplok", "name_en": "fried egg sunny side up", "qty": 1, "unit": "butir", "estimated_grams": 55, "kcal_100g": 190},
+  {"name": "susu", "name_en": "milk", "qty": 1, "unit": "gelas", "estimated_grams": 250, "kcal_100g": 60}
 ]
 
 Input: "rawon kikil komplit sama nasi"
 Output:
 [
-  {"name": "rawon", "name_en": "black beef soup", "qty": 1, "unit": "mangkok", "estimated_grams": 400},
-  {"name": "kikil sapi", "name_en": "beef tendon", "qty": 1, "unit": "porsi", "estimated_grams": 80},
-  {"name": "nasi putih", "name_en": "steamed white rice", "qty": 1, "unit": "porsi", "estimated_grams": 200}
+  {"name": "rawon", "name_en": "black beef soup", "qty": 1, "unit": "mangkok", "estimated_grams": 400, "kcal_100g": 90},
+  {"name": "kikil sapi", "name_en": "beef tendon", "qty": 1, "unit": "porsi", "estimated_grams": 80, "kcal_100g": 150},
+  {"name": "nasi putih", "name_en": "steamed white rice", "qty": 1, "unit": "porsi", "estimated_grams": 200, "kcal_100g": 130}
 ]
 
 Input: "semur jengkol 1 porsi"
 Output:
 [
-  {"name": "semur jengkol", "name_en": "braised jengkol beans", "qty": 1, "unit": "porsi", "estimated_grams": 150}
+  {"name": "semur jengkol", "name_en": "braised jengkol beans", "qty": 1, "unit": "porsi", "estimated_grams": 150, "kcal_100g": 180}
 ]
 """
 
@@ -402,18 +405,25 @@ def parse_food_text(text: str) -> tuple[list[dict], dict]:
         unit           = item.get("unit", "porsi")
         estimated_grams= float(item.get("estimated_grams", 100))
 
+        # Ekspektasi kalori per 100g dari LLM — dipakai untuk validasi & re-rank fuzzy
+        try:
+            expected_kcal = float(item.get("kcal_100g") or 0) or None
+        except (TypeError, ValueError):
+            expected_kcal = None
+
         grams = convert_to_gram(qty, unit, estimated_grams)
 
         parsed_item = {
-            "name":       name,
-            "name_en":    name_en,
-            "qty":        qty,
-            "unit":       unit,
-            "grams":      round(grams, 1),
+            "name":          name,
+            "name_en":       name_en,
+            "qty":           qty,
+            "unit":          unit,
+            "grams":         round(grams, 1),
+            "expected_kcal": expected_kcal,
         }
         result.append(parsed_item)
-        
-        print(f"   {i}. {name} (EN: {name_en}) - {qty} {unit} ≈ {round(grams, 1)}g")
+
+        print(f"   {i}. {name} (EN: {name_en}) - {qty} {unit} ≈ {round(grams, 1)}g (~{expected_kcal or '?'} kcal/100g)")
 
     log_detail["parsed_items_count"] = len(result)
     log_detail["parse_time_ms"] = round((time.time() - start_time) * 1000, 2)

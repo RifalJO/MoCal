@@ -76,7 +76,15 @@ def exact_match(query: str) -> dict | None:
 
 
 # ─── Step 2: Fuzzy match ──────────────────────────────────────────────────────
-def fuzzy_match(query: str) -> dict | None:
+def fuzzy_match(query: str, expected_kcal: float | None = None) -> dict | None:
+    """
+    Fuzzy match dengan re-ranking berbasis kalori.
+
+    Ambil top-5 kandidat di atas threshold. Jika ada beberapa kandidat dengan
+    skor hampir sama (selisih ≤ 5 poin dari terbaik) dan expected_kcal tersedia,
+    pilih kandidat yang kalorinya paling dekat dengan ekspektasi — mencegah
+    "nasi goreng" match ke "nasi goreng seafood" yang kalorinya jauh berbeda.
+    """
     searchable = _all_searchable_names()
     if not searchable:
         return None
@@ -84,21 +92,38 @@ def fuzzy_match(query: str) -> dict | None:
     names  = [s[0] for s in searchable]
     foods  = [s[1] for s in searchable]
 
-    result = process.extractOne(
+    candidates = process.extract(
         query.lower().strip(),
         names,
         scorer=fuzz.token_sort_ratio,
-        score_cutoff=settings.FUZZY_THRESHOLD
+        score_cutoff=settings.FUZZY_THRESHOLD,
+        limit=5
     )
 
-    if result:
-        matched_name, score, idx = result
-        return {
-            **foods[idx],
-            "match_method": "fuzzy",
-            "match_score": round(score / 100, 3)
-        }
-    return None
+    if not candidates:
+        return None
+
+    best_score = candidates[0][1]
+    # Kandidat yang skornya nyaris seri dengan yang terbaik
+    contenders = [c for c in candidates if best_score - c[1] <= 5]
+
+    chosen = contenders[0]
+    if expected_kcal and expected_kcal > 0 and len(contenders) > 1:
+        def kcal_deviation(cand):
+            kcal = foods[cand[2]].get("kcal")
+            if kcal is None:
+                return float("inf")
+            return abs(kcal - expected_kcal)
+        chosen = min(contenders, key=kcal_deviation)
+        if chosen != contenders[0]:
+            print(f"\n   [re-rank] fuzzy: '{contenders[0][0]}' -> '{chosen[0]}' (lebih dekat ke ~{expected_kcal} kcal/100g)", end=" ")
+
+    matched_name, score, idx = chosen
+    return {
+        **foods[idx],
+        "match_method": "fuzzy",
+        "match_score": round(score / 100, 3)
+    }
 
 
 # ─── Step 3: USDA API fallback ────────────────────────────────────────────────
@@ -141,11 +166,11 @@ def usda_search(english_name: str) -> dict | None:
 
 
 # ─── Main: find_food ──────────────────────────────────────────────────────────
-def find_food(name: str, english_name: str | None = None) -> tuple[dict, dict]:
+def find_food(name: str, english_name: str | None = None, expected_kcal: float | None = None) -> tuple[dict, dict]:
     """
     Urutan pencarian:
     1. Exact match di DB lokal
-    2. Fuzzy match di DB lokal
+    2. Fuzzy match di DB lokal (re-rank pakai expected_kcal jika tersedia)
     3. USDA API (pakai nama Inggris jika tersedia)
     4. Tidak ditemukan
 
@@ -177,7 +202,7 @@ def find_food(name: str, english_name: str | None = None) -> tuple[dict, dict]:
     # Step 2: Fuzzy match
     print(f"   Step 2/3: Fuzzy match...", end=" ")
     match_log["steps_tried"].append("fuzzy_match")
-    result = fuzzy_match(name)
+    result = fuzzy_match(name, expected_kcal)
     if result:
         print(f"✅ FOUND (fuzzy: {result.get('match_score', 0):.1%})")
         match_log["match_found"] = True

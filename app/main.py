@@ -7,7 +7,8 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from app.database import get_db, init_db, settings, User, UserProfile
 from app.matcher import find_food
-from app.parser import parse_food_text, estimate_nutrition_llm, convert_to_gram
+from app.parser import parse_food_text, convert_to_gram
+from app.validator import rule_check, validate_batch_llm, is_plausible_kcal
 from app.auth import get_password_hash, verify_password, create_access_token, get_current_user
 
 
@@ -241,15 +242,159 @@ def root():
     return {"status": "ok", "message": "Calorie Tracker API is running"}
 
 
+# ─── Pipeline estimasi bersama (dipakai /api/estimate & /api/estimate/guest) ──
+def run_estimation_pipeline(text: str) -> tuple[list[FoodItemResult], list[str], dict]:
+    """
+    Pipeline lengkap:
+    1. Parse teks bebas → daftar makanan + expected_kcal (LLM call #1)
+    2. Cari nutrisi tiap makanan (exact → fuzzy dengan re-rank kalori → USDA)
+    3. VALIDASI: rule-based sanity check (0 token) untuk semua item;
+       item yang mencurigakan ATAU not_found dikirim ke LLM dalam SATU call batch
+       (LLM call #2, hanya jika perlu)
+    4. Hitung kalori per item
+
+    Returns: (results, unknown_items, log_detail_partial)
+    """
+    parsed_items, parse_log = parse_food_text(text)
+
+    if not parsed_items:
+        raise HTTPException(status_code=422, detail="Tidak ada makanan yang terdeteksi dari teks")
+
+    # ── Step 2: Match tiap makanan + rule-based check ──────────────────────────
+    pending    = []
+    match_logs = []
+
+    for item in parsed_items:
+        name_raw      = item.get("name", "").strip()
+        name_en       = item.get("name_en", None)
+        qty           = float(item.get("qty", 1))
+        unit          = item.get("unit", "porsi")
+        expected_kcal = item.get("expected_kcal")
+
+        if not name_raw:
+            continue
+
+        food, match_log = find_food(name_raw, name_en, expected_kcal=expected_kcal)
+
+        # Rule-based sanity check (tanpa LLM)
+        if food["match_method"] == "not_found":
+            suspicious, reasons = True, ["not_found"]
+        else:
+            suspicious, reasons = rule_check(
+                name_raw,
+                food.get("kcal"),
+                expected_kcal,
+                food.get("match_method", "exact"),
+                food.get("match_score", 0.0),
+            )
+
+        match_log["validation"] = {
+            "suspicious": suspicious,
+            "reasons": reasons,
+            "expected_kcal": expected_kcal,
+        }
+        match_logs.append(match_log)
+
+        if suspicious:
+            print(f"   ⚠️ Suspicious: '{name_raw}' → {reasons}")
+
+        # Gram: pakai hasil parser (qty × unit / estimated_grams LLM),
+        # fallback ke default_portion_g makanan hasil match
+        gram = item.get("grams") or convert_to_gram(qty, unit, food.get("default_portion_g", 100.0))
+
+        pending.append({
+            "name_raw": name_raw, "qty": qty, "unit": unit, "gram": gram,
+            "food": food, "suspicious": suspicious,
+            "is_estimate": False, "match_log": match_log,
+        })
+
+    # ── Step 3: Validasi batch — SATU LLM call untuk semua item bermasalah ─────
+    suspects = [p for p in pending if p["suspicious"]]
+    unknown_items = []
+    validation_log = {
+        "total_items": len(pending),
+        "suspect_count": len(suspects),
+        "llm_called": False,
+    }
+
+    if suspects:
+        verdicts = validate_batch_llm([
+            {"name": p["name_raw"], "kcal_db": p["food"].get("kcal")}
+            for p in suspects
+        ])
+        validation_log["llm_called"] = True
+
+        for idx, p in enumerate(suspects):
+            verdict = (verdicts or {}).get(idx)
+            food = p["food"]
+
+            if verdict and verdict.get("verdict") == "fix":
+                # LLM tidak setuju dengan DB → pakai nilai koreksi LLM
+                p["food"] = {
+                    **food,
+                    "kcal":      verdict["kcal"],
+                    "protein_g": verdict["protein_g"],
+                    "carbs_g":   verdict["carbs_g"],
+                    "fat_g":     verdict["fat_g"],
+                    "source":    "llm_estimate" if food["match_method"] == "not_found" else "llm_validation",
+                }
+                p["is_estimate"] = True
+                p["match_log"]["validation"]["verdict"] = "fix"
+                print(f"   🔧 Corrected '{p['name_raw']}': {food.get('kcal')} → {verdict['kcal']} kcal/100g")
+            elif verdict and verdict.get("verdict") == "ok":
+                # LLM setuju nilai DB masuk akal → tetap pakai DB
+                p["match_log"]["validation"]["verdict"] = "ok"
+            else:
+                # LLM gagal / tidak menjawab item ini
+                p["match_log"]["validation"]["verdict"] = "unavailable"
+                if not is_plausible_kcal(food.get("kcal")):
+                    unknown_items.append(p["name_raw"])
+
+    # ── Step 4: Hitung nutrisi per item ─────────────────────────────────────────
+    results = []
+    for p in pending:
+        food = p["food"]
+        gram = p["gram"]
+
+        kcal_100g = food.get("kcal")
+        kcal      = round((gram / 100) * kcal_100g, 1) if kcal_100g else None
+        protein   = round((gram / 100) * (food.get("protein_g") or 0), 1)
+        carbs     = round((gram / 100) * (food.get("carbs_g") or 0), 1)
+        fat       = round((gram / 100) * (food.get("fat_g") or 0), 1)
+
+        results.append(FoodItemResult(
+            name_raw     = p["name_raw"],
+            name_matched = food.get("name", p["name_raw"]),
+            qty          = p["qty"],
+            unit         = p["unit"],
+            gram         = round(gram, 1),
+            kcal         = kcal,
+            protein_g    = protein,
+            carbs_g      = carbs,
+            fat_g        = fat,
+            match_method = food.get("match_method", "not_found"),
+            match_score  = food.get("match_score", 0.0),
+            source       = food.get("source", "unknown"),
+            is_estimate  = p["is_estimate"],
+        ))
+
+    log_detail_partial = {
+        "parsing": parse_log,
+        "matching": match_logs,
+        "validation": validation_log,
+    }
+    return results, unknown_items, log_detail_partial
+
+
 # ─── Endpoint: Estimate kalori ────────────────────────────────────────────────
 @app.post("/api/estimate", response_model=LogResponse)
 def estimate_calories(req: LogRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """
     Endpoint utama:
     1. Parse teks bebas → daftar makanan (LLM)
-    2. Cari nutrisi tiap makanan (DB lokal → USDA API → LLM estimasi)
-    3. Hitung total kalori
-    4. Return hasil lengkap + simpan log detail ke database
+    2. Cari nutrisi tiap makanan (DB lokal → USDA API)
+    3. Validasi hasil match (rule-based → LLM batch conditional)
+    4. Hitung total kalori, simpan log detail ke database
     """
     import time
     request_start = time.time()
@@ -261,96 +406,26 @@ def estimate_calories(req: LogRequest, current_user: User = Depends(get_current_
     if len(text) > 2000:
         raise HTTPException(status_code=400, detail="Input terlalu panjang (max 2000 karakter)")
 
-    # ── Step 1: Parse teks → daftar makanan ───────────────────────────────────
-    parsed_items, parse_log = parse_food_text(text)
+    results, unknown_items, log_detail = run_estimation_pipeline(text)
 
-    if not parsed_items:
-        raise HTTPException(status_code=422, detail="Tidak ada makanan yang terdeteksi dari teks")
-
-    # ── Step 2: Cari nutrisi tiap makanan ─────────────────────────────────────
-    results      = []
-    unknown_items = []
-    match_logs = []
-
-    for item in parsed_items:
-        name_raw  = item.get("name", "").strip()
-        name_en   = item.get("name_en", None)
-        qty       = float(item.get("qty", 1))
-        unit      = item.get("unit", "porsi")
-
-        if not name_raw:
-            continue
-
-        # Cari di DB lokal + USDA API
-        food, match_log = find_food(name_raw, name_en)
-        match_logs.append(match_log)
-
-        # Fallback LLM estimasi jika benar-benar tidak ketemu
-        is_estimate = False
-        if food["match_method"] == "not_found":
-            print(f"\n   🤖 Estimating nutrition for '{name_raw}' using LLM...")
-            llm_start = time.time()
-            llm_result = estimate_nutrition_llm(name_raw)
-            llm_time = round((time.time() - llm_start) * 1000, 2)
-            
-            if llm_result:
-                food = {**food, **llm_result}
-                is_estimate = True
-                match_log["llm_estimate"] = True
-                match_log["llm_estimate_time_ms"] = llm_time
-                print(f"   ✅ LLM estimation: {llm_result.get('kcal', 0)} kcal/100g ({llm_time}ms)")
-            else:
-                print(f"   ❌ LLM estimation failed")
-                unknown_items.append(name_raw)
-
-        # Konversi porsi ke gram
-        gram = convert_to_gram(qty, unit, food.get("default_portion_g", 100.0))
-
-        # Hitung kalori berdasarkan gram (pakai field 'kcal' yang sudah di-map dari 'cal')
-        kcal_100g = food.get("kcal")
-        kcal      = round((gram / 100) * kcal_100g, 1) if kcal_100g else None
-        protein   = round((gram / 100) * (food.get("protein_g") or 0), 1)
-        carbs     = round((gram / 100) * (food.get("carbs_g") or 0), 1)
-        fat       = round((gram / 100) * (food.get("fat_g") or 0), 1)
-
-        results.append(FoodItemResult(
-            name_raw     = name_raw,
-            name_matched = food.get("name", name_raw),
-            qty          = qty,
-            unit         = unit,
-            gram         = round(gram, 1),
-            kcal         = kcal,
-            protein_g    = protein,
-            carbs_g      = carbs,
-            fat_g        = fat,
-            match_method = food.get("match_method", "not_found"),
-            match_score  = food.get("match_score", 0.0),
-            source       = food.get("source", "unknown"),
-            is_estimate  = is_estimate,
-        ))
-
-    # ── Step 3: Hitung total ───────────────────────────────────────────────────
+    # ── Hitung total ────────────────────────────────────────────────────────────
     total_kcal    = round(sum(r.kcal    or 0 for r in results), 1)
     total_protein = round(sum(r.protein_g   for r in results), 1)
     total_carbs   = round(sum(r.carbs_g     for r in results), 1)
     total_fat     = round(sum(r.fat_g       for r in results), 1)
 
-    # ── Step 4: Siapkan log detail ──────────────────────────────────────────────
+    # ── Lengkapi log detail ─────────────────────────────────────────────────────
     total_time = round((time.time() - request_start) * 1000, 2)
-    
-    log_detail = {
-        "parsing": parse_log,
-        "matching": match_logs,
-        "summary": {
-            "total_items_parsed": len(parsed_items),
-            "total_items_matched": len(results),
-            "unknown_items": unknown_items,
-            "total_time_ms": total_time
-        },
-        "input": {
-            "raw_text": text,
-            "text_length": len(text)
-        }
+
+    log_detail["summary"] = {
+        "total_items_parsed": log_detail["parsing"].get("parsed_items_count", len(results)),
+        "total_items_matched": len(results),
+        "unknown_items": unknown_items,
+        "total_time_ms": total_time
+    }
+    log_detail["input"] = {
+        "raw_text": text,
+        "text_length": len(text)
     }
 
     # ── Step 5: Simpan log ke DB dengan user_id ───────────────────────────────
@@ -414,59 +489,10 @@ def estimate_calories_guest(req: LogRequest):
     if len(text) > 2000:
         raise HTTPException(status_code=400, detail="Input terlalu panjang (max 2000 karakter)")
 
-    # Step 1: Parse
-    parsed_items, parse_log = parse_food_text(text)
-    if not parsed_items:
-        raise HTTPException(status_code=422, detail="Tidak ada makanan yang terdeteksi dari teks")
+    # Pipeline sama dengan /api/estimate (parse → match → validasi → hitung)
+    results, unknown_items, _ = run_estimation_pipeline(text)
 
-    # Step 2: Match + nutrition
-    results = []
-    unknown_items = []
-
-    for item in parsed_items:
-        name_raw = item.get("name", "").strip()
-        name_en = item.get("name_en", None)
-        qty = float(item.get("qty", 1))
-        unit = item.get("unit", "porsi")
-
-        if not name_raw:
-            continue
-
-        food, match_log = find_food(name_raw, name_en)
-
-        is_estimate = False
-        if food["match_method"] == "not_found":
-            llm_result = estimate_nutrition_llm(name_raw)
-            if llm_result:
-                food = {**food, **llm_result}
-                is_estimate = True
-            else:
-                unknown_items.append(name_raw)
-
-        gram = convert_to_gram(qty, unit, food.get("default_portion_g", 100.0))
-        kcal_100g = food.get("kcal")
-        kcal = round((gram / 100) * kcal_100g, 1) if kcal_100g else None
-        protein = round((gram / 100) * (food.get("protein_g") or 0), 1)
-        carbs = round((gram / 100) * (food.get("carbs_g") or 0), 1)
-        fat = round((gram / 100) * (food.get("fat_g") or 0), 1)
-
-        results.append(FoodItemResult(
-            name_raw=name_raw,
-            name_matched=food.get("name", name_raw),
-            qty=qty,
-            unit=unit,
-            gram=round(gram, 1),
-            kcal=kcal,
-            protein_g=protein,
-            carbs_g=carbs,
-            fat_g=fat,
-            match_method=food.get("match_method", "not_found"),
-            match_score=food.get("match_score", 0.0),
-            source=food.get("source", "unknown"),
-            is_estimate=is_estimate,
-        ))
-
-    # Step 3: Totals
+    # Totals
     total_kcal = round(sum(r.kcal or 0 for r in results), 1)
     total_protein = round(sum(r.protein_g for r in results), 1)
     total_carbs = round(sum(r.carbs_g for r in results), 1)
