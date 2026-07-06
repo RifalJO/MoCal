@@ -1,0 +1,4 @@
+# Dependensi tambahan untuk development lokal (tidak di-deploy ke Vercel)
+# Install: pip install -r requirements-dev.txt
+-r requirements.txt
+uvicorn==0.30.6

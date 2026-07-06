@@ -1,6 +1,8 @@
 # app/matcher.py
 # Fuzzy matching engine — cocokkan nama makanan ke database lokal
 
+import csv
+from pathlib import Path
 from rapidfuzz import process, fuzz
 from sqlalchemy.orm import Session
 from app.database import Food, settings, SessionLocal
@@ -11,16 +13,65 @@ import requests
 _food_cache: list[dict] = []
 _cache_loaded: bool = False
 
+# CSV sumber data — sama dengan yang diimport ke Supabase. Dibaca langsung
+# supaya cold start serverless tidak perlu menarik 1.500+ baris dari DB.
+FOODS_CSV_PATH = Path(__file__).resolve().parent.parent / "dataset" / "foods_combined.csv"
+
+
+def _parse_float(value, default=None):
+    try:
+        return float(value) if value not in (None, "") else default
+    except (TypeError, ValueError):
+        return default
+
+
+def _load_cache_from_csv() -> list[dict] | None:
+    """Baca cache makanan dari file CSV lokal (jauh lebih cepat dari query DB
+    lintas region). Return None jika file tidak ada / tidak terbaca."""
+    if not FOODS_CSV_PATH.exists():
+        return None
+    try:
+        with open(FOODS_CSV_PATH, encoding="utf-8") as f:
+            return [
+                {
+                    "id":      row.get("id", ""),
+                    "name":    (row.get("name") or "").strip().lower(),
+                    "aliases": [a.strip() for a in (row.get("name_aliases") or "").split("|") if a.strip()],
+                    "kcal":    _parse_float(row.get("cal")),
+                    "protein_g": _parse_float(row.get("protein"), 0.0),
+                    "carbs_g":   _parse_float(row.get("carbs"), 0.0),
+                    "fat_g":     _parse_float(row.get("fat"), 0.0),
+                    "default_portion_g": _parse_float(row.get("default_portion_g"), 100.0),
+                    "source":  row.get("source", "unknown"),
+                }
+                for row in csv.DictReader(f)
+                if (row.get("name") or "").strip()
+            ]
+    except Exception as e:
+        print(f"[cache] Gagal baca CSV ({e}) - fallback ke DB")
+        return None
+
+
 def load_food_cache(db: Session | None = None):
     """Load semua nama makanan ke memory untuk fuzzy matching yang cepat.
     Dipanggil otomatis saat pertama kali find_food() dipanggil.
+
+    Prioritas: CSV lokal (cepat, tanpa network) → query DB (fallback).
     """
     global _food_cache, _cache_loaded
 
     if _cache_loaded:
         return
 
-    # Gunakan session yang diberikan atau buat baru
+    # Coba dari CSV dulu — tanpa koneksi database sama sekali
+    csv_cache = _load_cache_from_csv()
+    if csv_cache:
+        _food_cache = csv_cache
+        _cache_loaded = True
+        print(f"[OK] Cache loaded dari CSV: {len(_food_cache)} makanan")
+        return
+
+    # Fallback: query database
     own_session = db is None
     if own_session:
         db = SessionLocal()
@@ -47,7 +98,7 @@ def load_food_cache(db: Session | None = None):
             for f in foods
         ]
         _cache_loaded = True
-        print(f"✅ Cache loaded: {len(_food_cache)} makanan")
+        print(f"[OK] Cache loaded dari DB: {len(_food_cache)} makanan")
     finally:
         if own_session:
             db.close()
@@ -140,7 +191,7 @@ def usda_search(english_name: str) -> dict | None:
                 "pageSize": 1,
                 "dataType": "SR Legacy,Foundation"
             },
-            timeout=5
+            timeout=2.5
         ).json()
 
         if not res.get("foods"):
