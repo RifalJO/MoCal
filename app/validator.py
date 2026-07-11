@@ -37,18 +37,23 @@ CATEGORY_RULES: list[tuple[str, tuple[str, ...], float, float]] = [
     ("roti_kue",       ("roti", "kue", "cake", "donat", "martabak", "bolu", "biskuit", "cookie", "wafer"), 150, 550),
     ("buah",           ("pisang", "apel", "jeruk", "mangga", "pepaya", "semangka", "melon", "buah", "anggur", "salak", "alpukat", "durian"), 15, 200),
     ("sayur",          ("sayur", "tumis", "capcay", "pecel", "lalapan", "urap", "gado-gado", "salad", "cah "), 15, 250),
-    ("sup_berkuah",    ("soto", "sop", "sup", "rawon", "bakso", "seblak", "tekwan", "sekoteng"), 30, 250),
+    ("sup_berkuah",    ("soto", "sop", "sup", "rawon", "bakso", "seblak", "tekwan", "sekoteng", "gulai", "opor", "kari", "semur"), 30, 250),
     ("tahu_tempe",     ("tahu", "tempe"),                                              60, 400),
     ("protein_hewani", ("ayam", "daging", "sapi", "ikan", "udang", "cumi", "telur", "bebek", "kambing", "rendang", "sate", "kerang", "kepiting", "ceker", "kikil", "babat", "paru", "usus"), 80, 450),
 ]
 
 
 def get_category(name: str) -> tuple[str, float, float] | None:
-    """Cari kategori makanan berdasar keyword. Return (label, min, max) atau None."""
-    padded = f" {name.lower().strip()} "
+    """Cari kategori makanan berdasar keyword. Return (label, min, max) atau None.
+
+    Keyword dicocokkan per kata utuh (word boundary), BUKAN substring —
+    substring membuat "gula" match di dalam "gulai nangka" sehingga sayur
+    90 kcal dianggap sirup 200-450 kcal dan memicu LLM call sia-sia.
+    """
+    n = name.lower().strip()
     for label, keywords, lo, hi in CATEGORY_RULES:
         for kw in keywords:
-            if kw in padded or kw == padded.strip():
+            if re.search(rf"\b{re.escape(kw.strip())}\b", n):
                 return label, lo, hi
     return None
 

@@ -65,6 +65,20 @@ ATURAN PENTING — BACA SEMUA SEBELUM MEMPROSES
    - "usus" / "usus ayam"                  → "usus ayam"
    - "darah" / "saren" / "marus"           → "darah ayam"
 
+5. SINGKATAN GAUL & TYPO — WAJIB diperbaiki ke nama standar, JANGAN disalin mentah:
+   - "naspad"                  → "nasi padang"
+   - "nasgor"                  → "nasi goreng"
+   - "rendg" / "rendang" typo  → "rendang"
+   - "krupuk"                  → "kerupuk"
+   - "sambel ijo" / "sambel"   → "sambal ijo" / "sambal"
+   - "miayam"                  → "mie ayam"
+   - "esteh" / "es teh anget"  → "es teh" / "teh manis hangat"
+   - "gado2"                   → "gado-gado"
+   - Kata pengantar seperti "lauk", "sayurnya", "pakai" BUKAN bagian nama makanan
+   - "sayurnya nasi padang" maksudnya sayur khas nasi padang → "gulai nangka"
+   ⚠️ "name" TIDAK BOLEH berisi singkatan/typo. "name_en" HARUS bahasa Inggris
+   sungguhan (terjemahan), BUKAN salinan kata Indonesia.
+
 ═══════════════════════════════════════════════
 FORMAT OUTPUT — SANGAT PENTING!
 ═══════════════════════════════════════════════
@@ -146,6 +160,24 @@ Output:
 [
   {"name": "semur jengkol", "name_en": "braised jengkol beans", "qty": 1, "unit": "porsi", "estimated_grams": 150, "kcal_100g": 180}
 ]
+
+Input: "Makan naspad dengan lauk rendg, krupuk, sayurnya nasi padang itu loh, sambel ijo"
+Output:
+[
+  {"name": "nasi padang", "name_en": "padang style rice", "qty": 1, "unit": "porsi", "estimated_grams": 250, "kcal_100g": 165},
+  {"name": "rendang", "name_en": "beef rendang", "qty": 1, "unit": "potong", "estimated_grams": 100, "kcal_100g": 195},
+  {"name": "kerupuk", "name_en": "crackers", "qty": 1, "unit": "porsi", "estimated_grams": 20, "kcal_100g": 480},
+  {"name": "gulai nangka", "name_en": "young jackfruit curry", "qty": 1, "unit": "porsi", "estimated_grams": 100, "kcal_100g": 90},
+  {"name": "sambal ijo", "name_en": "green chili sambal", "qty": 1, "unit": "sendok makan", "estimated_grams": 15, "kcal_100g": 130}
+]
+
+Input: "nasgor pake telor, esteh"
+Output:
+[
+  {"name": "nasi goreng", "name_en": "fried rice", "qty": 1, "unit": "porsi", "estimated_grams": 250, "kcal_100g": 168},
+  {"name": "telur ceplok", "name_en": "fried egg", "qty": 1, "unit": "butir", "estimated_grams": 55, "kcal_100g": 190},
+  {"name": "es teh", "name_en": "sweet iced tea", "qty": 1, "unit": "gelas", "estimated_grams": 250, "kcal_100g": 35}
+]
 """
 
 # ─────────────────────────────────────────────
@@ -176,6 +208,7 @@ FOOD_ALIASES = {
 
     # Minuman
     "es teh":       "teh manis dingin",
+    "esteh":        "teh manis dingin",
     "teh tarik":    "teh susu",
     "kopi susu":    "kopi susu",
     "es kopi":      "kopi dingin",
@@ -185,6 +218,25 @@ FOOD_ALIASES = {
     "rice":         "nasi putih",
     "mie":          "mie",
     "mi":           "mie",
+
+    # Singkatan gaul & ejaan pasar — jaring pengaman jika LLM parser
+    # meneruskan slang mentah tanpa menormalisasi (sering terjadi di model 8B)
+    "naspad":       "nasi padang",
+    "nasi pada":    "nasi padang",
+    "nasipada":     "nasi padang",
+    "nasgor":       "nasi goreng",
+    "miayam":       "mie ayam",
+    "mie yamin":    "mie ayam",
+    "gado2":        "gado-gado",
+    "magbar":       "martabak",
+    "krupuk":       "kerupuk",
+    "sambel":       "sambal",
+    "sambel ijo":   "sambal ijo",
+    "sambal hijau": "sambal ijo",
+    "rendg":        "rendang",
+    "lauk rendg":   "rendang",
+    "sayur nasipada": "gulai nangka",
+    "sayur nasi padang": "gulai nangka",
 }
 
 

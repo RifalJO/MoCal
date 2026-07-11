@@ -69,6 +69,12 @@ NEW_FOODS: list[tuple[str, str, float, float, float, float, float]] = [
     ("opor ayam",       "",                                                    163, 12.0, 4.0, 11.0, 200),
     ("gulai ayam",      "",                                                    165, 13.0, 3.0, 11.0, 200),
 
+    # Khas Padang (slang "naspad" dinormalisasi parser ke nama-nama ini)
+    ("nasi padang",     "naspad|nasi kapau",                                   165, 6.0, 24.0, 5.0, 400),
+    ("gulai nangka",    "sayur nangka|gulai cubadak|sayur nasi padang",         90, 2.0, 8.0, 6.0, 100),
+    ("gulai daun singkong", "daun singkong|sayur daun singkong",                95, 4.0, 6.0, 7.0, 100),
+    ("sambal ijo",      "sambal hijau|sambel ijo|sambal cabe ijo|sambal lado mudo", 130, 1.5, 8.0, 10.0, 15),
+
     # Sayur & pelengkap
     ("capcay",          "capcai|cap cay",                                       55, 3.0, 6.0, 2.0, 200),
     ("sayur lodeh",     "lodeh",                                                60, 2.0, 6.0, 3.5, 200),
