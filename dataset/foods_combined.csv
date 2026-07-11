@@ -176,7 +176,7 @@ b9bb22d0-1f88-4d07-a86b-d9ff61a45565,bakmi jawa,,256.3,7.5,8.0,10.8,100.0,dapur_
 49883166-d2b0-406e-8a76-7f1e7c063f9c,bakmoi ayam saori saus teriyaki,,250.8,13.8,1.0,22.8,100.0,dapur_umami,False
 cce314c6-5015-450d-9ac3-d4ef7ef93a82,bakpao ayam,,173.9,3.7,13.6,3.1,100.0,dapur_umami,False
 9f41a9fd-5a8e-482b-963a-627f5cae0d6d,bakpia kue,,272.0,8.7,44.1,6.7,100.0,indo_nutrition,False
-33144783-e7d2-45a0-9116-a66bc2ba6f8a,bakso,,76.0,4.1,9.2,2.5,100.0,indo_nutrition,True
+33144783-e7d2-45a0-9116-a66bc2ba6f8a,bakso,baso|bakso sapi,76.0,4.1,9.2,2.5,100.0,indo_nutrition,True
 4aaf3cd4-8945-4b64-8790-0da05de978a3,bakso goreng crispy,,91.3,7.7,1.7,6.0,100.0,dapur_umami,True
 fd512e58-786d-438f-ab42-f7122787cb1c,bakso goreng sajiku,,410.8,27.5,48.8,12.0,100.0,dapur_umami,True
 a7cbe62b-e5cb-46f1-ab44-388cf22c039a,bakso goreng tenggiri,,324.0,14.3,5.0,9.7,100.0,dapur_umami,True
@@ -617,7 +617,7 @@ d60bdafd-08d6-4050-bbc0-72a9d96829c0,cumi panggang saori teriyaki,,39.6,0.0,0.0,
 5b428ef5-0724-4769-aa7e-aa5acdc24508,cumi saus mentega,,69.3,4.3,1.5,5.3,100.0,dapur_umami,False
 507b4547-30fc-45de-826c-c41891e2004c,cumi saus padang,,129.8,8.8,6.0,8.0,100.0,dapur_umami,False
 bd224b23-12e9-402b-b437-b07eedb4d9bc,cumi tepung asam manis,,327.0,17.5,87.0,29.0,100.0,dapur_umami,False
-4dcfb87c-f2ba-471b-b3e2-7e093922141b,cumi-cumi goreng,,265.0,40.6,0.0,10.1,100.0,indo_nutrition,False
+4dcfb87c-f2ba-471b-b3e2-7e093922141b,cumi-cumi goreng,cumi goreng,265.0,40.6,0.0,10.1,100.0,indo_nutrition,False
 5340066b-873a-45d2-af52-93e27f3070cb,cumi-cumi segar,,75.0,16.1,0.1,0.7,100.0,indo_nutrition,False
 2625d65f-b956-4d4e-a565-d277a2df43b7,cumin 1 tsp,,8.0,0.3,1.5,0.5,100.0,daily_nutrition,False
 8af64a7f-7359-4a0a-87e7-abc25254105c,cupcake vanilla 1 medium,,240.0,2.0,35.0,11.0,100.0,daily_nutrition,False
@@ -1302,7 +1302,7 @@ f63903e6-b2ba-4443-b1cc-69cc2fc25b9e,kangkung bunga pepaya,,44.5,3.5,7.5,15.5,10
 e956a31c-e65d-454e-8b8c-699d2c321dcb,kangkung kukus,,30.0,3.2,4.7,0.7,100.0,indo_nutrition,False
 30b192b9-0407-46da-b24a-dca016561738,kangkung rebus,,22.0,2.5,3.1,0.6,100.0,indo_nutrition,False
 a1f1314e-c633-4d43-9b77-9bf595d48f2a,kangkung tondano,,43.0,1.8,8.4,0.2,100.0,indo_nutrition,False
-7cb2ed21-2d86-4be9-83a9-fc101e0b9cd0,kangkung tumis,,52.0,1.8,3.0,3.6,100.0,indo_nutrition,False
+7cb2ed21-2d86-4be9-83a9-fc101e0b9cd0,kangkung tumis,tumis kangkung|cah kangkung,52.0,1.8,3.0,3.6,100.0,indo_nutrition,False
 5615bac4-37f7-4d78-8e86-e0ea57ddc176,kaparende sayur,,38.0,2.4,2.6,2.0,100.0,indo_nutrition,False
 9b61a24c-46d3-446e-a693-ccc0919d7677,kapri muda,,42.0,3.3,9.6,0.2,100.0,indo_nutrition,False
 e87c80a0-f7ba-401a-80d2-7cd5ac5280eb,kapurung,,41.0,2.0,7.8,0.3,100.0,indo_nutrition,False
@@ -1669,7 +1669,7 @@ f25fddb1-1f19-416e-bdd0-46890cb2a44a,mie basah,,86.0,0.6,14.0,3.3,100.0,indo_nut
 ec7a3986-6ee3-4a17-b9ca-eee385dedeb9,mie cakalang aji-no-moto,,753.0,31.5,10.5,15.5,100.0,dapur_umami,True
 5b0fddab-63f7-4126-992e-3a567c30b2b3,mie celon,,102.0,3.0,17.8,2.1,100.0,indo_nutrition,True
 5d92798f-c27f-4276-bf90-ec752a84ce50,mie glosor,,315.8,10.5,6.8,13.0,100.0,dapur_umami,True
-e0aa65ba-d677-437c-adeb-5739b3ee78b0,mie goreng,,468.0,7.6,62.4,20.4,100.0,indo_nutrition,True
+e0aa65ba-d677-437c-adeb-5739b3ee78b0,mie goreng,,170,4.5,24.0,6.5,100.0,indo_nutrition,True
 66a27e27-42a3-47c0-b273-88d71e8220d5,mie goreng bulgogi,,288.0,9.0,72.3,5.0,100.0,dapur_umami,True
 21e4e3cd-7683-4ce9-910e-cfd698af37bd,mie goreng imlek,,150.7,7.7,5.0,10.3,100.0,dapur_umami,True
 d54d4656-044f-424b-8454-da5164ba8ac2,mie goreng jamur shitake saori,,677.0,16.0,15.0,35.0,100.0,dapur_umami,True
@@ -1734,7 +1734,7 @@ f853f0cb-7e94-4dc7-bc1d-d28504d75921,nanas,,52.0,0.4,13.7,0.2,100.0,indo_nutriti
 efa5716f-4b03-41df-88b7-d51b66bcf3cb,nangka muda,,51.0,2.0,11.3,0.4,100.0,indo_nutrition,False
 c77f012b-83af-44fb-84c1-5e10d47f41f7,nasgor keju sajiku,,672.5,20.5,64.5,35.5,100.0,dapur_umami,False
 d785c7c6-c976-4a96-a97d-d855a18dc8fb,nasgor singapura,,568.0,19.0,61.5,26.5,100.0,dapur_umami,False
-314907ff-9162-4869-8eb7-992c0cc4f69b,nasi,,180.0,3.0,39.8,0.3,100.0,indo_nutrition,True
+314907ff-9162-4869-8eb7-992c0cc4f69b,nasi,nasi biasa,180.0,3.0,39.8,0.3,100.0,indo_nutrition,True
 f0bb89d4-6a4e-4d9e-b3cd-c82d971a82c1,nasi ayam hainan,,438.3,16.8,71.5,9.0,100.0,dapur_umami,True
 b58756dd-8d35-4454-ae12-74c2df623d3e,nasi bakar teri medan,,73.3,0.0,0.0,0.0,100.0,dapur_umami,True
 09dea8f7-ed2a-4bcc-8302-4f343d05f078,nasi bakar teriyaki,,317.0,11.3,49.8,7.3,100.0,dapur_umami,True
@@ -2113,7 +2113,7 @@ c3b5f619-5ee9-4a40-aae8-b2d70340a1a4,red onion 14 cup in ceviche,,16.0,0.3,3.7,0
 ba2cd20e-408e-4c4a-b74d-2a58a8ee8585,rempeyek kacang tolo,,451.0,11.2,59.7,20.2,100.0,indo_nutrition,False
 d8b8f94c-8cb6-4366-b451-868ef7f28bc5,rempeyek kacang uci,,497.0,17.0,50.8,27.6,100.0,indo_nutrition,False
 2c3290af-3d0c-4d74-a30a-7e99d818e545,rendang ayam,,528.2,13.7,6.0,51.8,100.0,dapur_umami,True
-760180aa-d0c0-4054-9a53-f13a25269fb8,rendang sapi,,601.5,29.8,8.3,41.3,100.0,dapur_umami,True
+760180aa-d0c0-4054-9a53-f13a25269fb8,rendang sapi,,195,19.0,5.0,11.0,100.0,dapur_umami,True
 9522570a-fef1-4e93-b72f-84ee40518981,rendang sapi masakan,,193.0,22.6,7.8,7.9,100.0,indo_nutrition,True
 accac57c-5489-4062-8990-c6506cc528d5,rendang telur,,98.7,0.0,0.0,0.0,100.0,dapur_umami,True
 2fb1abf7-fe0c-4314-b4a2-593f17f97a9e,renggi goreng,,471.0,4.7,64.1,21.8,100.0,indo_nutrition,False
@@ -2557,7 +2557,7 @@ adacd6b0-ab75-4004-92a6-c2e0ea2f7d24,susu kedelai,,41.0,3.5,5.0,2.5,100.0,indo_n
 ce1ea4ce-8506-4b03-8365-b9c7d230821c,susu kental manis,,336.0,8.2,55.0,10.0,100.0,indo_nutrition,False
 3e1a4494-be7c-47b9-aa22-4e53ee70800a,susu kental tak manis,,138.0,7.0,9.9,7.9,100.0,indo_nutrition,False
 1d92de72-909b-49d9-954d-68d36715cfbc,susu kerbau,,160.0,6.3,7.1,12.0,100.0,indo_nutrition,False
-78b80ca0-01bb-4466-ba79-dd3f6c0c8ef4,susu sapi,,61.0,3.2,4.3,3.5,100.0,indo_nutrition,False
+78b80ca0-01bb-4466-ba79-dd3f6c0c8ef4,susu sapi,susu|susu putih|susu segar,61.0,3.2,4.3,3.5,100.0,indo_nutrition,False
 344186e3-c69c-4c92-8623-89176e4d6d92,susu skim bubuk,,359.0,35.6,52.0,1.0,100.0,indo_nutrition,False
 63a4066f-00f0-48cd-a15d-5b9d0c51037c,susu skim segar,,36.0,3.5,5.1,0.1,100.0,indo_nutrition,False
 35ac233b-3c43-441c-acf2-4a042d4bd48a,susu skim tak berlemak,,36.0,3.5,5.1,0.1,100.0,indo_nutrition,False
@@ -2635,7 +2635,7 @@ ec56180b-f2c9-4f08-9dd6-1255f3d0c986,tekokak,,34.0,2.0,7.9,0.1,100.0,indo_nutrit
 e4b79a8a-1295-49f6-b784-9c1e971f3543,telur ayam,,162.0,12.8,0.7,11.5,100.0,indo_nutrition,False
 4be22564-9b97-4188-b065-45777be545a3,telur ayam bagian kuning,,361.0,19.3,0.7,31.9,100.0,indo_nutrition,False
 72019227-5dac-4a57-89ac-da95cb4cd98f,telur ayam bagian putih,,50.0,10.8,0.8,0.0,100.0,indo_nutrition,False
-39b74238-231f-4343-9b30-6a703362ab2c,telur ayam ceplok,,383.0,15.1,8.3,32.9,100.0,indo_nutrition,False
+39b74238-231f-4343-9b30-6a703362ab2c,telur ayam ceplok,,190,13.6,0.8,14.5,100.0,indo_nutrition,False
 6f839e02-48b8-4920-870e-1aa6db721b90,telur ayam dadar,,251.0,16.3,1.4,19.4,100.0,indo_nutrition,False
 718cf294-29e4-4e8d-bc27-ec068bdb9d0d,telur ayam kampung,,179.0,13.6,4.4,13.3,100.0,indo_nutrition,False
 fde4c4da-eb2c-4ce3-808f-48ac54052690,telur bebek bagian kuning segar,,386.0,17.0,0.8,35.0,100.0,indo_nutrition,False
@@ -2651,7 +2651,7 @@ ac0e0c5a-0a9d-43cc-95ab-62ccb3554431,telur bumbu rujak,,26.8,0.0,0.0,0.0,100.0,d
 1e15a0b6-1239-4aa7-8f5a-3c86359677fc,telur ceplok sajiku bumbu gulai padang,,69.3,4.3,1.3,5.3,100.0,dapur_umami,False
 b2ee8d34-5e90-478d-88ae-cba793628284,telur ceplok sambal tomat,,202.5,8.5,4.7,16.7,100.0,dapur_umami,False
 fdd5e130-1038-49a4-94d4-cbf50a779053,telur crispy,,214.5,14.0,58.3,17.0,100.0,dapur_umami,False
-7ec848ba-b78c-4e69-9d10-b3fcc4247ec3,telur dadar,,102.0,5.0,1.0,8.0,100.0,dapur_umami,False
+7ec848ba-b78c-4e69-9d10-b3fcc4247ec3,telur dadar,telor dadar|omelet,102.0,5.0,1.0,8.0,100.0,dapur_umami,False
 754e160c-fc3a-4b5c-b40f-1c6779875bf2,telur dadar hijau,,34.5,0.0,0.0,0.0,100.0,dapur_umami,False
 b3597bd1-6208-4d62-a444-2280f1112b93,telur gabus masako,,6.0,0.1,0.5,0.4,100.0,dapur_umami,False
 ab4c6dd6-a2d2-47ee-af0e-ff2c142eccec,telur gulung,,66.0,1.9,0.3,6.5,100.0,dapur_umami,False
@@ -2954,3 +2954,47 @@ ebd23b78-99ff-4cc6-becf-a599c09cd02b,yoghurt,,52.0,3.3,4.0,2.5,100.0,indo_nutrit
 d5023f99-3cd3-44fe-8404-1eb259ae8a29,zaatar 1 tbsp,,40.0,1.0,3.0,3.0,100.0,daily_nutrition,False
 5c4539ca-06c3-4898-8bc0-8a8ef09e834a,zucchini rolled chicken curry,,254.3,13.3,5.5,19.5,100.0,dapur_umami,False
 d3546870-fd31-4aea-8859-77f8c1192e7e,zucchini stuffed chicken and cheese,,259.0,24.8,9.8,14.0,100.0,dapur_umami,False
+c776af73-95ff-49cc-a6e0-c8acfc01c7c3,nasi putih,nasi hangat|nasi putih hangat|steamed rice,130.0,2.4,28.6,0.2,200.0,curated_common,True
+2c7a5f8a-a017-42eb-bccb-ada9dc3102ac,nasi kuning,,150.0,2.7,26.0,3.5,200.0,curated_common,True
+4b91b60f-58b4-4c7b-b67a-51a1ee191034,lontong,lontong sayur polos,110.0,2.0,23.0,0.3,200.0,curated_common,True
+0cd226ea-4351-4c52-a7f0-89a308fa5dff,ketupat,,110.0,2.0,23.0,0.3,200.0,curated_common,True
+3bc017f6-f74f-4149-b64a-757146456582,mie instan,indomie|mi instan|mie instant|indomie goreng,185.0,4.0,25.0,8.0,200.0,curated_common,True
+31b950d4-e9e4-4974-a358-b2033b0d491a,mie rebus,mi rebus|mie kuah,120.0,4.0,18.0,3.5,300.0,curated_common,True
+43bcb740-a34d-41ab-b1a9-4c4063c7bb3e,roti tawar,roti putih|roti tawar putih,265.0,8.0,50.0,3.0,70.0,curated_common,True
+5df5a44e-f595-4a5c-b4d0-021b712c24ae,kentang goreng,french fries,312.0,3.4,41.0,15.0,100.0,curated_common,True
+1de1f428-c8ec-485b-9778-ec3aae370087,ayam goreng,ayam goreng biasa|fried chicken,245.0,28.0,1.5,14.0,100.0,curated_common,True
+5b3fbd05-7965-4139-9c05-2f75c7ed8ee2,ayam bakar,,210.0,28.0,2.0,10.0,100.0,curated_common,True
+e81a9161-4b62-4269-8951-4ad8bac23814,ayam geprek,,250.0,20.0,10.0,16.0,150.0,curated_common,True
+f989d372-82f0-4624-ae20-99dc46339887,telur ceplok,telor ceplok|telur mata sapi|ceplok telur,190.0,13.6,0.8,14.5,55.0,curated_common,True
+6001f927-32a0-45a3-b962-5625d7de74e7,telur balado,telor balado,190.0,11.0,5.0,14.0,70.0,curated_common,True
+22e98748-61fb-4c52-92e6-6e48f3fae67e,udang,udang segar|udang rebus|shrimp,91.0,21.0,0.1,1.0,100.0,curated_common,True
+994f227b-a3c1-4be3-b854-b327fb6336ec,udang goreng,udang goreng tepung,240.0,18.0,12.0,13.0,75.0,curated_common,True
+2fa2c6e3-cbdb-4a92-a384-848c2f325331,cumi-cumi,cumi|sotong,92.0,15.6,3.1,1.4,100.0,curated_common,True
+a1327797-e57d-49e5-ac25-1e1470a6921e,kerang hijau,,86.0,14.0,3.0,2.0,100.0,curated_common,True
+13356370-944f-48f8-a01f-a8c27ab801d1,ceker ayam,ceker|cakar ayam,215.0,19.0,0.2,15.0,60.0,curated_common,True
+4a4d6a77-2c21-4d0a-a000-c5462fe94eef,kikil sapi,kikil,150.0,23.0,0.0,6.5,80.0,curated_common,True
+398061dc-11e9-4ef6-9527-dd6f1ba52629,babat sapi,babat,113.0,16.0,0.0,5.0,80.0,curated_common,True
+64bc7298-8d03-463b-b5b5-de7e002e9b3d,paru sapi,paru,120.0,17.0,0.0,5.0,80.0,curated_common,True
+b39fd8f6-6c38-4d25-a8ad-3828e699d148,usus ayam,usus,130.0,18.0,0.0,6.0,80.0,curated_common,True
+918f9e0b-a18a-4ebd-9a85-4a50a139a07e,darah ayam,saren|marus|darah,105.0,16.0,1.0,4.0,50.0,curated_common,True
+8e9ce499-03da-474c-ba3c-330f7e638a51,ikan goreng,,220.0,22.0,8.0,11.0,100.0,curated_common,True
+cf7c437e-236e-4b21-9e2d-57e36e689b0c,lele goreng,pecel lele,204.0,18.0,4.0,13.0,100.0,curated_common,True
+3de1d962-1245-4c25-b127-bd7e97a691ff,rendang,rendang daging,195.0,19.0,5.0,11.0,100.0,curated_common,True
+e0e54642-e206-4743-9335-335ef7ed8782,soto ayam,soto|soto ayam bening,65.0,4.5,5.0,2.5,350.0,curated_common,True
+9b2bab22-6fc7-4596-8466-e013b3b09fc5,bakso kuah,bakso sapi kuah,80.0,5.0,6.0,3.5,350.0,curated_common,True
+12681722-513c-46d8-9261-e38010739ed3,opor ayam,,163.0,12.0,4.0,11.0,200.0,curated_common,True
+2f514084-3d9a-4131-a88f-4c4af2a3265c,gulai ayam,,165.0,13.0,3.0,11.0,200.0,curated_common,True
+5e4b0f46-c371-4a2d-a431-74b13ab56178,capcay,capcai|cap cay,55.0,3.0,6.0,2.0,200.0,curated_common,True
+43b16571-07c8-4b70-a9dd-7a769862359e,sayur lodeh,lodeh,60.0,2.0,6.0,3.5,200.0,curated_common,True
+ccd4a838-4474-413f-9947-6be237efe762,tempe orek,orek tempe|tempe kering,210.0,12.0,12.0,12.0,50.0,curated_common,True
+caca3dd6-25ea-421d-b23f-1f5675b9dd56,sambal,sambel|sambal terasi,120.0,2.0,10.0,8.0,15.0,curated_common,True
+566e718d-6aff-4f46-bcc4-789ce409fe6f,kerupuk,krupuk|kerupuk putih,480.0,1.0,60.0,25.0,20.0,curated_common,True
+914fa3fa-9cbf-4b80-80d2-1386f706a2bc,pisang,pisang ambon|banana,89.0,1.1,23.0,0.3,100.0,curated_common,True
+33688dcb-34b5-41a3-858a-7fbb4e8efdd1,teh manis,teh manis hangat|teh manis panas|es teh|es teh manis|teh manis dingin|teh es,35.0,0.0,9.0,0.0,250.0,curated_common,True
+9107b35e-023b-4f95-8863-b313c011461a,teh susu,teh tarik,55.0,1.5,9.0,1.5,250.0,curated_common,True
+3b896e63-5fee-4489-8af6-8bc21c3ced1d,kopi susu,es kopi susu|kopi susu gula aren,55.0,1.5,8.0,2.0,250.0,curated_common,True
+d6e783cd-326f-4c1d-9db2-2a7aeaa69cca,kopi dingin,es kopi,40.0,0.5,8.0,0.5,250.0,curated_common,True
+a5410362-325b-489e-8c1d-abc3af35c4f9,kopi hitam,kopi|kopi pahit|americano,2.0,0.1,0.4,0.0,250.0,curated_common,True
+0461f78c-64d3-4f11-9e8e-0f543d8e41d1,es jeruk,jus jeruk|jeruk peras,45.0,0.3,11.0,0.0,250.0,curated_common,True
+b81915b8-5780-4c2d-8ecf-78fff8cf821d,jus alpukat,,95.0,1.0,8.0,6.5,300.0,curated_common,True
+7774b33a-6c0d-49a9-8711-0632cd6fad77,air putih,air mineral|air,0.0,0.0,0.0,0.0,250.0,curated_common,True

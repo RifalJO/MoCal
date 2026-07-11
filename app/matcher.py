@@ -36,7 +36,7 @@ def _load_cache_from_csv() -> list[dict] | None:
                 {
                     "id":      row.get("id", ""),
                     "name":    (row.get("name") or "").strip().lower(),
-                    "aliases": [a.strip() for a in (row.get("name_aliases") or "").split("|") if a.strip()],
+                    "aliases": [a.strip().lower() for a in (row.get("name_aliases") or "").split("|") if a.strip()],
                     "kcal":    _parse_float(row.get("cal")),
                     "protein_g": _parse_float(row.get("protein"), 0.0),
                     "carbs_g":   _parse_float(row.get("carbs"), 0.0),
@@ -86,8 +86,8 @@ def load_food_cache(db: Session | None = None):
         _food_cache = [
             {
                 "id":    str(f.id),
-                "name":  f.name,
-                "aliases": f.name_aliases.split("|") if f.name_aliases else [],
+                "name":  (f.name or "").strip().lower(),
+                "aliases": [a.strip().lower() for a in f.name_aliases.split("|") if a.strip()] if f.name_aliases else [],
                 "kcal":  f.cal,
                 "protein_g":  f.protein,
                 "carbs_g":    f.carbs,
@@ -127,6 +127,21 @@ def exact_match(query: str) -> dict | None:
 
 
 # ─── Step 2: Fuzzy match ──────────────────────────────────────────────────────
+def _combined_ratio(query: str, candidate: str, **kwargs) -> float:
+    """Scorer gabungan untuk nama makanan.
+
+    token_sort_ratio saja gagal pada pola umum "query pendek vs nama entri
+    panjang" ('soto ayam' vs 'soto ayam jember' cuma 77.8). token_set_ratio
+    saja terlalu longgar ('soto ayam' vs 'ayam' = 100). Rata-rata keduanya:
+    set-ratio menangkap subset kata, sort-ratio menghukum kandidat yang
+    kehilangan/kelebihan banyak kata.
+    """
+    return (
+        0.5 * fuzz.token_set_ratio(query, candidate)
+        + 0.5 * fuzz.token_sort_ratio(query, candidate)
+    )
+
+
 def fuzzy_match(query: str, expected_kcal: float | None = None) -> dict | None:
     """
     Fuzzy match dengan re-ranking berbasis kalori.
@@ -146,7 +161,7 @@ def fuzzy_match(query: str, expected_kcal: float | None = None) -> dict | None:
     candidates = process.extract(
         query.lower().strip(),
         names,
-        scorer=fuzz.token_sort_ratio,
+        scorer=_combined_ratio,
         score_cutoff=settings.FUZZY_THRESHOLD,
         limit=5
     )
@@ -178,8 +193,55 @@ def fuzzy_match(query: str, expected_kcal: float | None = None) -> dict | None:
 
 
 # ─── Step 3: USDA API fallback ────────────────────────────────────────────────
+
+# Skor relevansi minimal (0-100) antara query dan deskripsi hasil USDA.
+# Di bawah ini hasil dianggap tidak nyambung — lebih baik lempar ke LLM
+# daripada pakai nutrisi makanan yang salah (uji: threshold 60 masih
+# meloloskan 'steamed white rice' -> 'corn, white, steamed (navajo)').
+USDA_MIN_RELEVANCE = 70.0
+
+
+def _extract_usda_nutrients(food: dict) -> dict | None:
+    """Ambil nutrisi per 100g dari satu hasil USDA.
+
+    PENTING: entri "Energy" bisa muncul dua kali (kcal DAN kJ) dengan
+    nutrientName sama persis. Tanpa cek unitName, nilai kJ bisa menimpa kcal
+    sehingga kalori menggelembung ~4.2x. Hanya terima Energy berunit KCAL.
+
+    Data Foundation sering tidak punya "Energy" polos, hanya
+    "Energy (Atwater General Factors)" — dipakai sebagai fallback.
+    """
+    kcal, kcal_atwater, protein, carbs, fat = None, None, 0.0, 0.0, 0.0
+    for n in food.get("foodNutrients", []):
+        name  = n.get("nutrientName")
+        unit  = (n.get("unitName") or "").upper()
+        value = n.get("value")
+        if value is None:
+            continue
+        if name == "Energy" and unit == "KCAL":
+            kcal = value
+        elif name == "Energy (Atwater General Factors)" and unit == "KCAL":
+            kcal_atwater = value
+        elif name == "Protein":
+            protein = value
+        elif name == "Carbohydrate, by difference":
+            carbs = value
+        elif name == "Total lipid (fat)":
+            fat = value
+
+    if kcal is None:
+        kcal = kcal_atwater
+    if kcal is None:
+        return None
+    return {"kcal": kcal, "protein_g": protein, "carbs_g": carbs, "fat_g": fat}
+
+
 def usda_search(english_name: str) -> dict | None:
-    """Search ke USDA API menggunakan nama bahasa Inggris"""
+    """Search ke USDA API menggunakan nama bahasa Inggris.
+
+    Ambil 5 kandidat, pilih yang deskripsinya paling relevan dengan query
+    (bukan asal hasil pertama), dan tolak jika relevansi terlalu rendah.
+    """
     if not settings.USDA_API_KEY:
         return None
     try:
@@ -188,31 +250,44 @@ def usda_search(english_name: str) -> dict | None:
             params={
                 "api_key":  settings.USDA_API_KEY,
                 "query":    english_name,
-                "pageSize": 1,
+                "pageSize": 5,
                 "dataType": "SR Legacy,Foundation"
             },
             timeout=2.5
         ).json()
 
-        if not res.get("foods"):
+        query = english_name.lower().strip()
+        best_food, best_score = None, 0.0
+        for food in res.get("foods", []):
+            desc  = (food.get("description") or "").lower()
+            score = _combined_ratio(query, desc)
+            if score > best_score:
+                best_food, best_score = food, score
+
+        if best_food is None or best_score < USDA_MIN_RELEVANCE:
+            if best_food is not None:
+                print(f"\n   [usda] hasil terbaik '{best_food.get('description')}' "
+                      f"relevansi {best_score:.0f} < {USDA_MIN_RELEVANCE:.0f} -> ditolak", end=" ")
             return None
 
-        food  = res["foods"][0]
-        nutr  = {n["nutrientName"]: n["value"] for n in food.get("foodNutrients", [])}
+        nutrients = _extract_usda_nutrients(best_food)
+        if nutrients is None:
+            return None
 
         return {
-            "name":     food["description"].lower(),
-            "kcal":     nutr.get("Energy", None),
-            "protein_g": nutr.get("Protein", 0.0),
-            "carbs_g":  nutr.get("Carbohydrate, by difference", 0.0),
-            "fat_g":    nutr.get("Total lipid (fat)", 0.0),
+            "name":     best_food["description"].lower(),
+            **nutrients,
             "default_portion_g": 100.0,
             "source":   "usda_api",
             "match_method": "api",
-            "match_score": 0.7
+            # Cap 0.85 supaya hasil USDA selalu melewati cek deviasi
+            # expected_kcal di validator (weak match < 0.9).
+            "match_score": round(min(best_score / 100, 0.85), 3)
         }
     except Exception as e:
-        print(f"⚠️ USDA API error: {e}")
+        # ASCII saja — print emoji bisa UnicodeEncodeError di konsol Windows
+        # (cp1252), yang membuat exception bocor keluar dari handler ini.
+        print(f"[!] USDA API error: {e}")
         return None
 
 
