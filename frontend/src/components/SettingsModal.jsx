@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/appStore'
 import { logout, saveOnboarding } from '@/services/api'
@@ -16,6 +16,13 @@ export default function SettingsModal({ onClose }) {
         name: '', age: '', gender: 'male',
         weight: '', height: '', activity: 'light', goal: 'maintain'
     })
+
+    // useState hanya membaca profile SEKALI saat mount. Saat user login dari
+    // dalam modal ini, fetchOnboarding() mengisi profile setelah mount —
+    // tanpa sinkronisasi ini form tetap kosong sampai modal ditutup-buka lagi.
+    useEffect(() => {
+        if (profile) setForm(profile)
+    }, [profile])
 
     const calcAndSave = () => {
         const w = parseFloat(form.weight)
