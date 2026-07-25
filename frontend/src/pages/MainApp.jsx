@@ -181,6 +181,21 @@ export default function MainApp() {
                         }}
                     />
 
+                    {/* Submit button (mobile) — for entering without a keyboard Enter key */}
+                    <div className="flex justify-end mb-2">
+                        <button
+                            onClick={handleSubmit}
+                            disabled={!inputText.trim() || isLoading}
+                            className="flex items-center gap-2 bg-[#df6620] text-white pl-5 pr-4 py-2.5 rounded-full font-bold text-[15px] shadow-lg shadow-[#df6620]/20 active:scale-95 disabled:opacity-40 disabled:shadow-none transition-all"
+                        >
+                            {t('journal.addEntry')}
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="12 5 19 12 12 19" />
+                            </svg>
+                        </button>
+                    </div>
+
                     {/* Error toast (mobile) */}
                     {error && (
                         <div className="p-3 bg-red-50 border border-red-200 rounded-xl mb-2">
