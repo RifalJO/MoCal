@@ -117,6 +117,12 @@ celerybeat.pid
 
 # Environments
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
 .venv
 env/
 venv/
