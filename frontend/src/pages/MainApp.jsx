@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/appStore'
 import { submitLog, fetchUserLogs, deleteLog, validateAuth } from '@/services/api'
+import { useCountUp } from '@/hooks/useCountUp'
+import { celebrateGoal } from '@/lib/celebrate'
 import TopBar from '@/components/TopBar'
 import BottomBar from '@/components/BottomBar'
 import LogItem from '@/components/LogItem'
@@ -15,7 +17,7 @@ export default function MainApp() {
     const navigate = useNavigate()
     const { t, i18n } = useTranslation()
     const locale = i18n.language === 'id' ? 'id-ID' : 'en-US'
-    const { logs, isLoading, hasOnboarding, goals, isAuthenticated, showAuthWarning, setShowAuthWarning } = useAppStore()
+    const { logs, isLoading, hasOnboarding, goals, isAuthenticated, showAuthWarning, setShowAuthWarning, streak } = useAppStore()
     const [inputText, setInputText] = useState('')
     const [showSettings, setShowSettings] = useState(false)
     const [showGoals, setShowGoals] = useState(false)
@@ -116,11 +118,6 @@ export default function MainApp() {
         }
     }
 
-    // Format date for API
-    const formatDateForAPI = (date) => {
-        return date.toISOString().split('T')[0]
-    }
-
     // Calculate totals for desktop summary - from items data
     const totalKcal = logs.reduce((sum, log) => sum + (log.total_kcal || 0), 0)
     const totalC = Math.round(logs.reduce((sum, log) => {
@@ -147,6 +144,23 @@ export default function MainApp() {
     const proteinPct = goals ? Math.min((totalP / goals.protein) * 100, 100) : 0
     const carbsPct = goals ? Math.min((totalC / goals.carbs) * 100, 100) : 0
     const fatPct = goals ? Math.min((totalF / goals.fat) * 100, 100) : 0
+
+    // Angka beranimasi (count-up) untuk ringkasan desktop
+    const shownKcal = useCountUp(Math.round(totalKcal))
+    const shownC = useCountUp(totalC)
+    const shownP = useCountUp(totalP)
+    const shownF = useCountUp(totalF)
+
+    // Konfeti saat total kalori MENYEBERANGI target harian dalam sesi ini.
+    // Ditaruh di sini (bukan GoalsCard) supaya selalu ter-mount di kedua layout.
+    const prevKcalRef = useRef(null)
+    const goalKcal = goals?.kcal || 0
+    useEffect(() => {
+        const prev = prevKcalRef.current
+        prevKcalRef.current = totalKcal
+        if (prev === null || !goalKcal) return
+        if (prev < goalKcal && totalKcal >= goalKcal) celebrateGoal()
+    }, [totalKcal, goalKcal])
 
     return (
         <div className="min-h-screen bg-[#f8f7f6]">
@@ -252,6 +266,14 @@ export default function MainApp() {
                                 {new Date().toLocaleDateString(locale, { month: 'long', day: 'numeric', year: 'numeric' })}
                             </p>
                         </div>
+                        {/* Chip streak 🔥 (user login & streak sudah termuat) */}
+                        {isAuthenticated && streak !== null && streak !== undefined && (
+                            <div className="flex items-center gap-1.5 bg-[#df6620]/10 border border-[#df6620]/20 rounded-full px-3 py-2"
+                                title={`${streak} hari beruntun`}>
+                                <span className="text-base">🔥</span>
+                                <span key={streak} className="streak-pop text-sm font-bold text-[#df6620] tabular-nums">{streak}</span>
+                            </div>
+                        )}
                         <button onClick={() => setShowSettings(true)}
                             className="w-10 h-10 rounded-full bg-[#df6620]/10 flex items-center justify-center border border-[#df6620]/20 hover:bg-[#df6620]/20 transition-colors">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -351,7 +373,7 @@ export default function MainApp() {
                                     <h3 className="text-sm font-medium text-slate-400 uppercase tracking-widest mb-4">{t('journal.todaysEntries')}</h3>
                                     <div className="space-y-0">
                                         {logs.map((log, i) => (
-                                            <div key={i} className="group flex items-center justify-between py-3 px-4 bg-slate-50 rounded-lg mb-2 hover:bg-slate-100 transition-colors">
+                                            <div key={i} className="log-enter group flex items-center justify-between py-3 px-4 bg-slate-50 rounded-lg mb-2 hover:bg-slate-100 transition-colors">
                                                 <div className="flex-1 pr-4">
                                                     <p className="text-slate-700 font-medium">{log.raw_input}</p>
                                                     <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
@@ -405,7 +427,7 @@ export default function MainApp() {
                             {/* Calorie Tally Card */}
                             <div className="bg-[#df6620] text-white p-8 rounded-xl shadow-xl shadow-[#df6620]/20 relative overflow-hidden group">
                                 <div className="relative z-10">
-                                    <h2 className="text-5xl font-bold mb-2">{totalKcal.toLocaleString('id-ID')}</h2>
+                                    <h2 className="text-5xl font-bold mb-2 tabular-nums">{shownKcal.toLocaleString('id-ID')}</h2>
                                     <p className="text-lg opacity-90 mb-6 font-medium">{t('summary.kcalConsumed')}</p>
                                     <div className="w-full bg-white/20 rounded-full h-2 mb-2">
                                         <div className="bg-white h-2 rounded-full transition-all" style={{ width: `${kcalPct}%` }} />
@@ -434,7 +456,7 @@ export default function MainApp() {
                                     <div>
                                         <div className="flex justify-between text-sm mb-1">
                                             <span className="opacity-60">{t('summary.protein')}</span>
-                                            <span className="font-mono font-medium">{totalP}g / {goals?.protein}g</span>
+                                            <span className="font-mono font-medium">{shownP}g / {goals?.protein}g</span>
                                         </div>
                                         <div className="w-full bg-slate-100 rounded-full h-1.5">
                                             <div className="bg-blue-400 h-1.5 rounded-full transition-all" style={{ width: `${proteinPct}%` }} />
@@ -443,7 +465,7 @@ export default function MainApp() {
                                     <div>
                                         <div className="flex justify-between text-sm mb-1">
                                             <span className="opacity-60">{t('summary.carbs')}</span>
-                                            <span className="font-mono font-medium">{totalC}g / {goals?.carbs}g</span>
+                                            <span className="font-mono font-medium">{shownC}g / {goals?.carbs}g</span>
                                         </div>
                                         <div className="w-full bg-slate-100 rounded-full h-1.5">
                                             <div className="bg-emerald-400 h-1.5 rounded-full transition-all" style={{ width: `${carbsPct}%` }} />
@@ -452,7 +474,7 @@ export default function MainApp() {
                                     <div>
                                         <div className="flex justify-between text-sm mb-1">
                                             <span className="opacity-60">{t('summary.fats')}</span>
-                                            <span className="font-mono font-medium">{totalF}g / {goals?.fat}g</span>
+                                            <span className="font-mono font-medium">{shownF}g / {goals?.fat}g</span>
                                         </div>
                                         <div className="w-full bg-slate-100 rounded-full h-1.5">
                                             <div className="bg-amber-400 h-1.5 rounded-full transition-all" style={{ width: `${fatPct}%` }} />

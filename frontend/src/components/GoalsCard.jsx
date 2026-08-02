@@ -1,8 +1,6 @@
-import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/appStore'
 import { useCountUp } from '@/hooks/useCountUp'
-import { celebrateGoal } from '@/lib/celebrate'
 import RingChart from './RingChart'
 
 export default function GoalsCard() {
@@ -40,17 +38,8 @@ export default function GoalsCard() {
     const shownP = useCountUp(totalP)
     const shownF = useCountUp(totalF)
 
-    // Konfeti saat total kalori MENYEBERANGI target dalam sesi ini
-    // (bukan saat halaman di-load dengan target yang sudah tercapai)
-    const prevKcalRef = useRef(null)
-    const goalKcal = goals?.kcal || 0
-    useEffect(() => {
-        const prev = prevKcalRef.current
-        prevKcalRef.current = totalKcal
-        if (prev === null || !goalKcal) return
-        if (prev < goalKcal && totalKcal >= goalKcal) celebrateGoal()
-    }, [totalKcal, goalKcal])
-
+    // Catatan: trigger konfeti dipindah ke MainApp supaya selalu ter-mount
+    // (GoalsCard hanya render di dalam popup Goals).
     if (!hasOnboarding || !goals) return null
 
     const kcalPct = Math.min((totalKcal / goals.kcal) * 100, 100)
