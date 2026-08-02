@@ -8,7 +8,14 @@ export default function TopBar() {
     const navigate = useNavigate()
     const { t } = useTranslation()
     const logCount = useAppStore(s => s.logs.length)
+    const streak = useAppStore(s => s.streak)
+    const isAuthenticated = useAppStore(s => s.isAuthenticated)
     const [showSettings, setShowSettings] = useState(false)
+
+    // 🔥 = streak hari beruntun (user login); guest fallback ke jumlah log hari ini.
+    // streak null (belum termuat/gagal fetch) juga fallback — jangan tampil 0 palsu.
+    const showStreak = isAuthenticated && streak !== null && streak !== undefined
+    const flameValue = showStreak ? streak : logCount
 
     return (
         <>
@@ -30,13 +37,19 @@ export default function TopBar() {
                     {t('common.today')}
                 </button>
 
-                <div className="
+                <div
+                    className="
           flex items-center gap-2
           bg-white rounded-full px-4 py-2
           shadow-sm border border-border/40
-        ">
+        "
+                    title={showStreak ? `${streak} hari beruntun` : undefined}
+                >
                     <span className="text-base">🔥</span>
-                    <span className="text-[15px] font-semibold text-ink">{logCount}</span>
+                    {/* key={flameValue}: re-mount span saat angka berubah → animasi pop */}
+                    <span key={flameValue} className="streak-pop text-[15px] font-semibold text-ink">
+                        {flameValue}
+                    </span>
                     <button onClick={() => setShowSettings(true)}
                         className="ml-1 text-muted hover:text-ink transition-colors">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"

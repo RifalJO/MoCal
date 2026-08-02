@@ -1,9 +1,20 @@
+import { useEffect, useState } from 'react'
+
 export default function RingChart({ label, value, unit, pct, color }) {
     const size = 80
     const stroke = 7
     const r = (size - stroke) / 2
     const circ = 2 * Math.PI * r
-    const offset = circ - (pct / 100) * circ
+
+    // Mulai dari 0 saat mount lalu transisi CSS mengisi ke pct —
+    // tanpa ini ring langsung "lompat" ke nilai akhir saat halaman dibuka.
+    const [drawPct, setDrawPct] = useState(0)
+    useEffect(() => {
+        const raf = requestAnimationFrame(() => setDrawPct(pct))
+        return () => cancelAnimationFrame(raf)
+    }, [pct])
+
+    const offset = circ - (drawPct / 100) * circ
 
     return (
         <div className="flex flex-col items-center gap-1">

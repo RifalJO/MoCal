@@ -8,3 +8,29 @@ body {
   font-family: 'Spline Sans', sans-serif;
   background-color: #f8f7f6;
 }
+
+/* ─── Micro-interactions (MoCal hidup) ─────────────────────────────── */
+
+/* Log baru masuk: slide-up + fade */
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+.log-enter {
+  animation: slideUpFade 0.3s ease-out both;
+}
+
+/* Angka streak bertambah: pop */
+@keyframes popScale {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+.streak-pop {
+  display: inline-block;
+  animation: popScale 0.35s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .log-enter, .streak-pop { animation: none; }
+}

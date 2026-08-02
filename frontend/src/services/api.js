@@ -36,6 +36,9 @@ export async function login(email, password) {
         // Restore onboarding/profile data from server
         await fetchOnboarding()
 
+        // Muat streak untuk chip 🔥 (non-blocking terhadap alur login)
+        fetchStreak()
+
         return { success: true }
     } catch (error) {
         console.error('Login error:', error)
@@ -88,9 +91,12 @@ export async function validateAuth() {
         // Restore onboarding/profile data from server
         await fetchOnboarding()
 
+        // Muat streak untuk chip 🔥 (non-blocking)
+        fetchStreak()
+
         console.log('✅ Auth session restored successfully')
         return { authenticated: true, user: data }
-    } catch (error) {
+    } catch {
         console.log('❌ Auth validation failed - token expired or invalid')
         // Token invalid/expired — bersihkan seluruh sesi termasuk profile/goals,
         // supaya data onboarding akun lama tidak bocor ke akun yang login berikutnya
@@ -105,7 +111,7 @@ export async function getCurrentUser() {
         const store = useAppStore.getState()
         store.setUser(data)
         return data
-    } catch (error) {
+    } catch {
         // Token invalid, clear auth
         logout()
         return null
@@ -166,6 +172,23 @@ export async function fetchUserLogs(date = null) {
     } catch (error) {
         console.error('Fetch logs error:', error)
         return []
+    }
+}
+
+// ─── Gamifikasi: streak ──────────────────────────────────────────────────────
+
+// Ambil streak hari beruntun untuk chip 🔥 di TopBar.
+// Gagal → set null supaya chip fallback ke jumlah log (jangan tampil angka salah).
+export async function fetchStreak() {
+    const store = useAppStore.getState()
+    if (!store.isAuthenticated || !store.token) return
+
+    try {
+        const { data } = await api.get(`/api/stats/streak?tz_offset=${tzOffsetMinutes()}`)
+        store.setStreak(data.streak)
+    } catch (error) {
+        console.error('Fetch streak error:', error)
+        store.setStreak(null)
     }
 }
 
@@ -317,6 +340,10 @@ export async function submitLog(text) {
             items: data.items || [],
             logged_at: new Date().toISOString(),
         })
+
+        // Log baru bisa memperpanjang streak — refresh chip 🔥 (non-blocking)
+        fetchStreak()
+
         return { success: true, data }
     } catch (error) {
         console.error('API Error:', error)

@@ -48,6 +48,10 @@ export const useAppStore = create(
             setHasOnboarding: (v) => set({ hasOnboarding: v }),
             setIsAuthenticated: (v) => set({ isAuthenticated: v }),
 
+            // Gamifikasi — streak hari beruntun (null = belum diketahui/sembunyikan)
+            streak: null,
+            setStreak: (v) => set({ streak: v }),
+
             // Guest trial
             guestTrialUsed: false,
             showAuthWarning: false,

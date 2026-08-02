@@ -1,30 +1,31 @@
+import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/appStore'
+import { useCountUp } from '@/hooks/useCountUp'
+import { celebrateGoal } from '@/lib/celebrate'
 import RingChart from './RingChart'
 
 export default function GoalsCard() {
     const { t } = useTranslation()
     const { logs, goals, hasOnboarding } = useAppStore()
 
-    if (!hasOnboarding || !goals) return null
-
     // Calculate totals directly from logs items
     const totalKcal = logs.reduce((sum, log) => sum + (log.total_kcal || 0), 0)
-    
+
     const totalC = Math.round(logs.reduce((sum, log) => {
         if (log.items && log.items.length > 0) {
             return sum + log.items.reduce((s, item) => s + (item.carbs_g || 0), 0)
         }
         return sum + (log.total_carbs || 0)
     }, 0))
-    
+
     const totalP = Math.round(logs.reduce((sum, log) => {
         if (log.items && log.items.length > 0) {
             return sum + log.items.reduce((s, item) => s + (item.protein_g || 0), 0)
         }
         return sum + (log.total_protein || 0)
     }, 0))
-    
+
     const totalF = Math.round(logs.reduce((sum, log) => {
         if (log.items && log.items.length > 0) {
             return sum + log.items.reduce((s, item) => s + (item.fat_g || 0), 0)
@@ -32,12 +33,25 @@ export default function GoalsCard() {
         return sum + (log.total_fat || 0)
     }, 0))
 
-    // Debug log
-    console.log('📊 GoalsCard - Logs:', logs)
-    console.log('📊 GoalsCard - Totals:', { totalKcal, totalC, totalP, totalF })
-    if (logs.length > 0) {
-        console.log('📊 GoalsCard - First log items:', logs[0]?.items)
-    }
+    // Angka beranimasi (count-up) — hook dipanggil sebelum early-return
+    // agar urutan hooks konsisten antar render
+    const shownKcal = useCountUp(Math.round(totalKcal))
+    const shownC = useCountUp(totalC)
+    const shownP = useCountUp(totalP)
+    const shownF = useCountUp(totalF)
+
+    // Konfeti saat total kalori MENYEBERANGI target dalam sesi ini
+    // (bukan saat halaman di-load dengan target yang sudah tercapai)
+    const prevKcalRef = useRef(null)
+    const goalKcal = goals?.kcal || 0
+    useEffect(() => {
+        const prev = prevKcalRef.current
+        prevKcalRef.current = totalKcal
+        if (prev === null || !goalKcal) return
+        if (prev < goalKcal && totalKcal >= goalKcal) celebrateGoal()
+    }, [totalKcal, goalKcal])
+
+    if (!hasOnboarding || !goals) return null
 
     const kcalPct = Math.min((totalKcal / goals.kcal) * 100, 100)
     const carbsPct = Math.min((totalC / goals.carbs) * 100, 100)
@@ -56,7 +70,7 @@ export default function GoalsCard() {
                         <span className="text-[15px] font-medium text-ink">{t('goals.calories')}</span>
                     </div>
                     <span className="text-[15px] font-semibold text-ink tabular-nums">
-                        {totalKcal.toLocaleString('id-ID')} / {goals.kcal.toLocaleString('id-ID')}
+                        {shownKcal.toLocaleString('id-ID')} / {goals.kcal.toLocaleString('id-ID')}
                     </span>
                 </div>
                 <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
@@ -65,9 +79,9 @@ export default function GoalsCard() {
                 </div>
             </div>
             <div className="grid grid-cols-3 gap-4">
-                <RingChart label={t('goals.carbs')} value={totalC} unit="g" pct={carbsPct} color={ringColor(carbsPct)} />
-                <RingChart label={t('goals.protein')} value={totalP} unit="g" pct={proteinPct} color={ringColor(proteinPct)} />
-                <RingChart label={t('goals.fat')} value={totalF} unit="g" pct={fatPct} color={ringColor(fatPct)} />
+                <RingChart label={t('goals.carbs')} value={shownC} unit="g" pct={carbsPct} color={ringColor(carbsPct)} />
+                <RingChart label={t('goals.protein')} value={shownP} unit="g" pct={proteinPct} color={ringColor(proteinPct)} />
+                <RingChart label={t('goals.fat')} value={shownF} unit="g" pct={fatPct} color={ringColor(fatPct)} />
             </div>
         </div>
     )

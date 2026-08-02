@@ -610,6 +610,39 @@ def get_logs(current_user: User = Depends(get_current_user), db: Session = Depen
     return result
 
 
+# ─── Endpoint: Streak (gamifikasi, 0 token) ───────────────────────────────────
+@app.get("/api/stats/streak")
+def get_streak(current_user: User = Depends(get_current_user), db: Session = Depends(get_db), tz_offset: int = 0):
+    """
+    Hitung hari beruntun user mencatat log, dihitung pada timezone klien.
+    tz_offset: menit di timur UTC (WIB = 420), sama seperti /api/logs.
+    Query dibatasi 366 hari terakhir agar tidak unbounded.
+    """
+    from app.database import FoodLog
+    from app.stats import compute_streak
+    from datetime import datetime, timedelta, timezone
+
+    client_tz = timezone(timedelta(minutes=tz_offset))
+    now_client = datetime.now(client_tz)
+    since = now_client - timedelta(days=366)
+
+    rows = db.query(FoodLog.logged_at).filter(
+        FoodLog.user_id == current_user.id,
+        FoodLog.logged_at >= since,
+    ).all()
+
+    logged_dates = {
+        r.logged_at.astimezone(client_tz).date()
+        for r in rows if r.logged_at is not None
+    }
+    today = now_client.date()
+
+    return {
+        "streak": compute_streak(logged_dates, today),
+        "logged_today": today in logged_dates,
+    }
+
+
 # ─── Endpoint: Delete Log ──────────────────────────────────────────────────────
 @app.delete("/api/logs/{log_id}")
 def delete_log(log_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
