@@ -109,12 +109,9 @@ Jika input tidak mengandung makanan sama sekali (misalnya: "halo", "terima kasih
 CONTOH — PELAJARI DENGAN SEKSAMA
 ═══════════════════════════════════════════════
 
-Input: "makan siang nasi uduk sama udang goreng 5 ekor"
-Output:
-[
-  {"name": "nasi uduk", "name_en": "steamed coconut rice", "qty": 1, "unit": "porsi", "estimated_grams": 250, "kcal_100g": 163},
-  {"name": "udang goreng", "name_en": "fried shrimp", "qty": 5, "unit": "ekor", "estimated_grams": 75, "kcal_100g": 240}
-]
+Contoh dipilih agar mencakup pola tersulit: topping/jeroan, multi-item +
+minuman, slang/typo, dan item tunggal telanjang. Terapkan pola yang sama ke
+input lain.
 
 Input: "soto ayam pakai ceker sama nasi putih"
 Output:
@@ -133,34 +130,6 @@ Output:
   {"name": "teh manis hangat", "name_en": "sweet hot tea", "qty": 1, "unit": "gelas", "estimated_grams": 250, "kcal_100g": 35}
 ]
 
-Input: "udang"
-Output:
-[
-  {"name": "udang", "name_en": "shrimp", "qty": 1, "unit": "porsi", "estimated_grams": 100, "kcal_100g": 100}
-]
-
-Input: "sarapan roti bakar 2 lembar, telur ceplok, dan segelas susu"
-Output:
-[
-  {"name": "roti bakar", "name_en": "toast", "qty": 2, "unit": "lembar", "estimated_grams": 60, "kcal_100g": 310},
-  {"name": "telur ceplok", "name_en": "fried egg sunny side up", "qty": 1, "unit": "butir", "estimated_grams": 55, "kcal_100g": 190},
-  {"name": "susu", "name_en": "milk", "qty": 1, "unit": "gelas", "estimated_grams": 250, "kcal_100g": 60}
-]
-
-Input: "rawon kikil komplit sama nasi"
-Output:
-[
-  {"name": "rawon", "name_en": "black beef soup", "qty": 1, "unit": "mangkok", "estimated_grams": 400, "kcal_100g": 90},
-  {"name": "kikil sapi", "name_en": "beef tendon", "qty": 1, "unit": "porsi", "estimated_grams": 80, "kcal_100g": 150},
-  {"name": "nasi putih", "name_en": "steamed white rice", "qty": 1, "unit": "porsi", "estimated_grams": 200, "kcal_100g": 130}
-]
-
-Input: "semur jengkol 1 porsi"
-Output:
-[
-  {"name": "semur jengkol", "name_en": "braised jengkol beans", "qty": 1, "unit": "porsi", "estimated_grams": 150, "kcal_100g": 180}
-]
-
 Input: "Makan naspad dengan lauk rendg, krupuk, sayurnya nasi padang itu loh, sambel ijo"
 Output:
 [
@@ -171,12 +140,10 @@ Output:
   {"name": "sambal ijo", "name_en": "green chili sambal", "qty": 1, "unit": "sendok makan", "estimated_grams": 15, "kcal_100g": 130}
 ]
 
-Input: "nasgor pake telor, esteh"
+Input: "udang"
 Output:
 [
-  {"name": "nasi goreng", "name_en": "fried rice", "qty": 1, "unit": "porsi", "estimated_grams": 250, "kcal_100g": 168},
-  {"name": "telur ceplok", "name_en": "fried egg", "qty": 1, "unit": "butir", "estimated_grams": 55, "kcal_100g": 190},
-  {"name": "es teh", "name_en": "sweet iced tea", "qty": 1, "unit": "gelas", "estimated_grams": 250, "kcal_100g": 35}
+  {"name": "udang", "name_en": "shrimp", "qty": 1, "unit": "porsi", "estimated_grams": 100, "kcal_100g": 100}
 ]
 """
 
@@ -286,6 +253,232 @@ def convert_to_gram(qty: float, unit: str, estimated_grams: float) -> float:
         return qty * multiplier
     # Fallback ke estimated_grams
     return estimated_grams if estimated_grams else 100.0
+
+
+# ─────────────────────────────────────────────
+# LOCAL FAST-PATH — parse tanpa LLM untuk input sederhana
+# ─────────────────────────────────────────────
+#
+# Banyak input hanya berisi makanan yang SUDAH ada di database lokal
+# (mis. "nasi goreng", "nasi putih sama es teh"). Untuk kasus ini LLM parser
+# tidak diperlukan: pecah teks, exact-match tiap potongan ke CSV, pakai
+# default_portion_g. Jika SATU potongan saja gagal exact-match, seluruh
+# fast-path dibatalkan dan pipeline jatuh ke LLM parser (akurasi tetap sama).
+
+# Pemisah antar item: koma/titik-koma/simbol + konjungsi umum bahasa Indonesia.
+_SEPARATOR_RE = re.compile(
+    r"\s*(?:,|;|\+|&|\bdan\b|\bsama\b|\bplus\b|\bserta\b|\bjuga\b|\bterus\b|\blalu\b)\s*",
+    re.IGNORECASE,
+)
+
+# Kata pengisi yang boleh dibuang dari awal/akhir potongan tanpa mengubah makna
+# makanan. Konservatif — kalau ragu, fast-path gagal dan jatuh ke LLM (aman).
+_FILLER_WORDS = {
+    "makan", "sarapan", "minum", "makanan", "aku", "saya", "gua", "gue",
+    "tadi", "barusan", "pagi", "siang", "sore", "malam", "pesan", "beli",
+    "order", "dengan", "pakai", "pake", "lauk", "menu", "mau", "habis",
+    "seporsi", "porsi", "ini", "itu",
+}
+
+# "se-" + satuan → qty 1 (mis. "segelas" = 1 gelas).
+_SE_UNIT = {
+    "segelas": "gelas", "secangkir": "cup", "sepiring": "piring",
+    "semangkok": "mangkok", "semangkuk": "mangkok", "sebutir": "butir",
+    "sepotong": "potong", "selembar": "lembar", "seekor": "ekor",
+    "sebuah": "buah", "sebiji": "biji", "sesendok": "sendok makan",
+}
+
+# Satuan yang dikenali unit converter (multi-kata dicoba dulu pada regex).
+_KNOWN_UNITS = sorted(set(UNIT_TO_GRAMS.keys()) | {"cup"}, key=len, reverse=True)
+_QTY_UNIT_RE = re.compile(
+    r"(?P<qty>\d+(?:[.,]\d+)?)\s*(?P<unit>"
+    + "|".join(re.escape(u) for u in _KNOWN_UNITS)
+    + r")?\b",
+    re.IGNORECASE,
+)
+
+
+def _extract_qty_unit(chunk: str) -> tuple[str, float, str]:
+    """Pisahkan qty + unit dari potongan → (nama_bersih, qty, unit).
+
+    Default (1, 'porsi') jika tidak ada angka/satuan eksplisit.
+    """
+    qty, unit = 1.0, "porsi"
+    text = chunk
+
+    # "se-" + satuan (segelas, sepiring, ...)
+    for word, u in _SE_UNIT.items():
+        if re.search(rf"\b{word}\b", text, re.IGNORECASE):
+            unit = u
+            text = re.sub(rf"\b{word}\b", " ", text, flags=re.IGNORECASE)
+            break
+
+    # angka + satuan opsional (mis. "5 ekor", "200 gram", "2")
+    m = _QTY_UNIT_RE.search(text)
+    if m:
+        try:
+            qty = float(m.group("qty").replace(",", "."))
+        except ValueError:
+            qty = 1.0
+        if m.group("unit"):
+            unit = m.group("unit").lower()
+        text = text[:m.start()] + " " + text[m.end():]
+
+    name = " ".join(text.split()).strip(" -")
+    return name, qty, unit
+
+
+def _clean_food_token(name: str) -> str:
+    """Buang kata pengisi di awal/akhir potongan (konservatif)."""
+    words = [w for w in name.lower().split() if w]
+    while words and words[0] in _FILLER_WORDS:
+        words.pop(0)
+    while words and words[-1] in _FILLER_WORDS:
+        words.pop()
+    return " ".join(words)
+
+
+# Satuan per-biji: berat 1 biji sangat bervariasi (1 ekor ikan ≠ 1 ekor udang).
+# Fast-path TIDAK menebak — input dengan satuan ini diserahkan ke LLM.
+_PIECE_UNITS = {"ekor", "butir", "lembar", "potong", "biji", "buah"}
+
+# Porsi wajar per kategori (gram per 1 porsi) — meniru aturan porsi di
+# SYSTEM_PROMPT ("1 porsi/piring 200-300g, 1 mangkok 300-350g, 1 gelas 250ml").
+# Label kategori mengikuti CATEGORY_RULES di app/validator.py (DRY).
+# Dipakai HANYA saat default_portion_g di DB masih nilai pengisi 100.
+_CATEGORY_PORTION_G = {
+    "nasi":        250.0,   # nasi goreng/uduk 1 piring
+    "mie_pasta":   250.0,
+    "bubur":       300.0,   # 1 mangkok
+    "sup_berkuah": 350.0,   # 1 mangkok kuah
+    "minuman":     250.0,   # 1 gelas
+    "air_tawar":   250.0,
+    "sayur":       150.0,
+    "kerupuk":      20.0,   # pelengkap, bukan 100g kerupuk
+    "minyak_lemak": 15.0,   # 1 sdm
+    "gula_sirup":   15.0,
+}
+
+_FILLER_PORTION = 100.0     # nilai default_portion_g yang berarti "tidak dikurasi"
+
+# Hidangan utuh yang keyword-nya masuk kategori 'sayur' di validator padahal
+# porsinya sekelas makanan utama, bukan lauk sayur pendamping.
+_PORTION_OVERRIDES = {
+    "gado-gado": 250.0,
+    "pecel":     250.0,
+    "ketoprak":  250.0,
+    "capcay":    200.0,
+}
+
+
+def _resolve_portion_g(name: str, default_g: float) -> float:
+    """Porsi (gram) untuk 1 porsi makanan `name`.
+
+    default_portion_g yang terkurasi (≠100) dipercaya; nilai pengisi 100
+    diganti porsi wajar per kategori supaya total kalori tidak terlalu kecil
+    (mis. nasi goreng 100g=276 kcal padahal 1 piring ~250g=690 kcal).
+    """
+    if abs(default_g - _FILLER_PORTION) > 1e-9:
+        return default_g                      # nilai kurasi → pakai apa adanya
+
+    for dish, grams in _PORTION_OVERRIDES.items():
+        if dish in name.lower():
+            return grams
+
+    from app.validator import get_category    # import lokal, hindari siklus
+    cat = get_category(name)
+    if cat:
+        return _CATEGORY_PORTION_G.get(cat[0], default_g)
+    return default_g
+
+
+def try_local_parse(text: str) -> list[dict] | None:
+    """Coba parse SEPENUHNYA di lokal tanpa LLM.
+
+    Return list item (format sama dengan parse_food_text) HANYA jika SETIAP
+    potongan berhasil exact-match ke database lokal DAN porsinya bisa
+    ditentukan dengan yakin. Jika tidak → return None agar caller memakai
+    LLM parser (perilaku lama, akurasi tetap).
+    """
+    if not text or not text.strip():
+        return None
+
+    # Import lokal supaya tak ada siklus import saat modul dimuat.
+    from app.matcher import load_food_cache, exact_match
+    load_food_cache()
+
+    chunks = [c.strip() for c in _SEPARATOR_RE.split(text) if c and c.strip()]
+    if not chunks:
+        return None
+
+    items: list[dict] = []
+    for chunk in chunks:
+        base, qty, unit = _extract_qty_unit(chunk)
+        base = _clean_food_token(base)
+        if not base or len(base.split()) > 5:
+            return None                       # kosong/terlalu panjang → serah ke LLM
+        if unit in _PIECE_UNITS:
+            return None                       # berat per-biji tak pasti → serah ke LLM
+
+        food = None
+        for cand in (base, normalize_food_name(base)):
+            food = exact_match(cand)
+            if food:
+                break
+        if not food:
+            return None                       # satu gagal → batalkan fast-path
+
+        multiplier = UNIT_TO_GRAMS.get(unit)
+        if multiplier:
+            grams = qty * multiplier          # satuan eksplisit (gram, gelas, sdm...)
+        else:
+            default_g = food.get("default_portion_g") or _FILLER_PORTION
+            grams = qty * _resolve_portion_g(food["name"], default_g)
+
+        items.append({
+            "name":          food["name"],
+            "name_en":       None,
+            "qty":           qty,
+            "unit":          unit,
+            "grams":         round(grams, 1),
+            "expected_kcal": None,            # exact match dipercaya; tak perlu expected
+        })
+
+    return items or None
+
+
+# ─────────────────────────────────────────────
+# CACHE HASIL PARSE — input identik tak di-parse ulang (warm instance)
+# ─────────────────────────────────────────────
+from collections import OrderedDict
+
+_PARSE_CACHE_MAX = 256
+_parse_cache: "OrderedDict[str, list[dict]]" = OrderedDict()
+
+
+def _parse_cache_key(text: str) -> str:
+    return " ".join(text.lower().split())
+
+
+def get_cached_parse(text: str) -> list[dict] | None:
+    """Ambil hasil parse yang sudah di-cache (salinan, agar cache tak termutasi)."""
+    key = _parse_cache_key(text)
+    items = _parse_cache.get(key)
+    if items is None:
+        return None
+    _parse_cache.move_to_end(key)
+    return [dict(it) for it in items]
+
+
+def set_cached_parse(text: str, items: list[dict]) -> None:
+    """Simpan hasil parse (fast-path maupun LLM) untuk input identik berikutnya."""
+    if not items:
+        return
+    key = _parse_cache_key(text)
+    _parse_cache[key] = [dict(it) for it in items]
+    _parse_cache.move_to_end(key)
+    while len(_parse_cache) > _PARSE_CACHE_MAX:
+        _parse_cache.popitem(last=False)
 
 
 # ─────────────────────────────────────────────

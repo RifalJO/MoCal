@@ -66,9 +66,14 @@ def load_food_cache(db: Session | None = None):
     # Coba dari CSV dulu — tanpa koneksi database sama sekali
     csv_cache = _load_cache_from_csv()
     if csv_cache:
-        _food_cache = csv_cache
+        # Overlay tipis: makanan hasil estimasi LLM yang sudah dipersist ke DB.
+        # CSV tetap sumber utama (3.000+ baris); overlay hanya menambah yang
+        # "dipelajari" agar tidak perlu estimasi LLM ulang lintas cold start.
+        overlay = _load_estimate_overlay(db)
+        _food_cache = csv_cache + overlay
         _cache_loaded = True
-        print(f"[OK] Cache loaded dari CSV: {len(_food_cache)} makanan")
+        print(f"[OK] Cache loaded dari CSV: {len(csv_cache)} makanan"
+              + (f" (+{len(overlay)} estimasi tersimpan)" if overlay else ""))
         return
 
     # Fallback: query database
@@ -365,3 +370,100 @@ def find_food(name: str, english_name: str | None = None, expected_kcal: float |
         "match_method": "not_found",
         "match_score": 0.0
     }, match_log
+
+
+# ─── Persist estimasi LLM ke DB (agar tumbuh & berhenti panggil LLM) ──────────
+def _load_estimate_overlay(db: Session | None) -> list[dict]:
+    """Muat HANYA makanan bertanda 'llm_estimate' dari DB.
+
+    Dipakai sebagai lapisan tipis di atas cache CSV supaya makanan yang pernah
+    diestimasi LLM (lalu dipersist) bertahan lintas cold start tanpa perlu
+    estimasi ulang. Best-effort: kegagalan DB tidak boleh mematahkan CSV path.
+    """
+    own_session = db is None
+    if own_session:
+        db = SessionLocal()
+    try:
+        rows = db.query(
+            Food.id, Food.name, Food.name_aliases,
+            Food.cal, Food.protein, Food.carbs, Food.fat,
+            Food.default_portion_g, Food.source,
+        ).filter(Food.source == "llm_estimate").all()
+        return [
+            {
+                "id":      str(r.id),
+                "name":    (r.name or "").strip().lower(),
+                "aliases": [a.strip().lower() for a in r.name_aliases.split("|") if a.strip()] if r.name_aliases else [],
+                "kcal":    r.cal,
+                "protein_g": r.protein,
+                "carbs_g":   r.carbs,
+                "fat_g":     r.fat,
+                "default_portion_g": r.default_portion_g,
+                "source":  r.source,
+            }
+            for r in rows
+            if (r.name or "").strip()
+        ]
+    except Exception as e:
+        print(f"[overlay] Lewati overlay estimasi ({e})")
+        return []
+    finally:
+        if own_session:
+            db.close()
+
+
+def persist_estimated_food(db: Session, name: str, est: dict) -> bool:
+    """Simpan makanan hasil estimasi LLM ke tabel foods agar request berikutnya
+    langsung exact-match (tanpa LLM). Hanya untuk makanan yang BELUM ada.
+
+    est: {"kcal", "protein_g", "carbs_g", "fat_g"} per 100g.
+    Return True jika baris baru berhasil ditambahkan.
+    """
+    clean = (name or "").strip().lower()
+    if not clean:
+        return False
+
+    try:
+        kcal = float(est.get("kcal"))
+    except (TypeError, ValueError):
+        return False
+
+    # Pastikan cache dimuat, lalu tolak jika sudah ada (hindari duplikat).
+    load_food_cache(db)
+    if exact_match(clean):
+        return False
+
+    try:
+        food = Food(
+            name=clean,
+            name_aliases=None,
+            cal=kcal,
+            protein=float(est.get("protein_g") or 0),
+            carbs=float(est.get("carbs_g") or 0),
+            fat=float(est.get("fat_g") or 0),
+            default_portion_g=100.0,
+            source="llm_estimate",
+            is_indonesian=False,
+        )
+        db.add(food)
+        db.commit()
+        db.refresh(food)
+    except Exception as e:
+        db.rollback()
+        print(f"[persist] Gagal simpan '{clean}' ke DB: {e}")
+        return False
+
+    # Tambahkan ke cache in-memory agar langsung dipakai di request yang sama.
+    _food_cache.append({
+        "id":      str(food.id),
+        "name":    clean,
+        "aliases": [],
+        "kcal":    kcal,
+        "protein_g": food.protein,
+        "carbs_g":   food.carbs,
+        "fat_g":     food.fat,
+        "default_portion_g": 100.0,
+        "source":  "llm_estimate",
+    })
+    print(f"[persist] '{clean}' ({kcal} kcal/100g) ditambahkan ke DB + cache")
+    return True

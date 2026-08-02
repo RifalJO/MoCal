@@ -6,8 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from app.database import get_db, init_db, settings, User, UserProfile
-from app.matcher import find_food
-from app.parser import parse_food_text, convert_to_gram
+from app.matcher import find_food, persist_estimated_food
+from app.parser import (
+    parse_food_text, convert_to_gram, try_local_parse,
+    get_cached_parse, set_cached_parse,
+)
 from app.validator import rule_check, validate_batch_llm, is_plausible_kcal
 from app.auth import get_password_hash, verify_password, create_access_token, get_current_user
 
@@ -243,7 +246,7 @@ def root():
 
 
 # ─── Pipeline estimasi bersama (dipakai /api/estimate & /api/estimate/guest) ──
-def run_estimation_pipeline(text: str) -> tuple[list[FoodItemResult], list[str], dict]:
+def run_estimation_pipeline(text: str, db: Session | None = None) -> tuple[list[FoodItemResult], list[str], dict]:
     """
     Pipeline lengkap:
     1. Parse teks bebas → daftar makanan + expected_kcal (LLM call #1)
@@ -255,7 +258,21 @@ def run_estimation_pipeline(text: str) -> tuple[list[FoodItemResult], list[str],
 
     Returns: (results, unknown_items, log_detail_partial)
     """
-    parsed_items, parse_log = parse_food_text(text)
+    # ── Step 1: Parse teks bebas → daftar makanan ─────────────────────────────
+    # Urutan hemat token: cache hasil identik → fast-path lokal (0 token) →
+    # LLM parser (hanya jika dua cara di atas gagal).
+    parsed_items = get_cached_parse(text)
+    if parsed_items is not None:
+        parse_log = {"source": "cache", "parsed_items_count": len(parsed_items), "llm_model": None}
+    else:
+        parsed_items = try_local_parse(text)
+        if parsed_items is not None:
+            parse_log = {"source": "fast_path_local", "parsed_items_count": len(parsed_items), "llm_model": None}
+        else:
+            parsed_items, parse_log = parse_food_text(text)
+            parse_log["source"] = "llm"
+        if parsed_items:
+            set_cached_parse(text, parsed_items)
 
     if not parsed_items:
         raise HTTPException(status_code=422, detail="Tidak ada makanan yang terdeteksi dari teks")
@@ -341,6 +358,17 @@ def run_estimation_pipeline(text: str) -> tuple[list[FoodItemResult], list[str],
                 p["is_estimate"] = True
                 p["match_log"]["validation"]["verdict"] = "fix"
                 print(f"   🔧 Corrected '{p['name_raw']}': {food.get('kcal')} → {verdict['kcal']} kcal/100g")
+
+                # Persist makanan BARU (tadinya not_found) ke DB agar request
+                # berikutnya exact-match tanpa LLM. Hanya endpoint terautentikasi
+                # (db tersedia); guest tidak menulis ke DB.
+                if db is not None and food.get("match_method") == "not_found":
+                    persist_estimated_food(db, p["name_raw"], {
+                        "kcal":      verdict["kcal"],
+                        "protein_g": verdict["protein_g"],
+                        "carbs_g":   verdict["carbs_g"],
+                        "fat_g":     verdict["fat_g"],
+                    })
             elif verdict and verdict.get("verdict") == "ok":
                 # LLM setuju nilai DB masuk akal → tetap pakai DB
                 p["match_log"]["validation"]["verdict"] = "ok"
@@ -406,7 +434,7 @@ def estimate_calories(req: LogRequest, current_user: User = Depends(get_current_
     if len(text) > 2000:
         raise HTTPException(status_code=400, detail="Input terlalu panjang (max 2000 karakter)")
 
-    results, unknown_items, log_detail = run_estimation_pipeline(text)
+    results, unknown_items, log_detail = run_estimation_pipeline(text, db=db)
 
     # ── Hitung total ────────────────────────────────────────────────────────────
     total_kcal    = round(sum(r.kcal    or 0 for r in results), 1)
