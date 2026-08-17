@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     DB_PASSWORD: str = ""
     GROQ_API_KEY: str = ""
     USDA_API_KEY: str = ""
-    SECRET_KEY: str = "super_secret_key_mocal_123"
+    SECRET_KEY: str = ""  # WAJIB diisi lewat environment variable
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
     FUZZY_THRESHOLD: int = 80
@@ -32,6 +32,15 @@ class Settings(BaseSettings):
         extra = "ignore"
 
 settings = Settings()
+
+# Di produksi, kunci penandatangan JWT wajib berasal dari environment variable.
+# Gagal keras di sini lebih aman daripada diam-diam menandatangani token dengan
+# kunci kosong. Di lingkungan pengembangan lokal, kunci kosong dibiarkan.
+if settings.APP_ENV == "production" and not settings.SECRET_KEY:
+    raise RuntimeError(
+        "SECRET_KEY belum diset. Tambahkan sebagai environment variable "
+        "sebelum menjalankan aplikasi di lingkungan produksi."
+    )
 
 # ─── Engine ───────────────────────────────────────────────────────────────────
 def _clean_database_url(url: str) -> str:
