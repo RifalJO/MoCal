@@ -11,7 +11,7 @@
 import json
 import re
 from groq import Groq
-from app.database import settings
+from app.database import settings, groq_extra_kwargs
 
 client = Groq(api_key=settings.GROQ_API_KEY)
 
@@ -145,13 +145,14 @@ def _fetch_estimates_llm(names: list[str]) -> dict[int, dict]:
     print(f"\n   🤖 Batch validation LLM call: {len(names)} item ({names})")
 
     response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+        model=settings.GROQ_MODEL,
+            **groq_extra_kwargs(),
         messages=[
             {"role": "system", "content": NUTRITION_SYSTEM_PROMPT},
             {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
         ],
         temperature=0,
-        max_tokens=min(100 + 60 * len(names), 1500),
+        max_tokens=min(400 + 120 * len(names), 2000),
     )
     raw = _strip_code_fences(response.choices[0].message.content.strip())
 

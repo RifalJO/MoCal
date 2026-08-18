@@ -21,6 +21,13 @@ class Settings(BaseSettings):
     DB_USER: str = "postgres"
     DB_PASSWORD: str = ""
     GROQ_API_KEY: str = ""
+    # Model Groq. llama-3.1-8b-instant dimatikan Groq pada 16 Agustus 2026;
+    # bisa ditimpa lewat env var GROQ_MODEL tanpa mengubah kode.
+    GROQ_MODEL: str = "openai/gpt-oss-20b"
+    # Model reasoning (gpt-oss-*) memakai completion token untuk "berpikir".
+    # "low" menekan token tanpa menurunkan kualitas ekstraksi. Kosongkan
+    # ("") bila memakai model non-reasoning yang menolak parameter ini.
+    GROQ_REASONING_EFFORT: str = "low"
     USDA_API_KEY: str = ""
     SECRET_KEY: str = ""  # WAJIB diisi lewat environment variable
     JWT_ALGORITHM: str = "HS256"
@@ -32,6 +39,16 @@ class Settings(BaseSettings):
         extra = "ignore"
 
 settings = Settings()
+
+
+def groq_extra_kwargs() -> dict:
+    """Parameter tambahan untuk setiap pemanggilan Groq.
+
+    Dipisah agar konfigurasi reasoning_effort cukup diatur di satu tempat
+    dan otomatis hilang bila diganti model non-reasoning.
+    """
+    effort = (settings.GROQ_REASONING_EFFORT or "").strip()
+    return {"reasoning_effort": effort} if effort else {}
 
 # Di produksi, kunci penandatangan JWT wajib berasal dari environment variable.
 # Gagal keras di sini lebih aman daripada diam-diam menandatangani token dengan

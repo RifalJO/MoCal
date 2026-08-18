@@ -12,7 +12,7 @@ Perubahan utama:
 import json
 import re
 from groq import Groq
-from app.database import settings
+from app.database import settings, groq_extra_kwargs
 
 client = Groq(api_key=settings.GROQ_API_KEY)
 
@@ -517,7 +517,7 @@ def parse_food_text(text: str) -> tuple[list[dict], dict]:
         "parsed_items_count": 0,
         "parse_time_ms": 0,
         "errors": [],
-        "llm_model": "llama-3.1-8b-instant",
+        "llm_model": settings.GROQ_MODEL,
         "input_length": len(text)
     }
     
@@ -535,7 +535,8 @@ def parse_food_text(text: str) -> tuple[list[dict], dict]:
     try:
         print(f"\n🤖 Calling LLM ({log_detail['llm_model']})...")
         response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model=settings.GROQ_MODEL,
+            **groq_extra_kwargs(),
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user",   "content": text.strip()},
@@ -698,7 +699,8 @@ def estimate_nutrition_llm(food_name: str) -> dict:
     """
     try:
         response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model=settings.GROQ_MODEL,
+            **groq_extra_kwargs(),
             messages=[{"role": "user", "content": prompt}],
             temperature=0,
             max_tokens=200,
