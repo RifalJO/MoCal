@@ -400,6 +400,15 @@ def persist_estimated_food(db: Session, name: str, est: dict) -> bool:
     except (TypeError, ValueError):
         return False
 
+    # Tolak estimasi yang tidak konsisten dengan makronya sendiri. Model
+    # sesekali mengarang angka; menyimpannya akan mencemari basis data secara
+    # permanen. Pemeriksaan ini deterministik dan tanpa token.
+    from app.validator import is_kcal_consistent, atwater_kcal
+    if not is_kcal_consistent(kcal, est.get("protein_g"), est.get("carbs_g"), est.get("fat_g")):
+        atw = atwater_kcal(est.get("protein_g"), est.get("carbs_g"), est.get("fat_g"))
+        print(f"[persist] '{clean}' ditolak: kcal {kcal} tidak konsisten dengan makro (Atwater {atw:.0f})")
+        return False
+
     # Pastikan cache dimuat, lalu tolak jika sudah ada (hindari duplikat).
     load_food_cache(db)
     if exact_match(clean):

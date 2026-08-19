@@ -58,6 +58,38 @@ def get_category(name: str) -> tuple[str, float, float] | None:
     return None
 
 
+# ─── Konsistensi kcal vs makro (Atwater 4/4/9) ────────────────────────────────
+# Nilai gizi yang benar harus konsisten dengan dirinya sendiri: kalori kira-kira
+# sama dengan 4*protein + 4*karbohidrat + 9*lemak. Selisih liar menandakan salah
+# satu angkanya rusak. Pemeriksaan ini deterministik dan tidak memakai token.
+
+ATWATER_REL_TOLERANCE = 0.5     # toleransi relatif terhadap kcal
+ATWATER_ABS_FLOOR = 30.0        # lantai absolut agar makanan rendah kalori aman
+
+
+def atwater_kcal(protein_g, carbs_g, fat_g) -> float:
+    """Kalori teoretis dari makro (kkal per 100 g)."""
+    return 4.0 * (protein_g or 0) + 4.0 * (carbs_g or 0) + 9.0 * (fat_g or 0)
+
+
+def is_kcal_consistent(kcal, protein_g, carbs_g, fat_g) -> bool:
+    """True bila kcal masuk akal terhadap makronya sendiri.
+
+    Makanan yang nyaris nol kalori (air putih) dilewati karena rasio tidak
+    bermakna di sana.
+    """
+    try:
+        kcal = float(kcal)
+    except (TypeError, ValueError):
+        return False
+    atw = atwater_kcal(protein_g, carbs_g, fat_g)
+    if kcal < 20 and atw < 20:
+        return True
+    if atw < 5:                                  # makro kosong -> tak bisa dinilai
+        return True
+    return abs(kcal - atw) <= max(kcal * ATWATER_REL_TOLERANCE, ATWATER_ABS_FLOOR)
+
+
 def is_plausible_kcal(kcal) -> bool:
     """Cek apakah nilai kcal/100g berada dalam batas fisik yang mungkin."""
     try:

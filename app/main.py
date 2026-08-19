@@ -350,10 +350,15 @@ def run_estimation_pipeline(text: str, db: Session | None = None) -> tuple[list[
                 p["match_log"]["validation"]["verdict"] = "fix"
                 print(f"   🔧 Corrected '{p['name_raw']}': {food.get('kcal')} → {verdict['kcal']} kcal/100g")
 
-                # Persist makanan BARU (tadinya not_found) ke DB agar request
-                # berikutnya exact-match tanpa LLM. Hanya endpoint terautentikasi
-                # (db tersedia); guest tidak menulis ke DB.
-                if db is not None and food.get("match_method") == "not_found":
+                # Simpan hasil koreksi sebagai entri BARU agar permintaan
+                # berikutnya untuk nama yang sama tidak memanggil LLM lagi.
+                # Berlaku juga untuk fuzzy match yang ternyata keliru (mis.
+                # 'cireng' tercocok ke 'cireng umami' 32 kkal): entri baru
+                # bernama 'cireng' ditambahkan, baris lama TIDAK diubah.
+                # persist_estimated_food menolak nama yang sudah ada, sehingga
+                # match_method 'exact' otomatis terlewati.
+                # Hanya endpoint terautentikasi (db tersedia); guest tidak menulis.
+                if db is not None:
                     persist_estimated_food(db, p["name_raw"], {
                         "kcal":      verdict["kcal"],
                         "protein_g": verdict["protein_g"],
