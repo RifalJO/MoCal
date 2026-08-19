@@ -13,8 +13,8 @@ import requests
 _food_cache: list[dict] = []
 _cache_loaded: bool = False
 
-# CSV sumber data — sama dengan yang diimport ke Supabase. Dibaca langsung
-# supaya cold start serverless tidak perlu menarik 1.500+ baris dari DB.
+# CSV cadangan — dipakai hanya bila Supabase tidak dapat dihubungi.
+# Sinkronkan dengan: python scripts/sync_csv_to_supabase.py --apply
 FOODS_CSV_PATH = Path(__file__).resolve().parent.parent / "dataset" / "foods_combined.csv"
 
 
@@ -53,60 +53,36 @@ def _load_cache_from_csv() -> list[dict] | None:
 
 
 def load_food_cache(db: Session | None = None):
-    """Load semua nama makanan ke memory untuk fuzzy matching yang cepat.
-    Dipanggil otomatis saat pertama kali find_food() dipanggil.
+    """Muat seluruh makanan ke memori untuk pencocokan cepat.
+    Dipanggil otomatis saat find_food() pertama kali dipakai.
 
-    Prioritas: CSV lokal (cepat, tanpa network) → query DB (fallback).
+    Sumber utama: Supabase. Dipilih agar makanan hasil belajar (disimpan
+    oleh persist_estimated_food) langsung ikut terbaca tanpa sinkronisasi
+    manual ke CSV — filesystem serverless bersifat read-only sehingga CSV
+    tidak mungkin diperbarui saat runtime.
+
+    Cadangan: CSV lokal, dipakai hanya bila DB tidak dapat dihubungi.
     """
     global _food_cache, _cache_loaded
 
     if _cache_loaded:
         return
 
-    # Coba dari CSV dulu — tanpa koneksi database sama sekali
-    csv_cache = _load_cache_from_csv()
-    if csv_cache:
-        # Overlay tipis: makanan hasil estimasi LLM yang sudah dipersist ke DB.
-        # CSV tetap sumber utama (3.000+ baris); overlay hanya menambah yang
-        # "dipelajari" agar tidak perlu estimasi LLM ulang lintas cold start.
-        overlay = _load_estimate_overlay(db)
-        _food_cache = csv_cache + overlay
-        _cache_loaded = True
-        print(f"[OK] Cache loaded dari CSV: {len(csv_cache)} makanan"
-              + (f" (+{len(overlay)} estimasi tersimpan)" if overlay else ""))
-        return
-
-    # Fallback: query database
-    own_session = db is None
-    if own_session:
-        db = SessionLocal()
-
-    try:
-        # Hanya query kolom yang dibutuhkan (lebih cepat dari .all())
-        foods = db.query(
-            Food.id, Food.name, Food.name_aliases,
-            Food.cal, Food.protein, Food.carbs, Food.fat,
-            Food.default_portion_g, Food.source
-        ).all()
-        _food_cache = [
-            {
-                "id":    str(f.id),
-                "name":  (f.name or "").strip().lower(),
-                "aliases": [a.strip().lower() for a in f.name_aliases.split("|") if a.strip()] if f.name_aliases else [],
-                "kcal":  f.cal,
-                "protein_g":  f.protein,
-                "carbs_g":    f.carbs,
-                "fat_g":      f.fat,
-                "default_portion_g": f.default_portion_g,
-                "source": f.source,
-            }
-            for f in foods
-        ]
+    db_cache = _load_cache_from_db(db)
+    if db_cache:
+        _food_cache = db_cache
         _cache_loaded = True
         print(f"[OK] Cache loaded dari DB: {len(_food_cache)} makanan")
-    finally:
-        if own_session:
-            db.close()
+        return
+
+    csv_cache = _load_cache_from_csv()
+    if csv_cache:
+        _food_cache = csv_cache
+        _cache_loaded = True
+        print(f"[!] DB tidak terbaca - fallback ke CSV: {len(_food_cache)} makanan")
+        return
+
+    print("[!] Cache kosong: DB dan CSV sama-sama tidak terbaca")
 
 
 def _all_searchable_names() -> list[tuple[str, dict]]:
@@ -373,13 +349,9 @@ def find_food(name: str, english_name: str | None = None, expected_kcal: float |
 
 
 # ─── Persist estimasi LLM ke DB (agar tumbuh & berhenti panggil LLM) ──────────
-def _load_estimate_overlay(db: Session | None) -> list[dict]:
-    """Muat HANYA makanan bertanda 'llm_estimate' dari DB.
-
-    Dipakai sebagai lapisan tipis di atas cache CSV supaya makanan yang pernah
-    diestimasi LLM (lalu dipersist) bertahan lintas cold start tanpa perlu
-    estimasi ulang. Best-effort: kegagalan DB tidak boleh mematahkan CSV path.
-    """
+def _load_cache_from_db(db: Session | None) -> list[dict] | None:
+    """Muat seluruh tabel foods dari database. Return None bila gagal,
+    agar pemanggil dapat jatuh ke CSV sebagai cadangan."""
     own_session = db is None
     if own_session:
         db = SessionLocal()
@@ -388,7 +360,7 @@ def _load_estimate_overlay(db: Session | None) -> list[dict]:
             Food.id, Food.name, Food.name_aliases,
             Food.cal, Food.protein, Food.carbs, Food.fat,
             Food.default_portion_g, Food.source,
-        ).filter(Food.source == "llm_estimate").all()
+        ).all()
         return [
             {
                 "id":      str(r.id),
@@ -403,10 +375,10 @@ def _load_estimate_overlay(db: Session | None) -> list[dict]:
             }
             for r in rows
             if (r.name or "").strip()
-        ]
+        ] or None
     except Exception as e:
-        print(f"[overlay] Lewati overlay estimasi ({e})")
-        return []
+        print(f"[!] Gagal baca DB ({e}) - akan fallback ke CSV")
+        return None
     finally:
         if own_session:
             db.close()
