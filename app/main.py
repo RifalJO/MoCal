@@ -7,10 +7,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from app.database import get_db, init_db, settings, User, UserProfile
 from app.matcher import find_food, persist_estimated_food
-from app.parser import (
-    parse_food_text, convert_to_gram, try_local_parse,
-    get_cached_parse, set_cached_parse,
-)
+from app.parser import parse_food_text, convert_to_gram, try_local_parse
 from app.validator import rule_check, validate_batch_llm, is_plausible_kcal
 from app.auth import get_password_hash, verify_password, create_access_token, get_current_user
 
@@ -249,7 +246,7 @@ def root():
 def run_estimation_pipeline(text: str, db: Session | None = None) -> tuple[list[FoodItemResult], list[str], dict]:
     """
     Pipeline lengkap:
-    1. Parse teks bebas → daftar makanan + expected_kcal (LLM call #1)
+    1. Parse teks bebas → fast-path lokal (0 token), atau LLM bila gagal
     2. Cari nutrisi tiap makanan (exact → fuzzy dengan re-rank kalori → USDA)
     3. VALIDASI: rule-based sanity check (0 token) untuk semua item;
        item yang mencurigakan ATAU not_found dikirim ke LLM dalam SATU call batch
@@ -259,20 +256,14 @@ def run_estimation_pipeline(text: str, db: Session | None = None) -> tuple[list[
     Returns: (results, unknown_items, log_detail_partial)
     """
     # ── Step 1: Parse teks bebas → daftar makanan ─────────────────────────────
-    # Urutan hemat token: cache hasil identik → fast-path lokal (0 token) →
-    # LLM parser (hanya jika dua cara di atas gagal).
-    parsed_items = get_cached_parse(text)
+    # Urutan hemat token: fast-path lokal (0 token) → LLM parser (hanya bila
+    # fast-path gagal).
+    parsed_items = try_local_parse(text)
     if parsed_items is not None:
-        parse_log = {"source": "cache", "parsed_items_count": len(parsed_items), "llm_model": None}
+        parse_log = {"source": "fast_path_local", "parsed_items_count": len(parsed_items), "llm_model": None}
     else:
-        parsed_items = try_local_parse(text)
-        if parsed_items is not None:
-            parse_log = {"source": "fast_path_local", "parsed_items_count": len(parsed_items), "llm_model": None}
-        else:
-            parsed_items, parse_log = parse_food_text(text)
-            parse_log["source"] = "llm"
-        if parsed_items:
-            set_cached_parse(text, parsed_items)
+        parsed_items, parse_log = parse_food_text(text)
+        parse_log["source"] = "llm"
 
     if not parsed_items:
         raise HTTPException(status_code=422, detail="Tidak ada makanan yang terdeteksi dari teks")

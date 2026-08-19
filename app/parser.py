@@ -448,40 +448,6 @@ def try_local_parse(text: str) -> list[dict] | None:
 
 
 # ─────────────────────────────────────────────
-# CACHE HASIL PARSE — input identik tak di-parse ulang (warm instance)
-# ─────────────────────────────────────────────
-from collections import OrderedDict
-
-_PARSE_CACHE_MAX = 256
-_parse_cache: "OrderedDict[str, list[dict]]" = OrderedDict()
-
-
-def _parse_cache_key(text: str) -> str:
-    return " ".join(text.lower().split())
-
-
-def get_cached_parse(text: str) -> list[dict] | None:
-    """Ambil hasil parse yang sudah di-cache (salinan, agar cache tak termutasi)."""
-    key = _parse_cache_key(text)
-    items = _parse_cache.get(key)
-    if items is None:
-        return None
-    _parse_cache.move_to_end(key)
-    return [dict(it) for it in items]
-
-
-def set_cached_parse(text: str, items: list[dict]) -> None:
-    """Simpan hasil parse (fast-path maupun LLM) untuk input identik berikutnya."""
-    if not items:
-        return
-    key = _parse_cache_key(text)
-    _parse_cache[key] = [dict(it) for it in items]
-    _parse_cache.move_to_end(key)
-    while len(_parse_cache) > _PARSE_CACHE_MAX:
-        _parse_cache.popitem(last=False)
-
-
-# ─────────────────────────────────────────────
 # PARSER UTAMA
 # ─────────────────────────────────────────────
 

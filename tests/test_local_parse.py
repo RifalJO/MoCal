@@ -1,6 +1,6 @@
-"""Tes untuk fast-path lokal & cache parse — TIDAK memanggil LLM/Groq.
+"""Tes untuk fast-path lokal — TIDAK memanggil LLM/Groq.
 
-Semua tes di sini murni lokal (regex + exact match CSV + cache in-memory),
+Semua tes di sini murni lokal (regex + exact match ke CSV),
 sehingga bisa dijalankan berulang tanpa membakar token.
 """
 
@@ -8,8 +8,6 @@ from app.parser import (
     _extract_qty_unit,
     _clean_food_token,
     try_local_parse,
-    get_cached_parse,
-    set_cached_parse,
     normalize_food_name,
     convert_to_gram,
 )
@@ -130,30 +128,6 @@ def test_fast_path_full_dish_override_beats_sayur_category():
     items = try_local_parse("gado-gado")
     assert items is not None
     assert items[0]["grams"] == 250.0
-
-
-# ─── cache hasil parse ────────────────────────────────────────────────────────
-def test_parse_cache_roundtrip():
-    items = [{"name": "nasi", "qty": 1.0, "unit": "porsi", "grams": 200.0}]
-    set_cached_parse("Nasi  Putih", items)
-    # Key dinormalisasi (case + whitespace)
-    got = get_cached_parse("nasi putih")
-    assert got is not None
-    assert got[0]["name"] == "nasi"
-
-
-def test_parse_cache_returns_copy_not_reference():
-    items = [{"name": "teh", "qty": 1.0, "unit": "gelas", "grams": 250.0}]
-    set_cached_parse("teh manis unik xyz", items)
-    got = get_cached_parse("teh manis unik xyz")
-    got[0]["name"] = "MUTATED"
-    # Cache tidak boleh ikut termutasi
-    again = get_cached_parse("teh manis unik xyz")
-    assert again[0]["name"] == "teh"
-
-
-def test_parse_cache_miss_returns_none():
-    assert get_cached_parse("input yang belum pernah ada 999") is None
 
 
 # ─── helper lama tetap konsisten ──────────────────────────────────────────────
