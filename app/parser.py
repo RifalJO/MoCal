@@ -400,7 +400,12 @@ def try_local_parse(text: str) -> list[dict] | None:
     ditentukan dengan yakin. Jika tidak → return None agar caller memakai
     LLM parser (perilaku lama, akurasi tetap).
     """
+    print("\n" + "-"*80)
+    print("⚡ FAST-PATH (LOCAL PARSER) STARTED")
+    print("-" * 80)
+
     if not text or not text.strip():
+        print("❌ Fast-path gagal: Input kosong")
         return None
 
     # Import lokal supaya tak ada siklus import saat modul dimuat.
@@ -409,24 +414,33 @@ def try_local_parse(text: str) -> list[dict] | None:
 
     chunks = [c.strip() for c in _SEPARATOR_RE.split(text) if c and c.strip()]
     if not chunks:
+        print("❌ Fast-path gagal: Gagal memecah kalimat menjadi item (chunks kosong)")
         return None
 
     items: list[dict] = []
     for chunk in chunks:
         base, qty, unit = _extract_qty_unit(chunk)
-        base = _clean_food_token(base)
-        if not base or len(base.split()) > 5:
-            return None                       # kosong/terlalu panjang → serah ke LLM
+        clean_base = _clean_food_token(base)
+        
+        if not clean_base:
+            print(f"❌ Fast-path gagal: Kata '{base}' menjadi kosong setelah dibersihkan dari kata pengisi")
+            return None
+        if len(clean_base.split()) > 5:
+            print(f"❌ Fast-path gagal: Kata '{clean_base}' terlalu panjang (> 5 kata), diserahkan ke LLM")
+            return None
         if unit in _PIECE_UNITS:
-            return None                       # berat per-biji tak pasti → serah ke LLM
+            print(f"❌ Fast-path gagal: Terdeteksi satuan tak pasti '{unit}', butuh LLM untuk estimasi berat (gram)")
+            return None
 
         food = None
-        for cand in (base, normalize_food_name(base)):
+        for cand in (clean_base, normalize_food_name(clean_base)):
             food = exact_match(cand)
             if food:
                 break
+                
         if not food:
-            return None                       # satu gagal → batalkan fast-path
+            print(f"❌ Fast-path gagal: Makanan '{clean_base}' tidak ditemukan (exact match) di database lokal")
+            return None
 
         multiplier = UNIT_TO_GRAMS.get(unit)
         if multiplier:
@@ -444,6 +458,7 @@ def try_local_parse(text: str) -> list[dict] | None:
             "expected_kcal": None,            # exact match dipercaya; tak perlu expected
         })
 
+    print(f"✅ Fast-path BERHASIL memproses {len(items)} item! (Hemat 100% token LLM)")
     return items or None
 
 
