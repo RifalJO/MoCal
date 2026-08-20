@@ -470,6 +470,9 @@ def estimate_calories(req: LogRequest, current_user: User = Depends(get_current_
     print("📊 ESTIMATION SUMMARY")
     print("="*80)
     print(f"✅ Total items: {len(results)}")
+    for i, r in enumerate(results, 1):
+        print(f"   {i}. {r.name_raw} ({r.gram}g) → {r.kcal} kcal | P: {r.protein_g}g | C: {r.carbs_g}g | F: {r.fat_g}g (Match: {r.match_method})")
+    print("-" * 80)
     print(f"🔥 Total calories: {total_kcal} kcal")
     print(f"🥩 Protein: {total_protein}g")
     print(f"🍚 Carbs: {total_carbs}g")
@@ -523,7 +526,12 @@ def estimate_calories_guest(req: LogRequest):
     total_fat = round(sum(r.fat_g for r in results), 1)
 
     total_time = round((time.time() - request_start) * 1000, 2)
-    print(f"\n🧪 GUEST TRIAL — {len(results)} items, {total_kcal} kcal, {total_time}ms (NOT saved)")
+    print("\n" + "="*80)
+    print(f"🧪 GUEST TRIAL SUMMARY — {len(results)} items, {total_kcal} kcal, {total_time}ms (NOT saved)")
+    print("="*80)
+    for i, r in enumerate(results, 1):
+        print(f"   {i}. {r.name_raw} ({r.gram}g) → {r.kcal} kcal | P: {r.protein_g}g | C: {r.carbs_g}g | F: {r.fat_g}g (Match: {r.match_method})")
+    print("="*80 + "\n")
 
     # NO database save for guest
     return LogResponse(

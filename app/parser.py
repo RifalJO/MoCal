@@ -513,8 +513,8 @@ def parse_food_text(text: str) -> tuple[list[dict], dict]:
     print(f"⏱️  Start time: {time.strftime('%H:%M:%S')}")
 
     # ── Panggil LLM ──
+    print(f"\n🤖 Calling LLM (llama-3.1-8b)...")
     try:
-        print(f"\n🤖 Calling LLM ({log_detail['llm_model']})...")
         response = client.chat.completions.create(
             model=settings.GROQ_MODEL,
             **groq_extra_kwargs(),
